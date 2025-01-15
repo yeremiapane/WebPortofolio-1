@@ -45,12 +45,13 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Extract user ID from claims if available
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			userID, ok := claims["user_id"].(string)
+			userIDFloat, ok := claims["user_id"].(float64)
 			if !ok {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID missing from token"})
 				c.Abort()
 				return
 			}
+			userID := uint(userIDFloat)
 			c.Set("user_id", userID)
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

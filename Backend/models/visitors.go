@@ -8,5 +8,5 @@ type Visitor struct {
 	SessionId string    `gorm:"type:varchar(100);not null"`
 	IpAddress string    `gorm:"type:varchar(50)"`
 	UserAgent string    `gorm:"type:text"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+	CreatedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP;not null"`
 }
