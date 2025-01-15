@@ -90,22 +90,21 @@ func GetAllArticles(c *gin.Context) {
 }
 
 // Mendapatkan detail artikel + perkiraan waktu baca
-func GetArticleByID(c *gin.Context) {
-	id := c.Param("id")
-	var article models.Article
-	if err := config.DB.First(&article, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
-		return
-	}
-
-	// Hitung waktu baca
-	readTime := utils.CalculateReadingTime(strconv.Itoa(int(article.ReadingTime)))
-
-	c.JSON(http.StatusOK, gin.H{
-		"article":  article,
-		"readTime": readTime, // dalam menit
-	})
-}
+//func GetArticleByID(c *gin.Context) {
+//	id := c.Param("id")
+//	var article models.Article
+//	if err := config.DB.First(&article, id).Error; err != nil {
+//		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+//		return
+//	}
+//
+//	// Hitung waktu baca
+//
+//	c.JSON(http.StatusOK, gin.H{
+//		"article":  article,
+//		"readTime": readTime, // dalam menit
+//	})
+//}
 
 func UpdateArticle(c *gin.Context) {
 	id := c.Param("id")
@@ -177,6 +176,9 @@ func GetArticleDetail(c *gin.Context) {
 		return
 	}
 
+	readTime := utils.CalculateReadingTime(strconv.Itoa(int(article.ReadingTime)))
+	article.ReadingTime = readTime
+
 	// Dapatkan session_id
 	sessionID, _ := c.Cookie("session_id")
 	ipAddress := c.ClientIP()
@@ -195,7 +197,7 @@ func GetArticleDetail(c *gin.Context) {
 
 		// Simpan ke tabel visitors
 		v := models.Visitor{
-			ArticleId: int(article.ID),
+			ArticleId: uint(int(article.ID)),
 			SessionId: sessionID,
 			IpAddress: ipAddress,
 			UserAgent: userAgent,

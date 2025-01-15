@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
 	"net/http"
 )
 
@@ -37,6 +39,18 @@ func CreateComment(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Kirim email notifikasi ke admin
+	subject := "New Comment on Article: " + article.Title
+	body := fmt.Sprintf("Hi Admin,\n\nUser %s just commented on article '%s'.\nComment: %s\n\nPlease review in admin panel.\n",
+		name, article.Title, content)
+
+	go func() {
+		if err := utils.SendEmail(subject, body); err != nil {
+			// log error, tapi jangan return error ke user
+			fmt.Println("Failed to send email notification:", err)
+		}
+	}()
 
 	c.JSON(http.StatusOK, gin.H{"message": "Comment submitted, pending approval"})
 }
