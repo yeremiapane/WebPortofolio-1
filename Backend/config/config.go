@@ -1,26 +1,38 @@
 package config
 
 import (
+	"log"
+	"os"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
 
 var DB *gorm.DB
+var JWTSecret string
 
-func InitDB() {
+func InitConfig() {
+	// Load .env
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found using system environment variables")
+		log.Println("No .env file found")
 	}
-	dbDsn := os.Getenv("DB_CONNECTION_STRING")
-	if dbDsn == "" {
-		log.Fatal("DB_CONNECTION_STRING environment variable not set")
+
+	// Ambil env
+	JWTSecret = os.Getenv("JWT_SECRET")
+	if JWTSecret == "" {
+		log.Fatal("JWT_SECRET is not set")
 	}
-	db, err := gorm.Open(mysql.Open(dbDsn), &gorm.Config{})
+
+	dsn := os.Getenv("DB_CONNECTION_STRING")
+	if dsn == "" {
+		log.Fatal("DB_CONNECTION_STRING is not set")
+	}
+
+	// Koneksi MySQL
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect db : ", err)
+		log.Fatalf("Cannot connect to DB: %v", err)
 	}
 
 	DB = db

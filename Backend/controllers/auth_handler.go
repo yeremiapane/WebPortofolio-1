@@ -56,5 +56,13 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+}
+
+func Logout(c *gin.Context) {
+	cookieName := "jwt"
+	// Atur cookie dengan nilai kosong dan expired time di masa lalu
+	c.SetCookie(cookieName, "", -1, "/", "domainanda.com", true, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }

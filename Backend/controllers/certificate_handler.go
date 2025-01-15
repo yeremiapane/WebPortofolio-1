@@ -1,23 +1,24 @@
 package controllers
 
 import (
-	"encoding/json"
-	"fmt"
+	_ "fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
 	"net/http"
-	"time"
+	"strconv"
+	"strings"
 )
 
 type CertificateInput struct {
 	Title            string   `json:"title" binding:"required"`
 	Publisher        string   `json:"publisher" binding:"required"`
 	Images           []string `json:"images"`     // array URL
-	StartMonth       string   `json:"startMonth"` // "MM" (opsional)
-	StartYear        string   `json:"startYear"`  // "YYYY" (opsional)
-	EndMonth         string   `json:"endMonth"`
-	EndYear          string   `json:"endYear"`
+	IssueMonth       int      `json:"issueMonth"` // "MM" (opsional)
+	IssueYear        int      `json:"issueYear"`  // "YYYY" (opsional)
+	EndMonth         int      `json:"endMonth"`
+	EndYear          int      `json:"endYear"`
 	Description      string   `json:"description"`
 	VerificationLink string   `json:"verificationLink"`
 	Category         string   `json:"category"`
@@ -25,55 +26,64 @@ type CertificateInput struct {
 }
 
 func CreateCertificate(c *gin.Context) {
-	var input CertificateInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	title := c.PostForm("title")
+	publisher := c.PostForm("publisher")
+	category := c.PostForm("category")
+	skills := c.PostForm("skills")
+	description := c.PostForm("description")
+	verificationLink := c.PostForm("verification_link")
+
+	issueMonth, _ := strconv.Atoi(c.PostForm("issue_month"))
+	issueYear, _ := strconv.Atoi(c.PostForm("issue_year"))
+	endMonthStr := c.PostForm("end_month")
+	endYearStr := c.PostForm("end_year")
+
+	var endMonth, endYear *int
+	if endMonthStr != "" && endYearStr != "" {
+		em, _ := strconv.Atoi(endMonthStr)
+		ey, _ := strconv.Atoi(endYearStr)
+		endMonth = &em
+		endYear = &ey
 	}
 
-	imagesJson, err := json.Marshal(input.Images)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// Upload banyak file
+	form, _ := c.MultipartForm()
+	files := form.File["images"]
 
-	var startDate *time.Time
-	var endDate *time.Time
-
-	if input.StartYear != "" && input.StartMonth != "" {
-		parsed, err := time.Parse("2006-01-02", fmt.Sprintf("%s-%s-01", input.StartYear, input.StartMonth))
-		if err == nil {
-			startDate = &parsed
+	var fileNames []string
+	for _, file := range files {
+		filename := utils.GenerateFileName("certificate", file.Filename)
+		path := "uploads/certificate/" + filename
+		if err := c.SaveUploadedFile(file, path); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
 		}
-	}
-	if input.EndYear != "" && input.EndMonth != "" {
-		parsed, err := time.Parse("2006-01-02", fmt.Sprintf("%s-%s-01", input.EndYear, input.EndMonth))
-		if err == nil {
-			endDate = &parsed
-		}
+		fileNames = append(fileNames, filename)
 	}
 
-	newCert := models.Certificate{
-		Title:       input.Title,
-		Publisher:   input.Publisher,
-		Images:      string(imagesJson),
-		StartDate:   startDate,
-		EndDate:     endDate, // boleh null
-		Description: input.Description,
-		Category:    input.Category,
-		Skills:      input.Skills,
+	// "img1.jpg,img2.jpg"
+	imagesStr := strings.Join(fileNames, ",")
+
+	certificate := models.Certificate{
+		Title:            title,
+		Publisher:        publisher,
+		Images:           imagesStr,
+		IssueMonth:       issueMonth,
+		IssueYear:        issueYear,
+		EndMonth:         endMonth,
+		EndYear:          endYear,
+		Description:      description,
+		VerificationLink: verificationLink,
+		Category:         category,
+		Skills:           skills,
 	}
 
-	if input.VerificationLink != "" {
-		newCert.VerificationLink = &input.VerificationLink
-	}
-
-	if err := config.DB.Create(&newCert).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := config.DB.Create(&certificate).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, newCert)
 
+	c.JSON(http.StatusOK, certificate)
 }
 
 func GetAllCertificates(c *gin.Context) {
@@ -111,35 +121,42 @@ func UpdateCertificate(c *gin.Context) {
 		return
 	}
 
-	// Proses sama seperti create
-	imagesJSON, _ := json.Marshal(input.Images)
-
-	var startDate *time.Time
-	var endDate *time.Time
-	if input.StartYear != "" && input.StartMonth != "" {
-		parsed, _ := time.Parse("2006-01-02", fmt.Sprintf("%s-%s-01", input.StartYear, input.StartMonth))
-		startDate = &parsed
-	}
-	if input.EndYear != "" && input.EndMonth != "" {
-		parsed, _ := time.Parse("2006-01-02", fmt.Sprintf("%s-%s-01", input.EndYear, input.EndMonth))
-		endDate = &parsed
+	// Handle image uploads
+	form, _ := c.MultipartForm()
+	files := form.File["images"]
+	if len(files) > 0 {
+		var newImages []string
+		for _, file := range files {
+			filename := utils.GenerateFileName("certificate", file.Filename)
+			path := "uploads/certificate/" + filename
+			if err := c.SaveUploadedFile(file, path); err != nil {
+				utils.InfoLogger.Printf("Failed to save file image %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+				return
+			}
+			newImages = append(newImages, filename)
+		}
+		input.Images = newImages
 	}
 
 	cert.Title = input.Title
 	cert.Publisher = input.Publisher
-	cert.Images = string(imagesJSON)
-	cert.StartDate = startDate
-	cert.EndDate = endDate
+	cert.Images = strings.Join(input.Images, ",") // Convert image array to comma-separated string
+	cert.IssueMonth = input.IssueMonth
+	cert.IssueYear = input.IssueYear
+	cert.EndMonth = &input.EndMonth
+	cert.EndYear = &input.EndYear
 	cert.Description = input.Description
 	cert.Category = input.Category
 	cert.Skills = input.Skills
 	if input.VerificationLink != "" {
-		cert.VerificationLink = &input.VerificationLink
+		cert.VerificationLink = input.VerificationLink
 	} else {
-		cert.VerificationLink = nil
+		cert.VerificationLink = ""
 	}
 
 	if err := config.DB.Save(&cert).Error; err != nil {
+		utils.InfoLogger.Printf("Failed to save certificate: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

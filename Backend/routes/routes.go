@@ -29,7 +29,6 @@ func SetupRoutes() *gin.Engine {
 
 	// Public routes
 	r.POST("/login", controllers.Login)
-	r.POST("/register", controllers.RegisterAdmin)
 
 	// Certificate
 	r.GET("/certificates", controllers.GetAllCertificates)
@@ -38,12 +37,14 @@ func SetupRoutes() *gin.Engine {
 	// Articles
 	r.GET("/articles", controllers.GetAllArticles)
 	r.GET("/articles/:id", controllers.GetArticleByID)
-	r.POST("/comments", controllers.CreateComment) // komentar publik
+	r.POST("/:id/comments", controllers.CreateComment) // komentar publik
 
 	// Group admin, pakai AuthMiddleware
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthMiddleware())
 	{
+		admin.POST("/register", controllers.RegisterAdmin)
+		admin.POST("/logout", controllers.Logout)
 		// CRUD Certificate
 		admin.POST("/certificates", controllers.CreateCertificate)
 		admin.PUT("/certificates/:id", controllers.UpdateCertificate)
@@ -57,7 +58,9 @@ func SetupRoutes() *gin.Engine {
 
 		// Comments moderation
 		admin.GET("/articles/:articleID/comments", controllers.GetCommentsByArticle)
-		admin.PUT("/comments/:id/moderate", controllers.ModerateComment)
+		admin.PATCH("/comments/:id/approve", controllers.ApproveComment)
+        admin.PATCH("/comments/:id/reject", controllers.RejectComment)
+        admin.PATCH("/comments/:id/reset", controllers.ResetComment)
 	}
 
 	return r

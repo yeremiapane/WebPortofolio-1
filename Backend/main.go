@@ -4,17 +4,19 @@ import (
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/routes"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
 	"log"
 )
 
 func main() {
-	config.InitDB()
-
+	config.InitConfig()
+	utils.InitLogger()
 	err := config.DB.AutoMigrate(
 		&models.User{},
 		&models.Article{},
 		&models.Certificate{},
 		&models.Comments{},
+		&models.Visitor{},
 	)
 
 	if err != nil {

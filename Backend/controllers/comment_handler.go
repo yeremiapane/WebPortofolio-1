@@ -10,39 +10,35 @@ import (
 type CommentInput struct {
 	ArticleID uint   `json:"articleID" binding:"required"`
 	Name      string `json:"name" binding:"required"`
-	Email     string `json:"email"`
 	Content   string `json:"content" binding:"required"`
+	IsApprove bool   `json:"isApprove"`
 }
 
 // Tambah komentar (public)
 func CreateComment(c *gin.Context) {
-	var input CommentInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	articleID := c.Param("id")
+	name := c.PostForm("name")
+	content := c.PostForm("content")
 
-	// cek article exist
+	// Validasi ...
 	var article models.Article
-	if err := config.DB.First(&article, input.ArticleID).Error; err != nil {
+	if err := config.DB.First(&article, articleID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
 	}
 
 	comment := models.Comments{
-		ArticleID: input.ArticleID,
-		Name:      input.Name,
-		Email:     input.Email,
-		Content:   input.Content,
-		// isApproved default false
+		ArticleID: article.ID,
+		Name:      name,
+		Content:   content,
+		Status:    "pending",
 	}
-
 	if err := config.DB.Create(&comment).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, comment)
+	c.JSON(http.StatusOK, gin.H{"message": "Comment submitted, pending approval"})
 }
 
 // Mendapatkan komentar yang sudah disetujui
@@ -57,36 +53,48 @@ func GetCommentsByArticle(c *gin.Context) {
 	c.JSON(http.StatusOK, comments)
 }
 
-// Moderasi komentar: Approve/Reject
-func ModerateComment(c *gin.Context) {
+// Moderasi komentar: Approve
+func ApproveComment(c *gin.Context) {
 	id := c.Param("id")
-	action := c.Query("action") // ?action=approve / ?action=reject
-
 	var comment models.Comments
 	if err := config.DB.First(&comment, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Comment not found"})
 		return
 	}
 
-	switch action {
-	case "approve":
-		comment.IsApproved = true
-	case "reject":
-		// bisa hapus atau tandai
-		if err := config.DB.Delete(&comment).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "Comment rejected and removed"})
-		return
-	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid action"})
+	comment.Status = "approved"
+	config.DB.Save(&comment)
+	c.JSON(http.StatusOK, comment)
+}
+
+// Moderasi komentar: Reject
+func RejectComment(c *gin.Context) {
+	id := c.Param("id")
+	var comment models.Comments
+	if err := config.DB.First(&comment, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Comment not found"})
 		return
 	}
 
+	comment.Status = "rejected"
+	config.DB.Save(&comment)
+	c.JSON(http.StatusOK, comment)
+}
+
+// Moderasi komentar: Reset
+func ResetComment(c *gin.Context) {
+	id := c.Param("id")
+	var comment models.Comments
+	if err := config.DB.First(&comment, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Comment not found"})
+		return
+	}
+
+	comment.Status = "pending"
 	if err := config.DB.Save(&comment).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, comment)
 }

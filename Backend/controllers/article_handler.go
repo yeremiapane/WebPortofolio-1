@@ -5,7 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
+	"math"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -21,44 +25,58 @@ type ArticleInput struct {
 }
 
 // *Helper* untuk menghitung waktu baca
-func estimateReadingTime(content string) int {
-	// hitung jumlah kata
-	words := strings.Fields(content)
-	wordCount := len(words)
-	// rata-rata kecepatan baca ~200 kata/menit
-	readTime := wordCount / 200
-	if readTime == 0 {
-		readTime = 1
-	}
-	return readTime
-}
+//func estimateReadingTime(content string) int {
+//	// hitung jumlah kata
+//	words := strings.Fields(content)
+//	wordCount := len(words)
+//	// rata-rata kecepatan baca ~200 kata/menit
+//	readTime := wordCount / 200
+//	if readTime == 0 {
+//		readTime = 1
+//	}
+//	return readTime
+//}
 
 func CreateArticle(c *gin.Context) {
-	var input ArticleInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	// Title, Content, dsb. dikirim lewat form-data
+	title := c.PostForm("title")
+	publisher := c.PostForm("publisher")
+	category := c.PostForm("category")
+	tags := c.PostForm("tags")
+	content := c.PostForm("content")
+
+	// Upload file
+	file, err := c.FormFile("main_image")
+	var mainImagePath string
+	if err == nil {
+		// valid file found
+		filename := utils.GenerateFileName("article", file.Filename)
+		mainImagePath = "uploads/article/" + filename
+		if err := c.SaveUploadedFile(file, mainImagePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
 	}
 
-	imagesJSON, _ := json.Marshal(input.Images)
+	readingTime := utils.CalculateReadingTime(content)
 
-	newArticle := models.Article{
-		Title:     input.Title,
-		Publisher: input.Publisher,
-		MainImage: input.MainImage,
-		Images:    string(imagesJSON),
-		Category:  input.Category,
-		Tags:      input.Tags,
-		Content:   input.Content,
-		Likes:     0,
-		// CreatedAt dan UpdatedAt otomatis oleh GORM (jika diaktifkan)
+	article := models.Article{
+		Title:       title,
+		Publisher:   publisher,
+		Category:    category,
+		Tags:        tags,
+		MainImage:   mainImagePath,
+		Content:     content,
+		ReadingTime: readingTime,
+		// published_at, edited_at diatur sesuai logika
 	}
 
-	if err := config.DB.Create(&newArticle).Error; err != nil {
+	if err := config.DB.Create(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, newArticle)
+
+	c.JSON(http.StatusOK, article)
 }
 
 // Mendapatkan daftar artikel, diurutkan berdasarkan CreatedAt desc
@@ -81,7 +99,7 @@ func GetArticleByID(c *gin.Context) {
 	}
 
 	// Hitung waktu baca
-	readTime := estimateReadingTime(article.Content)
+	readTime := utils.CalculateReadingTime(strconv.Itoa(int(article.ReadingTime)))
 
 	c.JSON(http.StatusOK, gin.H{
 		"article":  article,
@@ -129,6 +147,7 @@ func DeleteArticle(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
 	}
+	os.Remove(article.MainImage)
 	if err := config.DB.Delete(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -147,4 +166,104 @@ func LikeArticle(c *gin.Context) {
 	article.Likes += 1
 	config.DB.Save(&article)
 	c.JSON(http.StatusOK, gin.H{"likes": article.Likes})
+}
+
+func GetArticleDetail(c *gin.Context) {
+	id := c.Param("id")
+
+	var article models.Article
+	if err := config.DB.First(&article, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+		return
+	}
+
+	// Dapatkan session_id
+	sessionID, _ := c.Cookie("session_id")
+	ipAddress := c.ClientIP()
+	userAgent := c.GetHeader("User-Agent")
+
+	// Cek apakah visitor sudah ada di tabel visitors (untuk article ini + session_id)
+	var count int64
+	config.DB.Model(&models.Visitor{}).
+		Where("article_id = ? AND session_id = ?", article.ID, sessionID).
+		Count(&count)
+
+	if count == 0 {
+		// Tambah 1 view
+		article.ViewCount++
+		config.DB.Save(&article)
+
+		// Simpan ke tabel visitors
+		v := models.Visitor{
+			ArticleId: int(article.ID),
+			SessionId: sessionID,
+			IpAddress: ipAddress,
+			UserAgent: userAgent,
+		}
+		config.DB.Create(&v)
+	}
+
+	c.JSON(http.StatusOK, article)
+}
+
+func GetArticlesWithFilter(c *gin.Context) {
+	search := c.Query("search")
+	category := c.Query("category")
+	tags := c.Query("tags") // "tag1,tag2"
+	limitStr := c.Query("limit")
+	pageStr := c.Query("page")
+
+	// Default limit & page
+	limit := 10
+	page := 1
+	if limitStr != "" {
+		if val, err := strconv.Atoi(limitStr); err == nil {
+			limit = val
+		}
+	}
+	if pageStr != "" {
+		if val, err := strconv.Atoi(pageStr); err == nil {
+			page = val
+		}
+	}
+	offset := (page - 1) * limit
+
+	db := config.DB.Model(&models.Article{})
+
+	// Filter search (cari di title atau content)
+	if search != "" {
+		db = db.Where("title LIKE ? OR content LIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+	// Filter category
+	if category != "" {
+		db = db.Where("category = ?", category)
+	}
+	// Filter tags -> misal user masukkan "golang,react"
+	if tags != "" {
+		tagList := strings.Split(tags, ",")
+		// Contoh: filter yang mengandung semua tag tersebut:
+		for _, t := range tagList {
+			t = strings.TrimSpace(t)
+			db = db.Where("FIND_IN_SET(?, tags)", t)
+		}
+	}
+
+	var total int64
+	db.Count(&total)
+
+	var articles []models.Article
+	if err := db.Limit(limit).Offset(offset).Find(&articles).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":       articles,
+		"total_data": total,
+		"page":       page,
+		"limit":      limit,
+		"total_page": totalPages,
+	})
 }
