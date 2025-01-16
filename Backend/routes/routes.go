@@ -38,7 +38,8 @@ func SetupRoutes() *gin.Engine {
 	r.GET("/articles", controllers.GetAllArticles)
 	r.GET("/articles/:id", controllers.GetArticleDetail)
 	r.GET("/articles?search=&category=&tags=&limit=&page=", controllers.GetArticlesWithFilter)
-	r.POST("/articles/:id/comments", controllers.CreateComment) // komentar publik
+	r.POST("/articles/:id/comments", controllers.CreateOrReplyComment) // komentar publik
+	r.GET("/articles/:id/comments", controllers.GetCommentsByArticle)
 
 	// Group admin, pakai AuthMiddleware
 	admin := r.Group("/admin")
@@ -58,7 +59,8 @@ func SetupRoutes() *gin.Engine {
 		admin.POST("/articles/:id/like", controllers.LikeArticle)
 
 		// Comments moderation
-		admin.GET("/articles/:articleID/comments", controllers.GetCommentsByArticle)
+		admin.POST("/comments/:id/reply", controllers.ReplyComments)
+		admin.GET("/articles/:id/comments", controllers.GetCommentsByArticle)
 		admin.PATCH("/comments/:id/approve", controllers.ApproveComment)
 		admin.PATCH("/comments/:id/reject", controllers.RejectComment)
 		admin.PATCH("/comments/:id/reset", controllers.ResetComment)

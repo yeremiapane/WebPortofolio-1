@@ -24,19 +24,6 @@ type ArticleInput struct {
 	Content   string   `json:"content"` // text/HTML/markdown
 }
 
-// *Helper* untuk menghitung waktu baca
-//func estimateReadingTime(content string) int {
-//	// hitung jumlah kata
-//	words := strings.Fields(content)
-//	wordCount := len(words)
-//	// rata-rata kecepatan baca ~200 kata/menit
-//	readTime := wordCount / 200
-//	if readTime == 0 {
-//		readTime = 1
-//	}
-//	return readTime
-//}
-
 func CreateArticle(c *gin.Context) {
 	// Title, Content, dsb. dikirim lewat form-data
 	title := c.PostForm("title")
@@ -88,23 +75,6 @@ func GetAllArticles(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, articles)
 }
-
-// Mendapatkan detail artikel + perkiraan waktu baca
-//func GetArticleByID(c *gin.Context) {
-//	id := c.Param("id")
-//	var article models.Article
-//	if err := config.DB.First(&article, id).Error; err != nil {
-//		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
-//		return
-//	}
-//
-//	// Hitung waktu baca
-//
-//	c.JSON(http.StatusOK, gin.H{
-//		"article":  article,
-//		"readTime": readTime, // dalam menit
-//	})
-//}
 
 func UpdateArticle(c *gin.Context) {
 	id := c.Param("id")
