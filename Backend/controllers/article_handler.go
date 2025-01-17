@@ -206,6 +206,7 @@ func GetArticlesWithFilter(c *gin.Context) {
 	if search != "" {
 		db = db.Where("title LIKE ? OR content LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
+
 	// Filter category
 	if category != "" {
 		db = db.Where("category = ?", category)

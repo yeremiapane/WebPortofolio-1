@@ -1,0 +1,18 @@
+# Tailwind CSS
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+# Material UI + Minimal UI
+npm install @mui/material @emotion/react @emotion/styled
+
+# Icon MUI
+npm install @mui/icons-material
+
+# React Router v6
+npm install react-router-dom
+
+# React Quill (untuk editor)
+npm install react-quill
+
+# Lain-lain (opsional) misalnya moment untuk date format, dsb.
+npm install moment
