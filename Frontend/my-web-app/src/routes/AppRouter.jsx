@@ -1,9 +1,20 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import DashboardLayoutAccount from "../components/layouts/MainLayout";
 
-// Import halaman admin
-import Dashboard from "../pages/admin/Dashboard/Dashboard";
+// Layouts
+// import PublicLayout from "../components/layouts/PublicLayout";
+import MainLayout from "../components/layouts/MainLayout";
+
+// Public Pages
+// import Landing from "../pages/Landing";
+import BlogLayout from "../pages/blog/BlogLayout";
+import ArticleLayout from "../pages/blog/ArticleLayout";
+// Auth Pages
+// import Login from "../pages/Login";
+// import Register from "../pages/Register";
+
+// Admin Pages
+import DashboardLayouts from "../pages/admin/Dashboard/Dashboard";
 import ArticleList from "../pages/admin/Articles/ArticleList";
 import CreateArticle from "../pages/admin/Articles/CreateArticle";
 import UpdateArticle from "../pages/admin/Articles/UpdateArticle";
@@ -15,23 +26,35 @@ import CommentDetail from "../pages/admin/Comments/CommentDetail";
 
 export default function AppRouter() {
     return (
-        <BrowserRouter >
+        <BrowserRouter>
             <Routes>
-                <Route path="/" element={<DashboardLayoutAccount />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="dashboard" element={<Dashboard />} />
+                {/* Rute publik dengan layout umum */}
+                {/*<Route element={<PublicLayout />}>*/}
+                {/*    <Route path="/" element={<Landing />} />*/}
+                <Route path="/blog" element={<BlogLayout />} />
+                <Route path="/blog/read" element={<ArticleLayout />} />
+                {/*</Route>*/}
 
-                    {/* Routes untuk Articles */}
+                {/*/!* Rute autentikasi *!/*/}
+                {/*<Route path="/login" element={<Login />} />*/}
+                {/*<Route path="/register" element={<Register />} />*/}
+
+                {/* Rute admin dengan layout khusus */}
+                <Route path="/admin" element={<MainLayout />}>
+                    <Route index element={<DashboardLayouts />} />
+                    <Route path="dashboard" element={<DashboardLayouts />} />
+
+                    {/* Article routes */}
                     <Route path="articles" element={<ArticleList />} />
                     <Route path="articles/create" element={<CreateArticle />} />
                     <Route path="articles/update/:id" element={<UpdateArticle />} />
 
-                    {/* Routes untuk Certificates */}
+                    {/* Certificate routes */}
                     <Route path="certificates" element={<CertificateList />} />
                     <Route path="certificates/create" element={<CreateCertificate />} />
                     <Route path="certificates/update/:id" element={<UpdateCertificate />} />
 
-                    {/* Routes untuk Comments */}
+                    {/* Comments routes */}
                     <Route path="comments" element={<CommentList />} />
                     <Route path="comments/:id" element={<CommentDetail />} />
                 </Route>

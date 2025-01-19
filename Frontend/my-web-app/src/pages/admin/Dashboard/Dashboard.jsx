@@ -2,27 +2,27 @@ import React from "react";
 
 export default function Dashboard() {
     return (
-        <div className="p-4">
+        <div>
             <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
 
             {/* Contoh ringkas: menampilkan summary atau quick stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="p-4 rounded shadow">
+                <div className="bg-white p-4 rounded shadow">
                     <h3 className="font-semibold text-gray-500">Total Articles</h3>
                     <p className="text-2xl font-bold">120</p>
                 </div>
-                <div className="p-4 rounded shadow">
+                <div className="bg-white p-4 rounded shadow">
                     <h3 className="font-semibold text-gray-500">Total Certificates</h3>
                     <p className="text-2xl font-bold">45</p>
                 </div>
-                <div className="p-4 rounded shadow">
+                <div className="bg-white p-4 rounded shadow">
                     <h3 className="font-semibold text-gray-500">Total Comments</h3>
                     <p className="text-2xl font-bold">237</p>
                 </div>
             </div>
 
             {/* Tabel ringkas Article */}
-            <div className="p-4 rounded shadow mb-6">
+            <div className="bg-white p-4 rounded shadow mb-6">
                 <h3 className="font-semibold mb-2">Recent Published Articles</h3>
                 <table className="min-w-full text-sm">
                     <thead>
@@ -50,7 +50,7 @@ export default function Dashboard() {
             </div>
 
             {/* Tabel ringkas Certificate */}
-            <div className="p-4 rounded shadow mb-6">
+            <div className="bg-white p-4 rounded shadow mb-6">
                 <h3 className="font-semibold mb-2">Recent Published Certificates</h3>
                 <table className="min-w-full text-sm">
                     <thead>
@@ -77,7 +77,7 @@ export default function Dashboard() {
             </div>
 
             {/* Tabel ringkas Comments */}
-            <div className="p-4 rounded shadow">
+            <div className="bg-white p-4 rounded shadow">
                 <h3 className="font-semibold mb-2">Recent Comments</h3>
                 <table className="min-w-full text-sm">
                     <thead>

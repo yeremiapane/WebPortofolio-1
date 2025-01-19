@@ -61,7 +61,7 @@ export default function ArticleList() {
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Published Articles</h2>
                 <Link
-                    to="/articles/create"
+                    to="/admin/articles/create"
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
                     Create Article
@@ -102,8 +102,8 @@ export default function ArticleList() {
                             <td className="py-2 px-2">{article.readingTime}</td>
                             <td className="py-2 px-2 flex gap-2">
                                 <Link
-                                    to={`/articles/update/${article.id}`}
-                                    className="px-8 py-4 rounded hover:bg-yellow-600"
+                                    to={`/admin/articles/update/${article.id}`}
+                                    className="px-8 py-4 rounded bg-blue-600 text-white hover:bg-white-700 transition-colors"
                                 >
                                     Update
                                 </Link>
