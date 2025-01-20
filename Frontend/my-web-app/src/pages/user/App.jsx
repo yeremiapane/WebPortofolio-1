@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-
+import ScrollReveal from "scrollreveal";
 // Untuk Swiper
-// import Swiper core and required modules
 import { Navigation } from 'swiper/modules';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -12,46 +11,31 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 
-// Fungsi bantu untuk memformat tanggal
-function formatDate(dateString) {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, options);
-}
+// Import file CSS utama kita yang berisi Tailwind + main.css
+import "../../Main_App.css";
 
 function App() {
-    // STATE untuk navigasi open/close di mobile
-    const [navOpen, setNavOpen] = useState(false);
+    // State untuk open/close nav menu di mobile
+    const [navMenuOpen, setNavMenuOpen] = useState(false);
 
-    // STATE untuk header shadow saat scroll
-    const [headerShadow, setHeaderShadow] = useState(false);
+    // Scroll event: header scroll style
+    const [headerScroll, setHeaderScroll] = useState(false);
 
-    // STATE untuk menampung data artikel (blog)
+    // Scroll event: scrolltop
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    // Data articles
     const [articles, setArticles] = useState([]);
 
-    // STATE untuk menampung data sertifikat
+    // Data certificates
     const [certificates, setCertificates] = useState([]);
 
-    // STATE untuk modal sertifikat
-    const [showModal, setShowModal] = useState(false);
-    const [selectedCertificate, setSelectedCertificate] = useState(null);
+    // Modal state
+    const [modalActive, setModalActive] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
 
-    // Scroll event listener
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 100) {
-                setHeaderShadow(true);
-            } else {
-                setHeaderShadow(false);
-            }
-        };
-        window.addEventListener("scroll", handleScroll);
-
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    // Fetch articles (misalnya: /articles?page=1&limit=3)
-    useEffect(() => {
+    // Fungsi untuk fetch data articles
+    const loadArticlesForHomepage = () => {
         fetch("/articles?page=1&limit=3")
             .then((res) => {
                 if (!res.ok) {
@@ -62,11 +46,13 @@ function App() {
             .then((data) => {
                 setArticles(data);
             })
-            .catch((err) => console.error("Error loading articles:", err));
-    }, []);
+            .catch((err) => {
+                console.error("Error loading articles:", err);
+            });
+    };
 
-    // Fetch certificates (misalnya: /certificates?page=1)
-    useEffect(() => {
+    // Fungsi untuk fetch data certificates
+    const loadCertificatesForHomepage = () => {
         fetch("/certificates?page=1")
             .then((res) => {
                 if (!res.ok) {
@@ -77,576 +63,497 @@ function App() {
             .then((data) => {
                 setCertificates(data);
             })
-            .catch((err) => console.error("Error loading certificates:", err));
+            .catch((err) => {
+                console.error("Error loading certificates:", err);
+            });
+    };
+
+    // Lifecycle
+    useEffect(() => {
+        loadArticlesForHomepage();
+        loadCertificatesForHomepage();
+
+        // Scroll event listener
+        const handleScroll = () => {
+            if (window.scrollY > 100) {
+                setHeaderScroll(true);
+            } else {
+                setHeaderScroll(false);
+            }
+
+            if (window.scrollY > 150) {
+                setShowScrollTop(true);
+            } else {
+                setShowScrollTop(false);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+
+        // Inisialisasi ScrollReveal
+        const sr = ScrollReveal({
+            distance: "100px",
+            duration: 1500,
+            delay: 200,
+            reset: true,
+        });
+        sr.reveal(
+            ".home__content, .about__img, .testimonial__wrapper, .footer__wrapper"
+        );
+        sr.reveal(".home__img, .about__content", { origin: "top" });
+        sr.reveal(
+            ".service__item, .skill__item, .experience__group, .portfolio__project, .blog__card",
+            { interval: 100 }
+        );
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
-    // Fungsi bantu untuk memotong deskripsi artikel
+    // Fungsi bantu
     const truncateText = (text, maxLength) => {
+        if (!text) return "";
         return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
     };
 
-    // Ketika klik kartu sertifikat
-    const handleCertificateClick = (id) => {
-        fetch(`/certificates/${id}`)
-            .then((res) => res.json())
-            .then((detail) => {
-                setSelectedCertificate(detail);
-                setShowModal(true);
-            })
-            .catch((err) => console.error("Error fetching certificate details:", err));
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, options);
     };
 
-    // Tutup modal
-    const closeModal = () => {
-        setShowModal(false);
-        setSelectedCertificate(null);
+    // Saat klik kartu sertifikat
+    const handleCertificateCardClick = (id) => {
+        fetch(`/certificates/${id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setModalContent(data);
+                setModalActive(true);
+            })
+            .catch((err) => {
+                console.error("Error fetching certificate details:", err);
+            });
     };
 
     return (
-        <div className="font-sans relative">
-            {/* ------------------------ HEADER ------------------------ */}
+        <>
+            {/* Header */}
             <header
-                className={`fixed top-0 left-0 right-0 z-50 h-16 flex items-center transition-colors ${
-                    headerShadow ? "bg-white shadow-md" : "bg-gray-900"
-                }`}
+                id="header"
+                className={`header ${headerScroll ? "header--scroll" : ""}`}
             >
-                <nav className="container mx-auto px-4 flex justify-between items-center">
-                    {/* Brand */}
-                    <a
-                        href="#home"
-                        className={`text-lg font-bold ${
-                            headerShadow ? "text-gray-900" : "text-white"
-                        }`}
-                    >
+                <nav className="nav container">
+                    <a href="#" className="nav__brand">
                         YR.
                     </a>
-
-                    {/* Tombol buka di mobile */}
-                    <div className="md:hidden">
-                        <button
-                            onClick={() => setNavOpen(true)}
-                            className={`text-2xl ${
-                                headerShadow ? "text-gray-800" : "text-white"
-                            }`}
-                        >
-                            <i className="ri-menu-3-line"></i>
-                        </button>
-                    </div>
-
-                    {/* Menu Navigasi */}
-                    <ul
-                        className={`fixed top-0 left-0 right-0 bottom-0 bg-white flex flex-col justify-center items-center gap-8 text-gray-900 text-lg font-medium transform transition-transform md:static md:flex-row md:bg-transparent md:translate-x-0 md:opacity-100 md:justify-end md:gap-6 md:text-base ${
-                            navOpen
-                                ? "translate-x-0 opacity-100"
-                                : "translate-x-full opacity-0 md:opacity-100"
-                        }`}
+                    <div
+                        className={`nav__menu ${navMenuOpen ? "nav__menu--open" : ""}`}
+                        id="nav-menu"
                     >
-                        {/* Tombol Close (mobile) */}
-                        <button
-                            onClick={() => setNavOpen(false)}
-                            className="absolute top-8 right-8 text-2xl md:hidden"
-                        >
-                            <i className="ri-close-line"></i>
-                        </button>
-
-                        {[
-                            { href: "#home", label: "Home" },
-                            { href: "#service", label: "Services" },
-                            { href: "#about", label: "About" },
-                            { href: "#skill", label: "Skills" },
-                            { href: "#experience", label: "Experience" },
-                            { href: "#portfolio", label: "Portfolio" },
-                            { href: "#blog", label: "Blog" },
-                        ].map((item) => (
-                            <li key={item.href}>
-                                <a
-                                    onClick={() => setNavOpen(false)}
-                                    href={item.href}
-                                    className={`hover:text-blue-600 ${
-                                        headerShadow
-                                            ? "md:text-gray-900"
-                                            : "md:text-white md:hover:text-blue-500"
-                                    }`}
-                                >
-                                    {item.label}
+                        <ul className="nav__list">
+                            <li className="nav__item">
+                                <a href="#home" className="nav__link nav__link--active">
+                                    Home
                                 </a>
                             </li>
-                        ))}
-
-                        <li>
-                            <a
-                                onClick={() => setNavOpen(false)}
-                                href="#contact"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-800"
-                            >
-                                Contact
-                            </a>
-                        </li>
-                    </ul>
+                            <li className="nav__item">
+                                <a href="#service" className="nav__link">
+                                    Services
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#about" className="nav__link">
+                                    About
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#skill" className="nav__link">
+                                    Skills
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#experience" className="nav__link">
+                                    Experience
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#portfolio" className="nav__link">
+                                    Portfolio
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#blog" className="nav__link">
+                                    Blog
+                                </a>
+                            </li>
+                            <li className="nav__item">
+                                <a href="#contact" className="btn btn--primary">
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        <span
+                            className="nav__close"
+                            onClick={() => setNavMenuOpen(false)}
+                            style={{ cursor: "pointer" }}
+                        >
+              <i id="nav-close" className="ri-close-line"></i>
+            </span>
+                    </div>
+                    <span
+                        className="nav__open"
+                        onClick={() => setNavMenuOpen(true)}
+                        style={{ cursor: "pointer" }}
+                    >
+            <i id="nav-open" className="ri-menu-3-line"></i>
+          </span>
                 </nav>
             </header>
 
-            <main className="mt-16 overflow-hidden">
-                {/* -------------------- HOME -------------------- */}
-                <section
-                    id="home"
-                    className="min-h-screen bg-gray-900 flex items-center py-16"
-                >
-                    <div className="container mx-auto grid gap-8 grid-cols-1 md:grid-cols-2 items-center px-4">
-                        {/* Kiri */}
-                        <div className="space-y-8">
-                            {/* Social Links */}
-                            <ul className="flex md:flex-col gap-4">
-                                <li>
-                                    <a
-                                        href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/"
-                                        className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                    >
-                                        <i className="ri-linkedin-line"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="https://github.com/yeremiapane"
-                                        className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                    >
-                                        <i className="ri-github-line"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                    >
-                                        <i className="ri-dribbble-line"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                    >
-                                        <i className="ri-youtube-line"></i>
-                                    </a>
-                                </li>
-                            </ul>
-
-                            {/* Info */}
-                            <div>
-                                <h1 className="text-4xl lg:text-5xl text-white font-bold mb-2 leading-tight">
-                                    Yeremia <br />
+            {/* Main */}
+            <main className="main">
+                {/* HOME */}
+                <section id="home" className="home">
+                    <div className="d-grid home__wrapper container">
+                        <div className="home__content">
+                            <div className="home__social">
+                                <ul className="social__list">
+                                    <li className="social__item">
+                                        <a
+                                            href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/"
+                                            className="social__link"
+                                        >
+                                            <i className="ri-linkedin-line"></i>
+                                        </a>
+                                    </li>
+                                    <li className="social__item">
+                                        <a href="https://github.com/yeremiapane" className="social__link">
+                                            <i className="ri-github-line"></i>
+                                        </a>
+                                    </li>
+                                    <li className="social__item">
+                                        <a href="#" className="social__link">
+                                            <i className="ri-dribbble-line"></i>
+                                        </a>
+                                    </li>
+                                    <li className="social__item">
+                                        <a href="#" className="social__link">
+                                            <i className="ri-youtube-line"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="home__info">
+                                <h1 className="home__name">
+                                    Yeremia
+                                    <br />
                                     Yosefan Pane
                                 </h1>
-                                <p className="text-blue-400 text-lg font-semibold mb-4">
-                                    Data Engineer / Data Analyst / Backend Developer
+                                <p className="home__profession">
+                                    Data Engineer/Data Analyst/Backend Developer
                                 </p>
-                                <p className="text-gray-200 text-sm leading-relaxed">
+                                <p className="home__description">
                                     I'm a Computer Science graduate from Medan State University.
                                     I'm known for my enthusiasm for data, love for challenges, and
                                     collaborative approach to finding new solutions and
-                                    innovations. I have TensorFlow Developer certifications from{" "}
-                                    <b className="text-blue-300">Google</b> and AI for Business
-                                    Professionals certifications from{" "}
-                                    <b className="text-blue-300">Certnexus</b>. My technical
+                                    innovations. I have TensorFlow Developer certifications from
+                                    <b style={{ color: "azure" }}> Google </b>
+                                    and AI for Business Professionals certifications from{" "}
+                                    <b style={{ color: "azure" }}>Certnexus</b>. My technical
                                     expertise includes Machine Learning Development, Data
                                     Analytics, and Data Science.
                                 </p>
-
-                                {/* Buttons */}
-                                <div className="mt-6 flex items-center gap-4">
-                                    <a
-                                        href="#"
-                                        className="px-5 py-2 rounded-lg border border-white text-white hover:bg-blue-700 transition"
-                                    >
+                                <div className="home__buttons">
+                                    <a href="#" className="btn btn--outline">
                                         Hire Me
                                     </a>
-                                    <a
-                                        href="#portfolio"
-                                        className="relative text-white after:content-[''] after:w-0 after:h-[2px] after:bg-white after:absolute after:-bottom-2 after:left-0 hover:after:w-full transition-all"
-                                    >
+                                    <a href="#" className="btn--line">
                                         See My Work
                                     </a>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Gambar kanan */}
-                        <div className="flex justify-center md:justify-end">
-                            <img
-                                src="../../../public/img/home.png"
-                                alt="Yeremia Yosefan Pane"
-                                className="w-[350px] md:w-[450px]"
-                            />
-                        </div>
+                        <img
+                            src="../../../public/img/home.png"
+                            alt="Yeremia Yosefan Pane"
+                            className="home__img"
+                        />
                     </div>
                 </section>
 
-                {/* -------------------- SERVICES -------------------- */}
-                <section id="service" className="py-16">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">My Expertise</h2>
-                            <p className="text-sm text-gray-600">
+                {/* SERVICE */}
+                <section id="service" className="section service">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">My Expertise</h2>
+                            <p className="section__description">
                                 Some of the technology skills I have to be able to work.
                             </p>
                         </div>
-
-                        <div className="grid gap-8 md:grid-cols-3">
-                            {/* Card 1 */}
-                            <div className="bg-white shadow-lg p-6 rounded-lg hover:-translate-y-2 transition transform">
-                                <div className="text-blue-600 text-4xl mb-4">
+                    </div>
+                    <div className="d-grid service__wrapper container">
+                        {/* service 1 */}
+                        <div className="service__item">
+                            <div className="service__card">
+                                <div className="service__icon">
                                     <i className="ri-code-s-slash-line"></i>
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">Web Development</h3>
-                                <p className="text-sm text-gray-600 mb-2">
+                                <h3 className="service__name">Web Development</h3>
+                                <p className="service__description">
                                     Design and build web systems with a high degree of
                                     attractiveness, ensuring they are highly functional.
                                 </p>
                             </div>
-
-                            {/* Card 2 */}
-                            <div className="bg-white shadow-lg p-6 rounded-lg hover:-translate-y-2 transition transform">
-                                <div className="text-blue-600 text-4xl mb-4">
+                        </div>
+                        {/* service 2 */}
+                        <div className="service__item">
+                            <div className="service__card">
+                                <div className="service__icon">
                                     <i className="ri-pen-nib-fill"></i>
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">
-                                    Data Analyst / Data Engineer
-                                </h3>
-                                <p className="text-sm text-gray-600 mb-2">
-                                    Designing, Pulling, Analyzing data using Google Studio, Power
-                                    BI, and Tableau.
+                                <h3 className="service__name">Data Analyst/Data Engineer</h3>
+                                <p className="service__description">
+                                    Designing, Pulling, Analyzing data using several tools such as
+                                    Google Studio, Power BI, and Tableu.
                                 </p>
                             </div>
-
-                            {/* Card 3 */}
-                            <div className="bg-white shadow-lg p-6 rounded-lg hover:-translate-y-2 transition transform">
-                                <div className="text-blue-600 text-4xl mb-4">
+                        </div>
+                        {/* service 3 */}
+                        <div className="service__item">
+                            <div className="service__card">
+                                <div className="service__icon">
                                     <i className="ri-device-line"></i>
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">IT Support</h3>
-                                <p className="text-sm text-gray-600 mb-2">
-                                    Perform analysis and troubleshooting for software/hardware and
-                                    network improvements.
+                                <h3 className="service__name">IT Support</h3>
+                                <p className="service__description">
+                                    Perform analysis and troubleshooting for software or hardware
+                                    and network improvements.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* -------------------- ABOUT -------------------- */}
-                <section id="about" className="py-16">
-                    <div className="container mx-auto px-4 grid gap-8 md:grid-cols-2 md:items-center">
-                        {/* Teks */}
-                        <div>
-                            <h2 className="text-xl font-bold mb-4">About Me</h2>
-                            <p className="text-sm text-gray-700 mb-6 leading-relaxed">
+                {/* ABOUT */}
+                <section id="about" className="section about">
+                    <div className="d-grid about__wrapper container">
+                        <div className="about__content">
+                            <h2 className="about__title">About Me</h2>
+                            <p className="about__description">
                                 I'm a Computer Science graduate from Medan State University. I'm
                                 known for my enthusiasm for data, love for challenges, and
                                 collaborative approach to finding new solutions and innovations.
                                 During my studies, I actively participated in various activities
                                 that added to my experience...
                             </p>
-                            <a
-                                href="../../../public/doc/CV Yeremia Yosefan Pane.pdf"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition"
-                            >
+                            <a href="./assets/doc/CV Yeremia Yosefan Pane.pdf" className="btn btn--primary">
                                 My Resume
                             </a>
                         </div>
-
-                        {/* Gambar */}
-                        <div className="flex justify-center md:justify-end">
-                            <img
-                                src="../../../public/img/about.jpg"
-                                alt="About me"
-                                className="rounded-lg w-[300px] md:w-[400px]"
-                            />
-                        </div>
+                        <img src="../../../public/img/about.jpg" alt="" className="about__img" />
                     </div>
                 </section>
 
-                {/* -------------------- SKILL -------------------- */}
-                <section id="skill" className="py-16 bg-gray-100 relative">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">My Skills</h2>
-                            <p className="text-sm text-gray-600">
+                {/* SKILL */}
+                <section id="skill" className="skill section">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">My Skills</h2>
+                            <p className="section__description">
                                 Enim adipiscing duis facilisi sed eu tortor. Suspendisse
-                                vulputate varius...
+                                vulputate varius eu sollicitudin amet placerat feugiat sem
+                                felis.
                             </p>
                         </div>
-
-                        <div className="grid gap-8 md:grid-cols-3">
-                            {/* Card 1 */}
-                            <div className="bg-white rounded-lg p-6 text-center shadow hover:scale-105 transition">
-                                <img
-                                    src="../../../public/img/skill1.svg"
-                                    alt="Skill"
-                                    className="w-20 h-20 mx-auto mb-4"
-                                />
-                                <h3 className="text-lg font-bold mb-2">Data Analyst</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li>Tableu</li>
-                                    <li>Power BI</li>
-                                    <li>Looker Studio</li>
-                                    <li>Python</li>
+                    </div>
+                    <div className="d-grid skill__wrapper container">
+                        <div className="section-bg"></div>
+                        <div className="skill__item">
+                            <div className="skill__card">
+                                <img src="../../../public/img/skill1.svg" alt="" className="skill__img" />
+                                <h3 className="skill__name">Data Analyst</h3>
+                                <ul className="skill__list">
+                                    <li className="skill__item">Tableu</li>
+                                    <li className="skill__item">Power BI</li>
+                                    <li className="skill__item">Looker Studio</li>
+                                    <li className="skill__item">Python</li>
                                 </ul>
                             </div>
-
-                            {/* Card 2 */}
-                            <div className="bg-white rounded-lg p-6 text-center shadow hover:scale-105 transition">
-                                <img
-                                    src="../../../public/img/skill2.svg"
-                                    alt="Skill"
-                                    className="w-20 h-20 mx-auto mb-4"
-                                />
-                                <h3 className="text-lg font-bold mb-2">Back-End</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li>Python</li>
-                                    <li>Golang</li>
-                                    <li>MySQL</li>
-                                    <li>Docker</li>
+                        </div>
+                        <div className="skill__item">
+                            <div className="skill__card">
+                                <img src="../../../public/img/skill2.svg" alt="" className="skill__img" />
+                                <h3 className="skill__name">Back-End</h3>
+                                <ul className="skill__list">
+                                    <li className="skill__item">Python</li>
+                                    <li className="skill__item">Golang</li>
+                                    <li className="skill__item">MySQL</li>
+                                    <li className="skill__item">Docker</li>
                                 </ul>
                             </div>
-
-                            {/* Card 3 */}
-                            <div className="bg-white rounded-lg p-6 text-center shadow hover:scale-105 transition">
-                                <img
-                                    src="../../../public/img/skill3.svg"
-                                    alt="Skill"
-                                    className="w-20 h-20 mx-auto mb-4"
-                                />
-                                <h3 className="text-lg font-bold mb-2">Framework</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li>Flask</li>
-                                    <li>GIN</li>
-                                    <li>Tensorflow</li>
-                                    <li>Apache Spark</li>
+                        </div>
+                        <div className="skill__item">
+                            <div className="skill__card">
+                                <img src="../../../public/img/skill3.svg" alt="" className="skill__img" />
+                                <h3 className="skill__name">Framework</h3>
+                                <ul className="skill__list">
+                                    <li className="skill__item">Flask</li>
+                                    <li className="skill__item">GIN</li>
+                                    <li className="skill__item">Tensorflow</li>
+                                    <li className="skill__item">Apache Spark</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* -------------------- EXPERIENCE -------------------- */}
-                <section id="experience" className="py-16">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">My Experience</h2>
-                        </div>
-
-                        <div className="grid gap-12 md:grid-cols-2">
-                            {/* Kiri (pendidikan) */}
-                            <div className="space-y-8">
-                                {/* Card 1 */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-book-fill text-blue-600"></i>
-                                        Education
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">Computer Science</h4>
-                                        <span className="text-xs font-bold">2020 - 2024</span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        Most popular winner of a national programming competition...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    Universitas Negeri Medan
-                  </span>
-                                </div>
-
-                                {/* Card 2 */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-book-fill text-blue-600"></i>
-                                        Education
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">AI For Junior Developer</h4>
-                                        <span className="text-xs font-bold">
-                      August 2023 - September 2023
-                    </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        In aliquam in leo ac et id rhoncus. Sit consectetur ultricies...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    Huawei X Digitalent KOMINFO
-                  </span>
-                                </div>
-
-                                {/* Card 3 */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-book-fill text-blue-600"></i>
-                                        Education
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">AI Hacker</h4>
-                                        <span className="text-xs font-bold">
-                      August 2022 - December 2022
-                    </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        Learned about Machine Learning Process, Data Visualization...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    PT Bisa AI Indonesia
-                  </span>
-                                </div>
-                            </div>
-
-                            {/* Kanan (pekerjaan) */}
-                            <div className="space-y-8">
-                                {/* Card 1 */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-book-fill text-blue-600"></i>
-                                        Education
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">
-                                            Machine Learning Specialist
-                                        </h4>
-                                        <span className="text-xs font-bold">
-                      February 2023 - July 2023
-                    </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        Learned about machine learning development...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    Bangkit Academy led by Google, GoTo, and Traveloka
-                  </span>
-                                </div>
-
-                                {/* Card 2 */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-book-fill text-blue-600"></i>
-                                        Education
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">
-                                            Computer Hacking Forensic Investigator
-                                        </h4>
-                                        <span className="text-xs font-bold">
-                      August 2021 - October 2021
-                    </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        Recognize, analyze, and investigate hacking...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    PT Digital Innovation Lounge and CV. Rekhindo Pratama
-                  </span>
-                                </div>
-
-                                {/* Card 3 (Work Experience) */}
-                                <div className="bg-white rounded-lg p-6 shadow hover:scale-105 transition">
-                                    <h3 className="flex items-center gap-2 text-sm font-medium mb-2">
-                                        <i className="ri-briefcase-fill text-blue-600"></i>
-                                        Work Experience
-                                    </h3>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-lg font-bold">Web Developer</h4>
-                                        <span className="text-xs font-bold">
-                      November 2024 - December 2024
-                    </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700 mb-2">
-                                        Responsible for the development of a tuition payment website...
-                                    </p>
-                                    <span className="text-sm font-medium">
-                    Universitas Negeri Medan
-                  </span>
-                                </div>
-                            </div>
+                {/* EXPERIENCE */}
+                <section id="experience" className="section experience">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">My Experience</h2>
                         </div>
                     </div>
-                </section>
-
-                {/* -------------------- PORTFOLIO -------------------- */}
-                <section id="portfolio" className="py-16">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">My Projects</h2>
-                            <p className="text-sm text-gray-600">
-                                Enim adipiscing duis facilisi sed eu tortor.
-                            </p>
-                        </div>
-
-                        <div className="grid gap-8 md:grid-cols-3">
-                            {/* Project 1 */}
-                            <div className="relative rounded-lg overflow-hidden group">
-                                <img
-                                    src="../../../public/img/portfolio1.jpg"
-                                    alt="Portfolio"
-                                    className="transform group-hover:scale-110 transition"
-                                />
-                                <div className="absolute bottom-0 left-0 right-0 bg-white p-4 translate-y-full group-hover:translate-y-0 transition">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-bold">Web Development</h3>
-                                            <span className="text-sm text-gray-600">
-                        Web Development
+                    <div className="d-grid experience__wrapper container">
+                        <div className="section-bg"></div>
+                        {/* Education */}
+                        <div className="experience__group">
+                            <div className="experience__group-wrapper d-grid">
+                                {/* Education 1 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-book-fill"></i>
+                                            Education
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">Computer Science</h3>
+                                            <span className="experience__date">2020 - 2024</span>
+                                        </div>
+                                        <p className="experience__description">
+                                            Most popular winner of a national programming competition
+                                            involving more than 20 public universities...
+                                        </p>
+                                        <span className="experience__place">
+                      Universitas Negeri Medan
+                    </span>
+                                    </div>
+                                </div>
+                                {/* Education 2 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-book-fill"></i>
+                                            Education
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">AI For Junior Developer</h3>
+                                            <span className="experience__date">
+                        August 2023 - September 2023
                       </span>
                                         </div>
-                                        <a
-                                            href="#"
-                                            className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-full hover:bg-blue-800 transition"
-                                        >
-                                            <i className="ri-external-link-line"></i>
-                                        </a>
+                                        <p className="experience__description">
+                                            In aliquam in leo ac et id rhoncus. Sit consectetur
+                                            ultricies sit id aliquam lectus sit ornare pharetra.
+                                        </p>
+                                        <span className="experience__place">
+                      Huawei X Digitalent KOMINFO
+                    </span>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* Project 2 */}
-                            <div className="relative rounded-lg overflow-hidden group">
-                                <img
-                                    src="../../../public/img/portfolio2.jpg"
-                                    alt="Portfolio"
-                                    className="transform group-hover:scale-110 transition"
-                                />
-                                <div className="absolute bottom-0 left-0 right-0 bg-white p-4 translate-y-full group-hover:translate-y-0 transition">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-bold">App Development</h3>
-                                            <span className="text-sm text-gray-600">
-                        App Development
+                                {/* Education 3 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-book-fill"></i>
+                                            Education
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">AI Hacker</h3>
+                                            <span className="experience__date">
+                        August 2022 - December 2022
                       </span>
                                         </div>
-                                        <a
-                                            href="#"
-                                            className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-full hover:bg-blue-800 transition"
-                                        >
-                                            <i className="ri-external-link-line"></i>
-                                        </a>
+                                        <p className="experience__description">
+                                            Learned about Machine Learning Process, Data
+                                            Visualization, Data Science...
+                                        </p>
+                                        <span className="experience__place">PT Bisa AI Indonesia</span>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Project 3 */}
-                            <div className="relative rounded-lg overflow-hidden group">
-                                <img
-                                    src="../../../public/img/portfolio3.jpg"
-                                    alt="Portfolio"
-                                    className="transform group-hover:scale-110 transition"
-                                />
-                                <div className="absolute bottom-0 left-0 right-0 bg-white p-4 translate-y-full group-hover:translate-y-0 transition">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-bold">UI/UX Design</h3>
-                                            <span className="text-sm text-gray-600">UI/UX Design</span>
+                        </div>
+                        {/* Work Experience */}
+                        <div className="experience__group">
+                            <div className="experience__group-wrapper d-grid">
+                                {/* Work 1 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-book-fill"></i>
+                                            Education
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">
+                                                Machine Learning Specialist
+                                            </h3>
+                                            <span className="experience__date">
+                        February 2023 - July 2023
+                      </span>
                                         </div>
-                                        <a
-                                            href="#"
-                                            className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-full hover:bg-blue-800 transition"
-                                        >
-                                            <i className="ri-external-link-line"></i>
-                                        </a>
+                                        <p className="experience__description">
+                                            Learned about machine learning development...
+                                        </p>
+                                        <span className="experience__place">
+                      Bangkit Academy led by Google, GoTo, and Traveloka
+                    </span>
+                                    </div>
+                                </div>
+                                {/* Work 2 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-book-fill"></i>
+                                            Education
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">
+                                                Computer Hacking Forensic Investigator
+                                            </h3>
+                                            <span className="experience__date">
+                        August 2021 - October 2021
+                      </span>
+                                        </div>
+                                        <p className="experience__description">
+                                            Recognize, analyze, and investigate hacking on mobile and
+                                            desktop devices...
+                                        </p>
+                                        <span className="experience__place">
+                      PT Digital Innovation Lounge and CV. Rekhindo Pratama
+                    </span>
+                                    </div>
+                                </div>
+                                {/* Work 3 */}
+                                <div className="experience__item">
+                                    <div className="experience__card">
+                                        <h3 className="experience__title">
+                                            <i className="ri-briefcase-fill"></i>
+                                            Work Experience
+                                        </h3>
+                                        <div className="experience__header">
+                                            <h3 className="experience__name">Web Developer</h3>
+                                            <span className="experience__date">
+                        November 2024 - December 2024
+                      </span>
+                                        </div>
+                                        <p className="experience__description">
+                                            Responsible for the development of a tuition payment
+                                            website with multiple payment methods.
+                                        </p>
+                                        <span className="experience__place">
+                      Universitas Negeri Medan
+                    </span>
                                     </div>
                                 </div>
                             </div>
@@ -654,245 +561,293 @@ function App() {
                     </div>
                 </section>
 
-                {/* -------------------- CERTIFICATES -------------------- */}
-                <section className="py-16 bg-white">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">My Certifications</h2>
-                            <p className="text-sm text-gray-600">
-                                Enim adipiscing duis facilisi sed eu tortor.
+                {/* PORTFOLIO */}
+                <section id="portfolio" className="section porfolio">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">My Projects</h2>
+                            <p className="section__description">
+                                Enim adipiscing duis facilisi sed eu tortor. Suspendisse
+                                vulputate varius eu sollicitudin amet placerat feugiat sem felis.
                             </p>
                         </div>
-
-                        {/* Slider */}
-                        <div className="relative">
-                            <Swiper
-                                modules={[Navigation]}
-                                navigation={{
-                                    nextEl: ".swiper-button-next",
-                                    prevEl: ".swiper-button-prev",
-                                }}
-                                spaceBetween={20}
-                                slidesPerView={1}
-                                breakpoints={{
-                                    640: {
-                                        slidesPerView: 2,
-                                    },
-                                    1024: {
-                                        slidesPerView: 3,
-                                    },
-                                }}
-                            >
-                                {certificates.map((cert) => (
-                                    <SwiperSlide key={cert.id}>
-                                        <div
-                                            className="bg-white rounded-lg shadow hover:scale-105 transition cursor-pointer flex flex-col"
-                                            onClick={() => handleCertificateClick(cert.id)}
-                                        >
-                                            <div className="relative w-full pt-[75%] bg-gray-100 overflow-hidden">
-                                                <img
-                                                    src={cert.image_path}
-                                                    alt={cert.issued_by}
-                                                    className="absolute top-0 left-0 w-full h-full object-cover"
-                                                />
-                                            </div>
-                                            <div className="p-4 text-center">
-                                                <h3 className="text-blue-800 text-sm font-bold mb-2">
-                                                    {cert.title}
-                                                </h3>
-                                                <h4 className="text-sm font-semibold text-gray-700">
-                                                    {cert.issued_by}
-                                                </h4>
-                                                <p className="text-xs text-gray-600 mt-2">
-                                                    {cert.description}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </SwiperSlide>
-                                ))}
-                            </Swiper>
-                            {/* Tombol navigasi swiper */}
-                            <div className="swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-blue-600 transition z-10 ml-2">
-                                <i className="ri-arrow-left-s-line text-xl"></i>
+                    </div>
+                    <div className="d-grid portfolio__wrapper container">
+                        {/* project 1 */}
+                        <div className="portfolio__project">
+                            <img
+                                src="../../../public/img/portfolio1.jpg"
+                                alt=""
+                                className="portfolio__img"
+                            />
+                            <div className="portfolio__content">
+                                <div className="portfolio__info">
+                                    <h3 className="portfolio__name">Web Development</h3>
+                                    <span className="portfolio__category">Web Development</span>
+                                </div>
+                                <a href="#" className="portfolio__link">
+                                    <i className="ri-external-link-line"></i>
+                                </a>
                             </div>
-                            <div className="swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-blue-600 transition z-10 mr-2">
-                                <i className="ri-arrow-right-s-line text-xl"></i>
+                        </div>
+                        {/* project 2 */}
+                        <div className="portfolio__project">
+                            <img
+                                src="../../../public/img/portfolio2.jpg"
+                                alt=""
+                                className="portfolio__img"
+                            />
+                            <div className="portfolio__content">
+                                <div className="portfolio__info">
+                                    <h3 className="portfolio__name">App Development</h3>
+                                    <span className="portfolio__category">App Development</span>
+                                </div>
+                                <a href="#" className="portfolio__link">
+                                    <i className="ri-external-link-line"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {/* project 3 */}
+                        <div className="portfolio__project">
+                            <img
+                                src="../../../public/img/portfolio3.jpg"
+                                alt=""
+                                className="portfolio__img"
+                            />
+                            <div className="portfolio__content">
+                                <div className="portfolio__info">
+                                    <h3 className="portfolio__name">UI/UX Design</h3>
+                                    <span className="portfolio__category">UI/UX Design</span>
+                                </div>
+                                <a href="#" className="portfolio__link">
+                                    <i className="ri-external-link-line"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Modal sertifikat */}
-                {showModal && selectedCertificate && (
-                    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center px-4">
-                        <div className="bg-white p-6 rounded-lg max-w-2xl w-full relative">
-                            {/* Tombol close */}
-                            <button
-                                onClick={closeModal}
-                                className="absolute top-4 right-4 bg-gray-400 text-white rounded px-2 py-1 hover:bg-gray-600 transition"
-                            >
+                {/* CERTIFICATIONS */}
+                <section className="section certificates">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">My Certifications</h2>
+                            <p className="section__description">
+                                Enim adipiscing duis facilisi sed eu tortor. Suspendisse vulputate
+                                varius eu sollicitudin amet placerat feugiat sem felis.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="certificates__wrapper container swiper">
+                        <div className="section-bg"></div>
+                        {/* Swiper container */}
+                        <Swiper
+                            modules={[Navigation]}
+                            navigation={{
+                                nextEl: ".swiper__next",
+                                prevEl: ".swiper__prev",
+                            }}
+                            spaceBetween={20}
+                            slidesPerView={1}
+                            breakpoints={{
+                                640: {
+                                    slidesPerView: 2,
+                                },
+                                1024: {
+                                    slidesPerView: 3,
+                                },
+                            }}
+                        >
+                            {certificates.map((cert) => (
+                                <SwiperSlide key={cert.id}>
+                                    <div
+                                        className="certification__card swiper-slide"
+                                        data-id={cert.id}
+                                        onClick={() => handleCertificateCardClick(cert.id)}
+                                    >
+                                        <div className="certification__img-wrapper">
+                                            <img
+                                                src={cert.image_path}
+                                                alt={cert.issued_by}
+                                                className="certification__img"
+                                            />
+                                        </div>
+                                        <div className="certification__content">
+                                            <h1 className="certification__category">{cert.title}</h1>
+                                            <h3 className="certification__publisher">
+                                                {cert.issued_by}
+                                            </h3>
+                                            <p className="certification__description">
+                                                {cert.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
+                    <div className="swiper__navigation">
+                        <div className="swiper__button swiper__prev">
+                            <i className="ri-arrow-left-s-line"></i>
+                        </div>
+                        <div className="swiper__button swiper__next">
+                            <i className="ri-arrow-right-s-line"></i>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Modal Sertifikat */}
+                <div
+                    id="certificateModal"
+                    className={`${modalActive ? "active" : ""}`}
+                    style={{ position: "relative" }}
+                >
+                    {modalActive && (
+                        <>
+                            <button id="closeModal" onClick={() => setModalActive(false)}>
                                 Close
                             </button>
+                            <div id="modalContent">
+                                {modalContent && (
+                                    <>
+                                        <h1>{modalContent.title}</h1>
+                                        <p>
+                                            <strong>Issued By:</strong> {modalContent.issued_by}
+                                        </p>
+                                        <img
+                                            src={modalContent.image_path}
+                                            alt={modalContent.issued_by}
+                                            style={{ maxWidth: "100%", margin: "1rem 0" }}
+                                        />
+                                        <p>{modalContent.description}</p>
+                                        <p>
+                                            <strong>Published At:</strong>{" "}
+                                            {formatDate(modalContent.created_at)}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </div>
 
-                            {/* Isi modal */}
-                            <h1 className="text-xl font-bold mb-2">
-                                {selectedCertificate.title}
-                            </h1>
-                            <p className="text-sm text-gray-700 mb-2">
-                                <strong>Issued By:</strong> {selectedCertificate.issued_by}
-                            </p>
-                            <img
-                                src={selectedCertificate.image_path}
-                                alt={selectedCertificate.issued_by}
-                                className="my-4 max-h-60 mx-auto"
-                            />
-                            <p className="text-sm text-gray-700 mb-4">
-                                {selectedCertificate.description}
-                            </p>
-                            <p className="text-sm text-gray-700">
-                                <strong>Published At:</strong>{" "}
-                                {formatDate(selectedCertificate.created_at)}
+                {/* BLOG */}
+                <section id="blog" className="section blog">
+                    <div className="container">
+                        <div className="section__header">
+                            <h2 className="section__title">Articles & News</h2>
+                            <p className="section__description">
+                                Enim adipiscing duis facilisi sed eu tortor. Suspendisse vulputate
+                                varius eu sollicitudin amet placerat feugiat sem felis.
                             </p>
                         </div>
                     </div>
-                )}
-
-                {/* -------------------- BLOG -------------------- */}
-                <section id="blog" className="py-16">
-                    <div className="container mx-auto px-4">
-                        <div className="text-center max-w-xl mx-auto mb-12">
-                            <h2 className="text-2xl font-bold mb-4">Articles & News</h2>
-                            <p className="text-sm text-gray-600">
-                                Enim adipiscing duis facilisi sed eu tortor.
-                            </p>
-                        </div>
-
-                        <div className="grid gap-8 md:grid-cols-3">
-                            {articles.map((article) => (
-                                <div
-                                    key={article.id}
-                                    className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition"
-                                >
-                                    <div className="overflow-hidden h-60 bg-gray-200">
-                                        <img
-                                            src={article.image_url}
-                                            alt={article.title}
-                                            className="w-full h-full object-cover transform hover:scale-110 transition"
-                                        />
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="text-lg font-bold mb-2">
-                                            <a
-                                                href={`read_article.html?id=${article.id}`}
-                                                className="hover:text-blue-600"
-                                            >
-                                                {article.title}
-                                            </a>
-                                        </h3>
-                                        <p className="text-sm text-gray-700 mb-4">
-                                            {truncateText(article.description, 35)}
-                                        </p>
-                                        <div className="flex items-center justify-between text-xs font-bold">
-                      <span className="bg-gray-100 px-2 py-1 rounded">
-                        {article.category}
-                      </span>
-                                            <span>{formatDate(article.published_at)}</span>
-                                        </div>
-                                    </div>
+                    <div className="d-grid blog__wrapper container">
+                        {articles.map((article) => (
+                            <div key={article.id} className="blog__card">
+                                <div className="blog__img-wrapper">
+                                    <img
+                                        src={article.image_url}
+                                        alt={article.title}
+                                        className="blog__img"
+                                    />
                                 </div>
-                            ))}
-                        </div>
-
-                        <div className="flex justify-center mt-8">
-                            <a
-                                href="article_pages.html"
-                                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-blue-800 transition"
-                            >
-                                Read More Article
-                            </a>
-                        </div>
+                                <div className="blog__content">
+                                    <h3 className="blog__title">
+                                        <a
+                                            href={`read_article.html?id=${article.id}`}
+                                            style={{ textDecoration: "none", color: "inherit" }}
+                                        >
+                                            {article.title}
+                                        </a>
+                                    </h3>
+                                    <p className="blog__description">
+                                        {truncateText(article.description, 35)}
+                                    </p>
+                                </div>
+                                <div className="blog__footer">
+                                    <span className="blog__category">{article.category}</span>
+                                    <span className="blog__date">
+                    {formatDate(article.published_at)}
+                  </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="read-more-container">
+                        <a href="article_pages.html" className="read-more-button">
+                            Read More Article
+                        </a>
                     </div>
                 </section>
             </main>
 
-            {/* ------------------------ FOOTER ------------------------ */}
-            <footer className="bg-gray-900 text-white py-10">
-                <div className="container mx-auto px-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-                    {/* Kiri */}
-                    <div>
-                        <span className="block text-sm mb-1">Get In Touch</span>
-                        <h2 className="text-2xl font-bold mb-4">Let's Talk About Work</h2>
-                        <a
-                            href="#contact"
-                            className="relative text-white after:content-[''] after:w-0 after:h-[2px] after:bg-white after:absolute after:-bottom-2 after:left-0 hover:after:w-full transition-all"
-                        >
+            {/* Footer */}
+            <footer className="footer section">
+                <div className="footer__wrapper container">
+                    <div className="footer__content">
+                        <span className="footer__subtitle">Get In Touch</span>
+                        <h2 className="footer__title">Let's Talk About Work</h2>
+                        <a href="#" className="btn--line">
                             Contact Me
                         </a>
                     </div>
-
-                    {/* Kanan */}
-                    <div>
-                        <ul className="flex gap-4 mb-4 md:mb-2">
-                            <li>
-                                <a
-                                    href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/"
-                                    className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                >
-                                    <i className="ri-linkedin-line"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="https://github.com/yeremiapane"
-                                    className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                >
-                                    <i className="ri-github-line"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                >
-                                    <i className="ri-dribbble-line"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="w-10 h-10 flex items-center justify-center border border-gray-500 text-gray-200 rounded-full hover:bg-blue-600 hover:border-transparent transition"
-                                >
-                                    <i className="ri-youtube-line"></i>
-                                </a>
-                            </li>
-                        </ul>
+                    <div className="footer__contact">
+                        <div className="footer__social">
+                            <ul className="social__list">
+                                <li className="social__item">
+                                    <a
+                                        href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/"
+                                        className="social__link"
+                                    >
+                                        <i className="ri-linkedin-line"></i>
+                                    </a>
+                                </li>
+                                <li className="social__item">
+                                    <a href="https://github.com/yeremiapane" className="social__link">
+                                        <i className="ri-github-line"></i>
+                                    </a>
+                                </li>
+                                <li className="social__item">
+                                    <a href="#" className="social__link">
+                                        <i className="ri-dribbble-line"></i>
+                                    </a>
+                                </li>
+                                <li className="social__item">
+                                    <a href="#" className="social__link">
+                                        <i className="ri-youtube-line"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                         <a
                             href="mailto:yeremiayosefanpane@hotmail.com"
-                            className="block text-sm font-bold mb-1"
+                            className="footer__contact-item"
                         >
                             yeremiayosefanpane@hotmail.com
                         </a>
                         <a
                             href="https://wa.me/6285277603027"
-                            className="block text-sm font-bold"
+                            className="footer__contact-item"
                         >
                             (+62) 8527 - 7603 - 027
                         </a>
                     </div>
                 </div>
-                <p className="text-center text-sm mt-8">
-                    &copy; {new Date().getFullYear()} Yeremia Yosefan Pane
+                <p className="footer__copyright container">
+                    &copy; Yeremia Yosefan Pane
                 </p>
             </footer>
 
-            {/* Tombol scrolltop (opsional) */}
+            {/* Scrolltop */}
             <a
                 href="#"
-                className="fixed bottom-[-100%] right-8 w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-full text-2xl transition-all hover:bg-blue-800"
+                className={`scrolltop ${showScrollTop ? "scrolltop--show" : ""}`}
+                id="scrolltop"
             >
                 <i className="ri-arrow-up-s-line"></i>
             </a>
-        </div>
+        </>
     );
 }
 
