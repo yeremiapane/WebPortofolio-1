@@ -6,9 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "../components/layouts/MainLayout";
 
 // Public Pages
-// import Landing from "../pages/Landing";
-import BlogLayout from "../pages/blog/BlogLayout";
-import ArticleLayout from "../pages/blog/ArticleLayout";
+import App from "../pages/user/App.jsx";
+import BlogApp from "../pages/blogs/BlogApp";
+import BlogRead from "../pages/blogs/BlogRead";
 // Auth Pages
 // import Login from "../pages/Login";
 // import Register from "../pages/Register";
@@ -30,9 +30,9 @@ export default function AppRouter() {
             <Routes>
                 {/* Rute publik dengan layout umum */}
                 {/*<Route element={<PublicLayout />}>*/}
-                {/*    <Route path="/" element={<Landing />} />*/}
-                <Route path="/blog" element={<BlogLayout />} />
-                <Route path="/blog/read" element={<ArticleLayout />} />
+                <Route path="/" element={<App />} />
+                <Route path="/blog" element={<BlogApp />} />
+                <Route path="/blog/read" element={<BlogRead />} />
                 {/*</Route>*/}
 
                 {/*/!* Rute autentikasi *!/*/}
