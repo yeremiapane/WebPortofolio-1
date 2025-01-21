@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/* Reset Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #5b2d8d;
+    --secondary-color: #f7a724;
+    --text-color: #000;
+    --hover-color: #fdaf31;
+}
+
+/* General Body Styling */
+body {
+    font-family: "Roboto", sans-serif;
+}
+
+/* Anchor Link Styling */
+a {
+    text-decoration: none !important;
+    color: var(--primary-color) !important;
+}
+
+/* Create Account Link */
+.createac {
+    font-size: 1rem !important;
+    color: var(--primary-color) !important;
+}
+
+/* Title Styling */
+.logintittle h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.28;
+    color: var(--primary-color);
+    margin-top: 50px;
+    margin-bottom: 25px;
+}
+
+/* Form Input Fields */
+form .inputfield {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #cccccc;
+    width: 80%;
+    padding-bottom: 5px;
+    margin-bottom: 15px; /* Spacing between fields */
+}
+
+form .inputfield svg {
+    margin-right: 10px;
+    fill: #cccccc; /* Adjust icon color */
+}
+
+form .inputfield input {
+    border: none;
+    outline: none;
+    background: none;
+    color: #333;
+    width: 100%;
+    padding: 5px 0;
+}
+
+form .inputfield input::placeholder {
+    color: #cccccc;
+    font-size: 14px;
+}
+
+/* Button Styling */
+.loginbtn button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.loginbtn button:hover {
+    background-color: var(--hover-color);
+}
+
+
+
+.forgetlink a {
+    font-size: 14px;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Left Section Text Content */
+.txtcontent span {
+    color: var(--secondary-color);
+}
+
+.txtcontent h1 {
+    color: white;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+/* General Layout for Left Section */
+.left_loginpage .leftsidebg {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+}
+
+.imgtxt {
+    display: flex;
+    flex-direction: column;
+   
+    height: 100%;
+    text-align: left;
+}
+
+.bankslogo img {
+    max-height: 400px;
+    width: auto;
+}
+
+/* Right Section */
+.right_loginpage {
+    width: 100%;
+}
+
+.right_loginpage .logo img {
+    height: 65px;
+    width: auto;
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 720px) {
+    .left_loginpage {
+        display: none;
+    }
+
+    #login_app {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .right_loginpage {
+        width: 100%;
+        padding: 20px;
+    }
+}

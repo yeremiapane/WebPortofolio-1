@@ -1,0 +1,389 @@
+/* =============== GLOBAL RESET / LAYOUT =============== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Untuk memastikan footer di bawah (jika konten pendek) */
+#mainArticle {
+  flex: 1; /* agar main melar, mendorong footer ke bawah */
+}
+
+/* =============== NAVBAR SUDAH DIASUMSI DI FILE LAIN =============== */
+/* =============== MAIN ARTICLE =============== */
+#mainArticle {
+  /* Perlebar hingga 1200px agar tampak lebih lega */
+  max-width: 1200px;
+  margin: 120px auto 40px; /* top offset for header, bottom spacing */
+  padding: 0 20px;
+}
+
+/* Top Section */
+#topSection {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#articleTitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.3rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.article-subinfo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Category Tag */
+.category-tag {
+  background-color: #e8f4fa;
+  color: #2e5077;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Tags Container */
+.tags-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.tags-container .tag-item {
+  background-color: #f9e2e7;
+  color: #b53b57;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+/* Meta top: Author, Date, Updated, ReadingTime */
+.article-meta-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.updated-badge {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+/* Article Image */
+#articleImageContainer {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+#articleImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#articleCaption {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+/* Article Content */
+#articleContent {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+/* Blockquote */
+#articleContent blockquote {
+  font-style: italic;
+  color: #555;
+  border-left: 4px solid #567b95;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Quill code blocks */
+pre.ql-syntax {
+  background: #2d2d2d;
+  color: #f8f8f2;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+/* =============== ACTIONS (LIKE, COMMENTS) AFTER ARTICLE =============== */
+#actionSection {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.like-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.like-icon {
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.like-icon:hover {
+  color: #e67171;
+}
+
+.comment-count-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #555;
+}
+
+/* =============== COMMENT SECTION =============== */
+#commentSection {
+  margin-bottom: 3rem;
+}
+
+#commentSection h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Komentar List */
+#commentList {
+  margin-bottom: 2rem;
+}
+
+.comment-item {
+  border-bottom: 1px solid #eee;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.comment-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.comment-author {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  color: #999;
+  margin-left: 1rem;
+}
+
+.comment-text {
+  margin: 0.5rem 0;
+}
+
+.comment-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  color: #2e5077;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.comment-reply-form {
+  margin-left: 2rem;
+  border-left: 2px solid #ccc;
+  padding-left: 1rem;
+  margin-top: 1rem;
+}
+
+/* Form Komentar */
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.comment-form label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.comment-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-form .form-group label {
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#quillEditor {
+  background: #fff;
+}
+
+/* Tombol Submit */
+.btn-submit {
+  align-self: flex-start;
+  background-color: #2e5077;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn-submit:hover {
+  background-color: #1f3a58;
+}
+
+/* =============== RELATED POSTS =============== */
+.related-posts {
+  margin-top: 3rem;
+  border-top: 2px solid #ddd;
+  padding-top: 2rem;
+}
+.related-posts h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+#relatedPostsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.related-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  transition: box-shadow 0.2s ease;
+}
+.related-item:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.related-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.related-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.related-info .related-title {
+  font-weight: 600;
+  color: #2e5077;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+.related-info .related-title:hover {
+  color: #1f3a58;
+}
+.related-info .related-date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* =============== FOOTER =============== */
+footer {
+  background: #f8f8f8;
+  border-top: 2px solid #ddd;
+  text-align: center;
+  padding: 2rem;
+}
+footer h2 {
+  font-size: 1.5rem;
+  color: #2e5077;
+  margin-bottom: 1rem;
+}
+footer p {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+/* =============== CUSTOM ALERT / TOAST =============== */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #2e5077;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.custom-alert.hidden {
+  opacity: 0;
+  transform: translateX(200%);
+}
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  #mainArticle {
+    margin: 80px 10px 20px;
+    padding: 0 10px;
+    max-width: 100%; /* agar full lebar di mobile */
+  }
+  #articleTitle {
+    font-size: 1.8rem;
+  }
+  #articleContent {
+    font-size: 1rem;
+  }
+  .comment-reply-form {
+    margin-left: 1rem;
+    padding-left: 0.5rem;
+  }
+}

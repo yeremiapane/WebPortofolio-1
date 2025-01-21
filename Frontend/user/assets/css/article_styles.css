@@ -1,0 +1,346 @@
+:root {
+  --primary: #2E5077;
+  --bg-color: #F6F4F0;
+  --card-bg: #F8FAFC;
+  --text-color: #1B1833;
+  --heading-color: #213555;
+  --border-color: #D8C4B6;
+  --shadow-light: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+html{
+  scroll-behavior: smooth;
+}
+
+/* Reset dasar dan box-sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Tipografi dasar */
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none;  /* Menghilangkan scrollbar untuk Firefox */
+  -ms-overflow-style: none;
+}
+
+/* Headings menggunakan Poppins */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--heading-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+/* Navbar styling */
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2.5rem;
+  background: var(--card-bg);
+  box-shadow: 0 2px 4px var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+#navbar h1 {
+  font-size: 2rem;
+  color: var(--primary);
+}
+
+#ulnavbar {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+}
+
+#ulnavbar a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+#ulnavbar a:hover {
+  color: var(--primary);
+}
+
+/* Container layout */
+#container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 50px auto;
+}
+
+/* Main content area */
+#mainContainer {
+  flex: 3 1 0;
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#mainContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* Post styling */
+.post {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+  scroll-snap-align: start;
+}
+
+.post:hover {
+  transform: translateY(-5px);
+}
+
+.post img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.post .title {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.post .description {
+  margin: 1rem 0;
+  color: #555;
+}
+
+.post .author {
+  font-style: italic;
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.post .more {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.post .more:hover {
+  background-color: #F2F9FF;
+  color : #2A3335;
+}
+
+/* Article meta info (reading time, likes, comments, etc.) */
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.article-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+/* Updated indicator */
+.updated .semi-bold {
+  font-weight: 600; /* semi bold */
+  color: #D9534F; /* contoh warna merah tanda update */
+}
+
+/* Kategori */
+.category {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+}
+
+/* Tag list */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #e8f4fa;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+/* Aside styling */
+aside {
+  flex: 1 1 0;
+}
+
+aside section {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+aside h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: var(--heading-color);
+}
+
+/* Search container */
+#inputContainer {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+}
+
+#searchBtn {
+  cursor: pointer;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0 8px 8px 0;
+  transition: background-color 0.3s ease;
+}
+
+#searchBtn:hover {
+  background-color: #9AA6B2;
+  color : #131010;
+}
+
+/* Categories and Tags styling */
+#categoriesContainer ul,
+#tagsUl {
+  list-style: none;
+  padding: 0;
+}
+
+#categoriesContainer li,
+#tagsUl li {
+  margin-bottom: 0.75rem;
+}
+
+#categoriesContainer a,
+#tagsUl a {
+  text-decoration: none;
+  color: var(--primary);
+  transition: color 0.3s ease;
+}
+
+#categoriesContainer a:hover,
+#tagsUl a:hover {
+  color: #2c5282;
+}
+
+#tagsUl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#tagsUl li {
+  background-color: #e8f4fa;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Footer styling */
+footer {
+  background: var(--card-bg);
+  border-top: 2px solid var(--border-color);
+  padding: 3rem 2.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+footer h2 {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+footer p {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsif untuk perangkat kecil */
+@media(max-width: 768px) {
+  #container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  /* Agar bagian mainContainer tidak membesar penuh tinggi di mobile */
+  #mainContainer {
+    height: auto;
+    overflow-y: auto;
+  }
+}
+
+/* Tambahan style untuk tombol Load More */
+#loadMoreBtn {
+  display: block;
+  margin: 1rem auto;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#loadMoreBtn:hover {
+  background-color: #9AA6B2;
+  color: #131010;
+}
