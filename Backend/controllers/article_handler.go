@@ -15,28 +15,28 @@ import (
 )
 
 type ArticleInput struct {
-	Title     string   `json:"title" binding:"required"`
-	Publisher string   `json:"publisher" binding:"required"`
-	MainImage string   `json:"mainImage"`
-	Images    []string `json:"images"`
-	Category  string   `json:"category"`
-	Tags      string   `json:"tags"`    // "Go, Docker, Tips"
-	Content   string   `json:"content"` // text/HTML/markdown
+	Title       string   `json:"title" binding:"required"`
+	Publisher   string   `json:"publisher" binding:"required"`
+	MainImage   string   `json:"mainImage"`
+	Images      []string `json:"images"`
+	Category    string   `json:"category"`
+	Tags        string   `json:"tags"`    // "Go, Docker, Tips"
+	Content     string   `json:"content"` // text/HTML/markdown
+	Description string   `json:"description"`
 }
 
 func CreateArticle(c *gin.Context) {
-	// Title, Content, dsb. dikirim lewat form-data
 	title := c.PostForm("title")
 	publisher := c.PostForm("publisher")
 	category := c.PostForm("category")
 	tags := c.PostForm("tags")
 	content := c.PostForm("content")
+	description := c.PostForm("description") // <-- Baru
 
 	// Upload file
 	file, err := c.FormFile("main_image")
 	var mainImagePath string
 	if err == nil {
-		// valid file found
 		filename := utils.GenerateFileName("article", file.Filename)
 		mainImagePath = "uploads/article/" + filename
 		if err := c.SaveUploadedFile(file, mainImagePath); err != nil {
@@ -54,8 +54,8 @@ func CreateArticle(c *gin.Context) {
 		Tags:        tags,
 		MainImage:   mainImagePath,
 		Content:     content,
+		Description: description, // <-- set field baru
 		ReadingTime: readingTime,
-		// published_at, edited_at diatur sesuai logika
 	}
 
 	if err := config.DB.Create(&article).Error; err != nil {
@@ -99,6 +99,7 @@ func UpdateArticle(c *gin.Context) {
 	article.Category = input.Category
 	article.Tags = input.Tags
 	article.Content = input.Content
+	article.Description = input.Description // <-- set field baru
 	article.UpdatedAt = time.Now()
 
 	if err := config.DB.Save(&article).Error; err != nil {

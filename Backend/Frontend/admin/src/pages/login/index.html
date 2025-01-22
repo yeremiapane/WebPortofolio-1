@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Admin</title>
+    <link rel="stylesheet" href="/admin_login_assets/css/style.css">
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <h2>Login</h2>
+        <p class="subtitle">to get started</p>
+
+        <!-- Form Login -->
+        <form id="loginForm" class="form-group">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+
+<!--            <div class="links">-->
+<!--                <a href="#" id="forgotPassword">Forgot Password?</a>-->
+<!--            </div>-->
+
+            <button type="submit" id="btnLogin">Continue</button>
+        </form>
+
+        <div class="register">
+            New User? <a href="/admin/register" id="registerLink">Register</a>
+        </div>
+    </div>
+</div>
+
+<!-- Script -->
+<script src="/admin_login_assets/js/login.js"></script>
+</body>
+</html>

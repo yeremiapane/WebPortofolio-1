@@ -1,0 +1,92 @@
+/* Reset dasar */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fafafa;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container utama */
+.register-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Kartu register */
+.register-card {
+    background-color: #fff;
+    width: 360px;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* Judul dan subjudul */
+.register-card h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 2rem;
+}
+
+/* Form */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Input text/password */
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Tombol "Register" */
+#btnRegister {
+    background-color: #28a745; /* warna hijau */
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+#btnRegister:hover {
+    background-color: #218838;
+}
+
+/* Bagian "Already have an account? Login" */
+.login {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.login a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+.login a:hover {
+    color: #28a745;
+}

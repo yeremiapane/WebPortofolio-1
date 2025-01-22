@@ -7,9 +7,10 @@ type Article struct {
 	Title       string `gorm:"not null"`
 	Publisher   string `gorm:"not null"`
 	MainImage   string
-	Images      string `gorm:"type:mediumtext"`
+	Images      string `gorm:"type:longtext"`
 	Category    string
 	Tags        string
+	Description string `gorm:"type:mediumtext"`
 	Content     string `gorm:"type:longtext"`
 	Likes       int    `gorm:"default:0"`
 	CreatedAt   time.Time

@@ -1,0 +1,56 @@
+<div class="content-container comments-container">
+    <h2>Comments</h2>
+
+    <div class="filter-bar">
+        <input type="text" id="searchComments" placeholder="Search comments..." class="search-input" />
+    </div>
+
+    <table id="commentsTable" class="table-list" style="display: none;">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Article ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Content</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="commentsTbody"></tbody>
+    </table>
+
+    <div id="commentsPagination" class="pagination" style="display: none;">
+        <button id="commentsPrev">Previous</button>
+        <span id="commentsPageInfo"></span>
+        <button id="commentsNext">Next</button>
+    </div>
+
+    <!-- Detail + Reply -->
+    <div id="commentDetailSection" class="comment-detail-section" style="display: none;">
+        <h3>Comment Detail</h3>
+        <p><strong>ID:</strong> <span id="detailCommentID"></span></p>
+        <p><strong>Article ID:</strong> <span id="detailArticleID"></span></p>
+        <p><strong>Parent ID:</strong> <span id="detailParentID"></span></p>
+        <p><strong>Name:</strong> <span id="detailName"></span></p>
+        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+        <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+        <p><strong>Content:</strong></p>
+        <div id="detailContent" class="comment-content-box"></div>
+
+        <div class="comment-actions">
+            <button id="btnApprove" class="btn-approve">Approve</button>
+            <button id="btnReject" class="btn-reject">Reject</button>
+            <button id="btnReset" class="btn-reset">Reset</button>
+            <button id="btnReply" class="btn-reply">Reply</button>
+        </div>
+
+        <div id="replyContainer" class="reply-container" style="display:none;">
+            <h4>Reply as Admin</h4>
+            <textarea id="replyContent" rows="3" placeholder="Type your reply..." class="reply-textarea"></textarea>
+            <button id="btnSubmitReply" class="btn-reply-submit">Submit Reply</button>
+        </div>
+
+        <button id="btnCloseDetail" class="btn-close-detail">Close Detail</button>
+    </div>
+</div>

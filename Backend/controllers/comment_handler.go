@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
@@ -419,4 +420,63 @@ func ReplyComments(c *gin.Context) {
 		"message": "Reply created successfully",
 		"data":    replyComment,
 	})
+}
+
+func GetCommentDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	commentIDUint64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment ID"})
+		return
+	}
+	commentID := uint(commentIDUint64)
+
+	var comment models.Comments
+	if err := config.DB.First(&comment, commentID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Comment not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	// Inisialisasi response
+	// di sini kita bisa menambahkan field "ParentComment" jika dibutuhkan
+	type CommentDetailResponse struct {
+		ID            uint             `json:"id"`
+		ArticleID     uint             `json:"article_id"`
+		ParentID      *uint            `json:"parent_id,omitempty"`
+		Name          string           `json:"name"`
+		Email         string           `json:"email,omitempty"`
+		Content       string           `json:"content"`
+		Status        string           `json:"status"`
+		IsApprove     bool             `json:"is_approve"`
+		IsAnonymous   bool             `json:"is_anonymous"`
+		ParentComment *models.Comments `json:"parent_comment,omitempty"`
+		// atau ringkasan parent comment
+		// CreatedAt, UpdatedAt, dsb. juga bisa
+	}
+
+	resp := CommentDetailResponse{
+		ID:          comment.ID,
+		ArticleID:   comment.ArticleID,
+		ParentID:    comment.ParentID,
+		Name:        comment.Name,
+		Email:       comment.Email,
+		Content:     comment.Content,
+		Status:      comment.Status,
+		IsApprove:   comment.IsApprove,
+		IsAnonymous: comment.IsAnonymous,
+	}
+
+	// Jika comment punya parent, kita bisa ambil detail parent
+	if comment.ParentID != nil {
+		var parent models.Comments
+		if err := config.DB.First(&parent, *comment.ParentID).Error; err == nil {
+			resp.ParentComment = &parent
+		}
+	}
+
+	c.JSON(http.StatusOK, resp)
 }
