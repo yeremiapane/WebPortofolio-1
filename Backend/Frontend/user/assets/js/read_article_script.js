@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Likes
         likeCountEl.textContent = article.Likes || 0;
-        // if (article.likedByUser) likeIconEl.style.color = 'red'; // opsional
+        if (article.likedByUser) likeIconEl.style.color = 'red'; // opsional
 
         // Image
         if (article.MainImage) {

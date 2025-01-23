@@ -159,6 +159,7 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
 .sidebar .profile-details{
   position: fixed;
   bottom: 0;

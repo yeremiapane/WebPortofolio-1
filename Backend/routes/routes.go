@@ -34,6 +34,7 @@ func SetupRoutes() *gin.Engine {
 	r.Static("/admin_login_assets", "./Frontend/admin/src/pages/login/assets")
 	r.Static("/admin_register_assets", "./Frontend/admin/src/pages/register/assets")
 	r.Static("/admin_dashboard_assets", "./Frontend/admin/src/pages/dashboard/assets")
+	r.Static("/admin_dashboard_pages", "./Frontend/admin/src/pages/dashboard")
 
 	// Routing untuk API
 
@@ -53,6 +54,7 @@ func SetupRoutes() *gin.Engine {
 
 	r.GET("/stats", controllers.GetDashboardStats)
 	// Admin group routes
+	r.POST("/articles/:id/like", controllers.LikeArticle)
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthMiddleware())
 	{
@@ -68,7 +70,6 @@ func SetupRoutes() *gin.Engine {
 		admin.POST("/articles", controllers.CreateArticle)
 		admin.PUT("/articles/:id", controllers.UpdateArticle)
 		admin.DELETE("/articles/:id", controllers.DeleteArticle)
-		admin.POST("/articles/:id/like", controllers.LikeArticle)
 
 		// Comments moderation
 		admin.GET("/comments/:id", controllers.GetCommentDetail)

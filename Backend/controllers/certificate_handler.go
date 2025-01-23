@@ -7,6 +7,7 @@ import (
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -33,12 +34,14 @@ func CreateCertificate(c *gin.Context) {
 	description := c.PostForm("description")
 	verificationLink := c.PostForm("verification_link")
 
+	// Contoh parsing issue month/year
 	issueMonth, _ := strconv.Atoi(c.PostForm("issue_month"))
 	issueYear, _ := strconv.Atoi(c.PostForm("issue_year"))
+
+	// End date optional
+	var endMonth, endYear *int
 	endMonthStr := c.PostForm("end_month")
 	endYearStr := c.PostForm("end_year")
-
-	var endMonth, endYear *int
 	if endMonthStr != "" && endYearStr != "" {
 		em, _ := strconv.Atoi(endMonthStr)
 		ey, _ := strconv.Atoi(endYearStr)
@@ -46,36 +49,40 @@ func CreateCertificate(c *gin.Context) {
 		endYear = &ey
 	}
 
-	// Upload banyak file
-	form, _ := c.MultipartForm()
-	files := form.File["images"]
+	// Mengambil beberapa file
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form data"})
+		return
+	}
+	files := form.File["images"] // array input name="images"
 
 	var fileNames []string
-	for _, file := range files {
-		filename := utils.GenerateFileName("certificate", file.Filename)
+	for _, f := range files {
+		filename := utils.GenerateFileName("certificate", f.Filename)
 		path := "uploads/certificate/" + filename
-		if err := c.SaveUploadedFile(file, path); err != nil {
+		if err := c.SaveUploadedFile(f, path); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 			return
 		}
 		fileNames = append(fileNames, filename)
 	}
 
-	// "img1.jpg,img2.jpg"
+	// Gabungkan jadi satu string "img1.jpg,img2.png"
 	imagesStr := strings.Join(fileNames, ",")
 
 	certificate := models.Certificate{
 		Title:            title,
 		Publisher:        publisher,
-		Images:           imagesStr,
+		Category:         category,
+		Skills:           skills,
+		Description:      description,
+		VerificationLink: verificationLink,
 		IssueMonth:       issueMonth,
 		IssueYear:        issueYear,
 		EndMonth:         endMonth,
 		EndYear:          endYear,
-		Description:      description,
-		VerificationLink: verificationLink,
-		Category:         category,
-		Skills:           skills,
+		Images:           imagesStr,
 	}
 
 	if err := config.DB.Create(&certificate).Error; err != nil {
@@ -109,54 +116,88 @@ func GetCertificateByID(c *gin.Context) {
 
 func UpdateCertificate(c *gin.Context) {
 	id := c.Param("id")
+
+	// 1) Cari certificate existing
 	var cert models.Certificate
 	if err := config.DB.First(&cert, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Certificate not found"})
 		return
 	}
 
-	var input CertificateInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 2) Ambil data text
+	title := c.PostForm("title")
+	publisher := c.PostForm("publisher")
+	category := c.PostForm("category")
+	skills := c.PostForm("skills")
+	description := c.PostForm("description")
+	verificationLink := c.PostForm("verification_link")
+
+	issueMonth, _ := strconv.Atoi(c.PostForm("issue_month"))
+	issueYear, _ := strconv.Atoi(c.PostForm("issue_year"))
+	var endMonth, endYear *int
+	endMonthStr := c.PostForm("end_month")
+	endYearStr := c.PostForm("end_year")
+	if endMonthStr != "" && endYearStr != "" {
+		em, _ := strconv.Atoi(endMonthStr)
+		ey, _ := strconv.Atoi(endYearStr)
+		endMonth = &em
+		endYear = &ey
+	}
+
+	// 3) Ambil file baru (jika ada)
+	form, err := c.MultipartForm()
+	if err != nil && err != http.ErrNotMultipart {
+		// Jika memang form-data error
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form data"})
 		return
 	}
 
-	// Handle image uploads
-	form, _ := c.MultipartForm()
-	files := form.File["images"]
-	if len(files) > 0 {
-		var newImages []string
-		for _, file := range files {
-			filename := utils.GenerateFileName("certificate", file.Filename)
-			path := "uploads/certificate/" + filename
-			if err := c.SaveUploadedFile(file, path); err != nil {
-				utils.InfoLogger.Printf("Failed to save file image %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-				return
+	var newFiles []string
+	if form != nil {
+		files := form.File["images"] // input name="images"
+		// 4) Jika user upload file baru, REPLACE
+		if len(files) > 0 {
+			// Hapus file lama di disk
+			oldImages := strings.Split(cert.Images, ",")
+			for _, old := range oldImages {
+				if old != "" {
+					os.Remove("uploads/certificate/" + old)
+				}
 			}
-			newImages = append(newImages, filename)
+
+			// Upload file baru
+			for _, file := range files {
+				filename := utils.GenerateFileName("certificate", file.Filename)
+				path := "uploads/certificate/" + filename
+				if err := c.SaveUploadedFile(file, path); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+					return
+				}
+				newFiles = append(newFiles, filename)
+			}
 		}
-		input.Images = newImages
 	}
 
-	cert.Title = input.Title
-	cert.Publisher = input.Publisher
-	cert.Images = strings.Join(input.Images, ",") // Convert image array to comma-separated string
-	cert.IssueMonth = input.IssueMonth
-	cert.IssueYear = input.IssueYear
-	cert.EndMonth = &input.EndMonth
-	cert.EndYear = &input.EndYear
-	cert.Description = input.Description
-	cert.Category = input.Category
-	cert.Skills = input.Skills
-	if input.VerificationLink != "" {
-		cert.VerificationLink = input.VerificationLink
-	} else {
-		cert.VerificationLink = ""
-	}
+	// 5) Update field
+	cert.Title = title
+	cert.Publisher = publisher
+	cert.Category = category
+	cert.Skills = skills
+	cert.Description = description
+	cert.VerificationLink = verificationLink
+	cert.IssueMonth = issueMonth
+	cert.IssueYear = issueYear
+	cert.EndMonth = endMonth
+	cert.EndYear = endYear
 
+	// 6) Jika ada file baru, ganti
+	if len(newFiles) > 0 {
+		cert.Images = strings.Join(newFiles, ",")
+	}
+	// else keep old images
+
+	// 7) Simpan ke DB
 	if err := config.DB.Save(&cert).Error; err != nil {
-		utils.InfoLogger.Printf("Failed to save certificate: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -171,9 +212,22 @@ func DeleteCertificate(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Certificate not found"})
 		return
 	}
+
+	// Hapus file fisik
+	if cert.Images != "" {
+		oldImages := strings.Split(cert.Images, ",")
+		for _, img := range oldImages {
+			if img != "" {
+				os.Remove("uploads/certificate/" + img)
+			}
+		}
+	}
+
+	// Hapus data di DB
 	if err := config.DB.Delete(&cert).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Certificate deleted"})
 }

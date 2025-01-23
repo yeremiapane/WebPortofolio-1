@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
@@ -78,30 +77,57 @@ func GetAllArticles(c *gin.Context) {
 
 func UpdateArticle(c *gin.Context) {
 	id := c.Param("id")
+
+	// 1) Cek existence article
 	var article models.Article
 	if err := config.DB.First(&article, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
 	}
 
-	var input ArticleInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	// 2) Ambil teks dari form-data
+	title := c.PostForm("title")
+	publisher := c.PostForm("publisher")
+	category := c.PostForm("category")
+	tags := c.PostForm("tags")
+	content := c.PostForm("content")
+	description := c.PostForm("description")
+
+	// 3) Jika ada file main_image baru
+	file, errFile := c.FormFile("main_image")
+	var newImagePath string
+	if errFile == nil {
+		// Artinya user upload file
+		filename := utils.GenerateFileName("article", file.Filename)
+		newImagePath = "uploads/article/" + filename
+
+		// Hapus file lama?
+		if article.MainImage != "" {
+			os.Remove(article.MainImage)
+		}
+
+		// Simpan file baru
+		if err := c.SaveUploadedFile(file, newImagePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+			return
+		}
 	}
 
-	imagesJSON, _ := json.Marshal(input.Images)
-
-	article.Title = input.Title
-	article.Publisher = input.Publisher
-	article.MainImage = input.MainImage
-	article.Images = string(imagesJSON)
-	article.Category = input.Category
-	article.Tags = input.Tags
-	article.Content = input.Content
-	article.Description = input.Description // <-- set field baru
+	// 4) Update field di article
+	article.Title = title
+	article.Publisher = publisher
+	article.Category = category
+	article.Tags = tags
+	article.Content = content
+	article.Description = description
 	article.UpdatedAt = time.Now()
 
+	// Jika user memang upload main_image baru
+	if newImagePath != "" {
+		article.MainImage = newImagePath
+	}
+
+	// 5) Simpan ke DB
 	if err := config.DB.Save(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -117,7 +143,22 @@ func DeleteArticle(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
 		return
 	}
-	os.Remove(article.MainImage)
+
+	// Hapus main image
+	if article.MainImage != "" {
+		os.Remove(article.MainImage)
+	}
+
+	// Hapus images (jika ada)
+	if article.Images != "" {
+		oldImages := strings.Split(article.Images, ",")
+		for _, old := range oldImages {
+			if old != "" {
+				os.Remove("uploads/article/" + old)
+			}
+		}
+	}
+
 	if err := config.DB.Delete(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

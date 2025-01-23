@@ -1,18 +1,24 @@
 /* ============= index.js ============= */
+
+/** GLOBAL VARIABLES **/
 let currentPageArticles = 1;
 let currentPageCertificates = 1;
+let currentCommentsPage = 1;
+let currentCommentID = null;
+let currentArticleId = null;
+let currentCertificateId = null;
 
+/** LOGOUT USER **/
 function logoutUser() {
     localStorage.removeItem('authToken');
-    alert('You have logged out.');
+    showToast('You have logged out.', 'info');
     window.location.href = '/Frontend/admin/src/pages/login/index.html'; // Sesuaikan path login
 }
 
-// Dipanggil saat halaman load
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-        alert('You must log in first.');
+        showToast('You must log in first.', 'error');
         window.location.href = '/Frontend/admin/src/pages/login/index.html';
         return;
     }
@@ -25,13 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load dashboard secara default
     const dynamicContent = document.getElementById('dynamic-content');
     if (dynamicContent) {
-        loadContent('dashboard.html', 'Dashboard');
+        loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
     }
 
     initializeSidebar();
 });
 
-/* SIDEBAR & TOGGLE */
+/** SIDEBAR & TOGGLE **/
 function initializeSidebar() {
     const arrowElements = document.querySelectorAll(".arrow");
     arrowElements.forEach(item => {
@@ -50,13 +56,10 @@ function initializeSidebar() {
     }
 }
 
-/* Pemuatan Halaman Dinamis */
+/** LOAD CONTENT DINAMIS **/
 function loadContent(page, title) {
     const dynamicContent = document.getElementById('dynamic-content');
-    if (!dynamicContent) {
-        console.error('Dynamic content container not found.');
-        return;
-    }
+    if (!dynamicContent) return;
 
     fetch(page)
         .then(response => {
@@ -70,57 +73,94 @@ function loadContent(page, title) {
             document.title = title;
 
             // Inisialisasi sesuai halaman
-            if (page === 'dashboard.html') {
+            if (page === '/admin_dashboard_pages/dashboard.html') {
                 loadArticles();
                 loadCertificates();
                 loadStats();
-            }
-            else if (page === 'write_articles.html') {
+            } else if (page === '/admin_dashboard_pages/write_articles.html') {
                 initializeWriteArticles();
-                const writeArticleForm = document.getElementById('writeArticleForm');
-                if (writeArticleForm) {
-                    writeArticleForm.addEventListener('submit', (e) => {
+                setupArticlePreview();      // setup preview button
+                const form = document.getElementById('writeArticleForm');
+                if (form) {
+                    form.addEventListener('submit', e => {
                         e.preventDefault();
                         submitArticleForm();
                     });
                 }
-            }
-            else if (page === 'update_articles.html') {
+            } else if (page === '/admin_dashboard_pages/update_articles.html') {
                 initializeWriteArticles();
+                setupArticlePreview();
                 initializeUpdateArticle();
-            }
-            else if (page === 'write_certificates.html') {
+            } else if (page === '/admin_dashboard_pages/write_certificates.html') {
                 initializeWriteCertificates();
-                const writeCertificateForm = document.getElementById('writeCertificateForm');
-                if (writeCertificateForm) {
-                    writeCertificateForm.addEventListener('submit', (e) => {
+                const form = document.getElementById('writeCertificateForm');
+                if (form) {
+                    form.addEventListener('submit', e => {
                         e.preventDefault();
                         submitCertificateForm();
                     });
                 }
-            }
-            else if (page === 'update_certificate.html') {
+            } else if (page === '/admin_dashboard_pages/update_certificate.html') {
                 initializeWriteCertificates();
                 initializeUpdateCertificate();
-            }
-            else if (page === 'comments.html'){
+            } else if (page === '/admin_dashboard_pages/comments.html') {
                 initializeComments();
             }
         })
         .catch(err => {
-            showToast(`Error loading content ${err}`, 'error')
+            showToast(`Error loading content: ${err}`, 'error');
             console.error('Error loading content:', err);
         });
 }
 
-/*======================= Bagian Statistic ====================*/
+/** TOAST ALERT **/
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    // Buat elemen toast
+    const toast = document.createElement('div');
+    toast.classList.add('toast');
+
+    // Tambahkan kelas tipe (toast-success / toast-error / toast-warning / toast-info)
+    switch (type) {
+        case 'success':
+            toast.classList.add('toast-success');
+            break;
+        case 'error':
+            toast.classList.add('toast-error');
+            break;
+        case 'warning':
+            toast.classList.add('toast-warning');
+            break;
+        default:
+            toast.classList.add('toast-info');
+    }
+
+    // Isi pesan
+    toast.textContent = message;
+
+    // Masukkan ke container
+    container.appendChild(toast);
+
+    // Hapus setelah beberapa detik
+    setTimeout(() => {
+        if (toast.parentElement) {
+            container.removeChild(toast);
+        }
+    }, 4000);
+}
+
+/** STATS (DASHBOARD) **/
 function loadStats() {
-    fetch('/admin/stats', {
+    fetch('/stats', {
         headers: window.authHeader
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to fetch stats');
-            showToast(`Error Failed to fetch stats ${res.status}`, 'error');
+            if (!res.ok) {
+                showToast(`Failed to fetch stats (Status ${res.status})`, 'error');
+                throw new Error('Failed to fetch stats');
+            }
             return res.json();
         })
         .then(data => {
@@ -132,21 +172,19 @@ function loadStats() {
             document.getElementById('dashRejectedComments').textContent = data.rejected_comments;
             document.getElementById('dashTotalLikes').textContent = data.total_likes;
             document.getElementById('dashTotalViews').textContent = data.total_views;
+            showToast('Stats loaded successfully', 'success');
         })
         .catch(err => {
-            showToast("Error fetching dashboard stats", 'error');
+            showToast(`Error fetching dashboard stats: ${err}`, 'error');
             console.error('Error fetching dashboard stats:', err);
         });
 }
 
-
-/*=======================Bagian Comments=======================*/
+/** COMMENTS **/
 function initializeComments() {
     console.log("Initialize Comments Page");
+    loadComments(1);
 
-    loadComments(1); // load halaman pertama
-
-    // Setup search
     const searchBox = document.getElementById('searchComments');
     if (searchBox) {
         searchBox.addEventListener('input', () => {
@@ -155,7 +193,6 @@ function initializeComments() {
         });
     }
 
-    // Setup pagination
     const prevBtn = document.getElementById('commentsPrev');
     const nextBtn = document.getElementById('commentsNext');
     if (prevBtn) {
@@ -172,7 +209,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol close detail
     const btnCloseDetail = document.getElementById('btnCloseDetail');
     if (btnCloseDetail) {
         btnCloseDetail.addEventListener('click', () => {
@@ -180,7 +216,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol reply
     const btnReply = document.getElementById('btnReply');
     if (btnReply) {
         btnReply.addEventListener('click', () => {
@@ -188,7 +223,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol submit reply
     const btnSubmitReply = document.getElementById('btnSubmitReply');
     if (btnSubmitReply) {
         btnSubmitReply.addEventListener('click', () => {
@@ -196,7 +230,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol Approve
     const btnApprove = document.getElementById('btnApprove');
     if (btnApprove) {
         btnApprove.addEventListener('click', () => {
@@ -204,7 +237,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol Reject
     const btnReject = document.getElementById('btnReject');
     if (btnReject) {
         btnReject.addEventListener('click', () => {
@@ -212,7 +244,6 @@ function initializeComments() {
         });
     }
 
-    // Tombol Reset
     const btnReset = document.getElementById('btnReset');
     if (btnReset) {
         btnReset.addEventListener('click', () => {
@@ -221,29 +252,21 @@ function initializeComments() {
     }
 }
 
-
-let currentCommentsPage = 1;
-let currentCommentID = null; // untuk menyimpan ID comment yg sedang di-detail
-
 function loadComments(page = 1) {
     currentCommentsPage = page;
-
-    // Ambil search
     const searchVal = document.getElementById('searchComments')?.value.trim() || '';
-    // Endpoint GET /admin/comments?limit=&page=&search=
     const url = `http://localhost:8080/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(searchVal)}`;
 
-    fetch(url, {
-        headers: window.authHeader
-    })
+    fetch(url, { headers: window.authHeader })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to fetch comments');
+            if (!res.ok) {
+                showToast('Failed to load comments', 'error');
+                throw new Error('Failed to fetch comments');
+            }
             return res.json();
         })
         .then(data => {
-            // data = { data: [...], total_data, page, limit, total_page }
             const items = data.data || [];
-            const total = data.total_data || 0;
             const totalPages = data.total_page || 1;
 
             const commentsTable = document.getElementById('commentsTable');
@@ -278,18 +301,48 @@ function loadComments(page = 1) {
             });
 
             commentsPageInfo.textContent = `Page ${data.page} of ${totalPages}`;
-
             const prevBtn = document.getElementById('commentsPrev');
             const nextBtn = document.getElementById('commentsNext');
             prevBtn.style.display = (page > 1) ? 'inline-block' : 'none';
             nextBtn.style.display = (page < totalPages) ? 'inline-block' : 'none';
+
+            showToast('Comments loaded successfully', 'success');
         })
         .catch(err => {
-            showToast("error loadComments", "error")
+            showToast(`Error loadComments: ${err}`, 'error');
             console.error('Error loadComments:', err);
         });
 }
 
+function detailComment(commentId) {
+    currentCommentID = commentId;
+    fetch(`http://localhost:8080/admin/comments/${commentId}`, {
+        headers: window.authHeader
+    })
+        .then(res => {
+            if (!res.ok) {
+                showToast('Failed to get comment detail', 'error');
+                throw new Error('Failed to get comment detail');
+            }
+            return res.json();
+        })
+        .then(comment => {
+            document.getElementById('detailCommentID').textContent = comment.id;
+            document.getElementById('detailArticleID').textContent = comment.article_id;
+            document.getElementById('detailParentID').textContent = comment.parent_id || '';
+            document.getElementById('detailName').textContent = comment.name || 'Anonymous';
+            document.getElementById('detailEmail').textContent = comment.email || '';
+            document.getElementById('detailStatus').textContent = comment.status;
+            document.getElementById('detailContent').textContent = comment.content;
+
+            document.getElementById('commentDetailSection').style.display = 'block';
+            document.getElementById('replyContainer').style.display = 'none';
+            showToast('Comment detail loaded', 'success');
+        })
+        .catch(err => {
+            console.error('detailComment error:', err);
+        });
+}
 
 function approveComment(commentId) {
     fetch(`http://localhost:8080/admin/comments/${commentId}/approve`, {
@@ -297,13 +350,14 @@ function approveComment(commentId) {
         headers: window.authHeader
     })
         .then(res => {
-            showToast("Comment failed to approve", "error")
-            if (!res.ok) throw new Error('Failed to approve comment');
+            if (!res.ok) {
+                showToast('Comment failed to approve', 'error');
+                throw new Error('Failed to approve comment');
+            }
             return res.json();
         })
         .then(data => {
-            // alert('Comment approved!');
-            showToast("Comment Approved!", "success")
+            showToast("Comment Approved!", "success");
             loadComments(currentCommentsPage);
             document.getElementById('detailStatus').textContent = 'approved';
         })
@@ -316,56 +370,19 @@ function rejectComment(commentId) {
         headers: window.authHeader
     })
         .then(res => {
-            showToast("Failed to reject comment!", "error")
-            if (!res.ok) throw new Error('Failed to reject comment');
+            if (!res.ok) {
+                showToast("Failed to reject comment!", "error");
+                throw new Error('Failed to reject comment');
+            }
             return res.json();
         })
         .then(data => {
-            // alert('Comment rejected!');
-            showToast("Comment Rejected!", "success")
+            showToast("Comment Rejected!", "success");
             loadComments(currentCommentsPage);
             document.getElementById('detailStatus').textContent = 'rejected';
         })
         .catch(err => console.error('rejectComment error:', err));
 }
-
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-
-    // Buat elemen toast
-    const toast = document.createElement('div');
-    toast.classList.add('toast');
-
-    // Tambahkan kelas tipe (toast-success / toast-error / toast-warning / toast-info)
-    switch (type) {
-        case 'success':
-            toast.classList.add('toast-success');
-            break;
-        case 'error':
-            toast.classList.add('toast-error');
-            break;
-        case 'warning':
-            toast.classList.add('toast-warning');
-            break;
-        default:
-            toast.classList.add('toast-info');
-    }
-
-    // Isi pesan
-    toast.textContent = message;
-
-    // Masukkan ke container
-    container.appendChild(toast);
-
-    // Hapus setelah animasi fadeOut selesai (4 detik total)
-    setTimeout(() => {
-        if (toast.parentElement) {
-            container.removeChild(toast);
-        }
-    }, 4000);
-}
-
 
 function resetComment(commentId) {
     fetch(`http://localhost:8080/admin/comments/${commentId}/reset`, {
@@ -373,55 +390,28 @@ function resetComment(commentId) {
         headers: window.authHeader
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to reset comment');
+            if (!res.ok) {
+                showToast('Failed to reset comment', 'error');
+                throw new Error('Failed to reset comment');
+            }
             return res.json();
         })
         .then(data => {
-            alert('Comment reset to pending!');
+            showToast('Comment reset to pending!', 'success');
             loadComments(currentCommentsPage);
             document.getElementById('detailStatus').textContent = 'pending';
         })
         .catch(err => console.error('resetComment error:', err));
 }
 
-
-let currentCommentID = null;
-
-function detailComment(commentId) {
-    currentCommentID = commentId; // simpan ID ke global
-    // GET /admin/comments/:id => detail
-    fetch(`http://localhost:8080/admin/comments/${commentId}`, {
-        headers: window.authHeader
-    })
-        .then(res => {
-            if (!res.ok) throw new Error('Failed to get comment detail');
-            return res.json();
-        })
-        .then(comment => {
-            document.getElementById('detailCommentID').textContent = comment.id;
-            document.getElementById('detailArticleID').textContent = comment.article_id;
-            document.getElementById('detailParentID').textContent = comment.parent_id || '';
-            document.getElementById('detailName').textContent = comment.name || 'Anonymous';
-            document.getElementById('detailEmail').textContent = comment.email || '';
-            document.getElementById('detailStatus').textContent = comment.status;
-            document.getElementById('detailContent').textContent = comment.content;
-
-            // Tampilkan detail section
-            document.getElementById('commentDetailSection').style.display = 'block';
-            // Sembunyikan replyContainer
-            document.getElementById('replyContainer').style.display = 'none';
-        })
-        .catch(err => console.error('detailComment error:', err));
-}
-
 function submitReply() {
     if (!currentCommentID) {
-        alert('No comment selected');
+        showToast('No comment selected', 'warning');
         return;
     }
     const replyText = document.getElementById('replyContent').value.trim();
     if (!replyText) {
-        alert('Reply content is empty');
+        showToast('Reply content is empty', 'warning');
         return;
     }
 
@@ -434,31 +424,35 @@ function submitReply() {
         body: formData
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to reply comment');
+            if (!res.ok) {
+                showToast('Failed to reply comment', 'error');
+                throw new Error('Failed to reply comment');
+            }
             return res.json();
         })
         .then(data => {
-            alert('Reply sent successfully!');
-            // reload comments
+            showToast('Reply sent successfully!', 'success');
             loadComments(currentCommentsPage);
-            // close reply container
             document.getElementById('replyContainer').style.display = 'none';
             document.getElementById('replyContent').value = '';
         })
         .catch(err => console.error('Error submitReply:', err));
 }
 
-
-
-/* ====================== BAGIAN ARTIKEL ====================== */
+/** ARTICLES **/
 function loadArticles(page = 1) {
     currentPageArticles = page;
     fetch(`/articles/filter?limit=10&page=${page}`, {
         headers: window.authHeader
     })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                showToast('Failed to load articles', 'error');
+                throw new Error('Failed to load articles');
+            }
+            return res.json();
+        })
         .then(data => {
-            // data = { data: [...], total_data, page, limit, total_page }
             const articlesTable = document.getElementById('articlesTable');
             const articlesTableBody = document.getElementById('articlesTableBody');
             const articlesPagination = document.getElementById('articlesPagination');
@@ -489,56 +483,66 @@ function loadArticles(page = 1) {
         `;
                 articlesTableBody.insertAdjacentHTML('beforeend', row);
             });
+
+            showToast("Articles loaded", "success");
         })
-        .catch(err => console.error('Error loadArticles:', err));
+        .catch(err => {
+            console.error('Error loadArticles:', err);
+        });
 }
 
 function updateArticle(id) {
     window.currentArticleId = id; // simpan agar nanti di update_articles.html dipakai
-    loadContent('update_articles.html', 'Update Article');
+    loadContent('/admin_dashboard_pages/update_articles.html', 'Update Article');
 }
+
+window.updateArticle = updateArticle;
 
 function deleteArticle(id) {
     if (!confirm('Are you sure to delete this article?')) return;
-
     fetch(`/admin/articles/${id}`, {
         method: 'DELETE',
         headers: window.authHeader
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to delete article');
+            if (!res.ok) {
+                showToast('Failed to delete article', 'error');
+                throw new Error('Failed to delete article');
+            }
             return res.json();
         })
         .then(data => {
-            alert('Article deleted successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+            showToast('Article deleted successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => console.error('Error deleting article:', err));
 }
 
-/* Submit Article (Write) */
+/** Submit Article (Write) **/
 function submitArticleForm() {
     const title = document.getElementById('title').value.trim();
     const author = document.getElementById('author').value.trim();
     const category = document.getElementById('category').value.trim();
     const tags = document.getElementById('tags').value.trim();
     const description = document.getElementById('description').value.trim();
-    const imageFile = document.getElementById('image').files[0];
+    const mainImageFile = document.getElementById('image').files[0];
     const content = document.querySelector('#quillEditor .ql-editor').innerHTML.trim();
 
     if (!title || !author || !category || !tags || !description || !content) {
-        alert('Please fill all fields');
+        showToast('Please fill all fields', 'warning');
         return;
     }
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('publisher', author); // server side mungkin "publisher"
+    formData.append('publisher', author);
     formData.append('category', category);
     formData.append('tags', tags);
     formData.append('description', description);
     formData.append('content', content);
-    if (imageFile) formData.append('main_image', imageFile);
+    if (mainImageFile) {
+        formData.append('main_image', mainImageFile);
+    }
 
     fetch('/admin/articles', {
         method: 'POST',
@@ -546,30 +550,35 @@ function submitArticleForm() {
         body: formData
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to create article');
+            if (!res.ok) {
+                showToast('Failed to create article', 'error');
+                throw new Error('Failed to create article');
+            }
             return res.json();
         })
-        .then(resp => {
-            alert('Article created successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+        .then(data => {
+            showToast('Article created successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => console.error('submitArticleForm:', err));
 }
 
-/* Update Article */
+/** Update Article **/
 function initializeUpdateArticle() {
     const articleId = window.currentArticleId;
     if (!articleId) {
-        alert('Missing article ID.');
+        showToast('Missing article ID.', 'error');
         return;
     }
 
-    // fetch detail
     fetch(`/articles/${articleId}`, {
         headers: window.authHeader
     })
         .then(res => {
-            if (!res.ok) throw new Error('Failed to fetch article detail');
+            if (!res.ok) {
+                showToast('Failed to fetch article detail', 'error');
+                throw new Error('Failed to fetch article detail');
+            }
             return res.json();
         })
         .then(article => {
@@ -581,17 +590,79 @@ function initializeUpdateArticle() {
 
             const editor = document.querySelector('#quillEditor .ql-editor');
             if (editor) editor.innerHTML = article.Content || '';
+            showToast("Article detail loaded", "success");
         })
         .catch(err => {
             console.error('Error fetch article:', err);
-            alert('Error loading article');
+            showToast('Error loading article detail', 'error');
         });
 
-    const form = document.getElementById('updateArticleForm');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        updateArticleSubmit(articleId);
-    });
+    const updateForm = document.getElementById('updateArticleForm');
+    if (updateForm) {
+        updateForm.addEventListener('submit', e => {
+            e.preventDefault();
+            updateArticleSubmit(articleId);
+        });
+    }
+}
+
+/** SETUP ARTICLE PREVIEW **/
+function setupArticlePreview() {
+    const previewButton = document.getElementById('previewButton');
+    if (previewButton) {
+        previewButton.addEventListener('click', () => {
+            const title = document.getElementById('title')?.value || '';
+            const author = document.getElementById('author')?.value || '';
+            const category = document.getElementById('category')?.value || '';
+            const tags = document.getElementById('tags')?.value || '';
+            const description = document.getElementById('description')?.value || '';
+            const quillEditor = document.querySelector('#quillEditor .ql-editor');
+            const content = quillEditor ? quillEditor.innerHTML : '';
+
+            // image preview
+            const mainImageFile = document.getElementById('image')?.files[0];
+            let imagePreviewUrl = '';
+            if (mainImageFile) {
+                imagePreviewUrl = URL.createObjectURL(mainImageFile);
+            }
+
+            // Tampilkan preview ke modal
+            const previewContent = document.getElementById('previewContent');
+            const previewModal = document.getElementById('previewModal');
+            const closePreview = document.getElementById('closePreview');
+
+            if (!previewContent || !previewModal) {
+                showToast('Preview modal elements not found', 'error');
+                return;
+            }
+
+            // Buat HTML preview
+            // misalnya menampilkan title, author, description, image, dsb.
+            const sanitizedContent = DOMPurify.sanitize(content);
+            let htmlPreview = `
+        <h2>${title}</h2>
+        <h4>By ${author}</h4>
+        <p><strong>Category:</strong> ${category}</p>
+        <p><strong>Tags:</strong> ${tags}</p>
+        <p><strong>Description:</strong> ${description}</p>
+        ${imagePreviewUrl ? `<img src="${imagePreviewUrl}" alt="${title}" style="max-width:200px;" />` : ''}
+        <div>${sanitizedContent}</div>
+      `;
+
+            previewContent.innerHTML = htmlPreview;
+            previewModal.style.display = 'block';
+
+            if (closePreview) {
+                closePreview.addEventListener('click', () => {
+                    previewModal.style.display = 'none';
+                    // Bersihkan URL object
+                    if (imagePreviewUrl) {
+                        URL.revokeObjectURL(imagePreviewUrl);
+                    }
+                });
+            }
+        });
+    }
 }
 
 function updateArticleSubmit(articleId) {
@@ -601,7 +672,7 @@ function updateArticleSubmit(articleId) {
     const tags = document.getElementById('tags').value.trim();
     const description = document.getElementById('description').value.trim();
     const content = document.querySelector('#quillEditor .ql-editor').innerHTML.trim();
-    const imageFile = document.getElementById('image').files[0];
+    const mainImageFile = document.getElementById('image').files[0];
 
     const formData = new FormData();
     formData.append('title', title);
@@ -610,7 +681,9 @@ function updateArticleSubmit(articleId) {
     formData.append('tags', tags);
     formData.append('description', description);
     formData.append('content', content);
-    if (imageFile) formData.append('main_image', imageFile);
+    if (mainImageFile) {
+        formData.append('main_image', mainImageFile);
+    }
 
     fetch(`/admin/articles/${articleId}`, {
         method: 'PUT',
@@ -618,22 +691,23 @@ function updateArticleSubmit(articleId) {
         body: formData
     })
         .then(res => {
-            if(!res.ok) throw new Error('Failed to update article');
+            if(!res.ok) {
+                showToast('Failed to update article', 'error');
+                throw new Error('Failed to update article');
+            }
             return res.json();
         })
         .then(data => {
-            showToast(`Article ${data} update successfully!`, 'success');
-            // alert('Article updated successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+            showToast('Article updated successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => {
-
             console.error('Error updating article:', err);
-            showToast(`Error Update article ${err}`, 'error');
+            showToast(`Error updating article: ${err}`, 'error');
         });
 }
 
-/* Quill Editor Inisialisasi (Write Article) */
+/** QUILL EDITOR INISIALISASI (Write Article) **/
 function initializeWriteArticles() {
     console.log("initializeWriteArticles: setting up Quill");
     Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
@@ -668,13 +742,19 @@ function initializeWriteArticles() {
     });
 }
 
-/* ====================== BAGIAN CERTIFICATE ====================== */
+/** CERTIFICATES **/
 function loadCertificates(page = 1) {
     currentPageCertificates = page;
     fetch(`/certificates?page=${page}&limit=10`, {
         headers: window.authHeader
     })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                showToast('Failed to load certificates', 'error');
+                throw new Error('Failed to load certificates');
+            }
+            return res.json();
+        })
         .then(certData => {
             const certificatesTable = document.getElementById('certificatesTable');
             const certificatesTableBody = document.getElementById('certificatesTableBody');
@@ -707,6 +787,7 @@ function loadCertificates(page = 1) {
         `;
                 certificatesTableBody.insertAdjacentHTML('beforeend', row);
             });
+            showToast('Certificates loaded', 'success');
         })
         .catch(err => console.error('Error loadCertificates:', err));
 }
@@ -719,28 +800,30 @@ function deleteCertificate(id) {
         headers: window.authHeader
     })
         .then(res => {
-            if(!res.ok) throw new Error('Failed to delete certificate');
+            if(!res.ok) {
+                showToast('Failed to delete certificate', 'error');
+                throw new Error('Failed to delete certificate');
+            }
             return res.json();
         })
         .then(data => {
-            showToast(`Certificate ${data} deleted successfully `, 'success')
-            // alert('Certificate deleted successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+            showToast('Certificate deleted successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => console.error('Error deleting certificate:', err));
 }
 
 function updateCertificate(id) {
     window.currentCertificateId = id;
-    loadContent('update_certificate.html', 'Update Certificate');
+    loadContent('/admin_dashboard_pages/update_certificate.html', 'Update Certificate');
 }
 
-/* Write Certificates */
+/** Write Certificates **/
 function initializeWriteCertificates() {
     console.log("initializeWriteCertificates: no Quill needed unless you want it");
 }
 
-/* Submit Certificate (Write) */
+/** Submit Certificate (Write) **/
 function submitCertificateForm() {
     const title = document.getElementById('Certificate_title').value.trim();
     const publisher = document.getElementById('Certificate_publisher').value.trim();
@@ -751,7 +834,7 @@ function submitCertificateForm() {
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
 
     if (!title || !publisher || !category || !tags || !description || !imageFile) {
-        alert('Please fill all fields and select an image');
+        showToast('Please fill all fields and select an image', 'warning');
         return;
     }
 
@@ -761,7 +844,7 @@ function submitCertificateForm() {
     formData.append('category', category);
     formData.append('tags', tags);
     formData.append('description', description);
-    formData.append('cert_image', imageFile); // sesuai field server
+    formData.append('cert_image', imageFile);
     if (verificationLink) {
         formData.append('link', verificationLink);
     }
@@ -772,30 +855,35 @@ function submitCertificateForm() {
         body: formData
     })
         .then(res => {
-            if(!res.ok) throw new Error('Failed to create certificate');
+            if(!res.ok) {
+                showToast('Failed to create certificate', 'error');
+                throw new Error('Failed to create certificate');
+            }
             return res.json();
         })
         .then(resp => {
-            alert('Certificate created successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+            showToast('Certificate created successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => console.error('Error create certificate:', err));
 }
 
-/* Update Certificate */
+/** Update Certificate **/
 function initializeUpdateCertificate() {
     const certId = window.currentCertificateId;
     if(!certId) {
-        alert('Missing certificate ID');
+        showToast('Missing certificate ID', 'error');
         return;
     }
 
-    // fetch detail
     fetch(`/certificates/${certId}`, {
         headers: window.authHeader
     })
         .then(res => {
-            if(!res.ok) throw new Error('Failed to fetch certificate detail');
+            if(!res.ok) {
+                showToast('Failed to fetch certificate detail', 'error');
+                throw new Error('Failed to fetch certificate detail');
+            }
             return res.json();
         })
         .then(cert => {
@@ -807,17 +895,20 @@ function initializeUpdateCertificate() {
             if(cert.link) {
                 document.getElementById('Certificate_verification_link').value = cert.link;
             }
+            showToast('Certificate detail loaded', 'success');
         })
         .catch(err => {
             console.error(err);
-            alert('Error load certificate detail');
+            showToast('Error load certificate detail', 'error');
         });
 
     const form = document.getElementById('updateCertificateForm');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        updateCertificateSubmit(certId);
-    });
+    if (form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            updateCertificateSubmit(certId);
+        });
+    }
 }
 
 function updateCertificateSubmit(certId) {
@@ -848,15 +939,18 @@ function updateCertificateSubmit(certId) {
         body: formData
     })
         .then(res => {
-            if(!res.ok) throw new Error('Failed to update certificate');
+            if(!res.ok) {
+                showToast('Failed to update certificate', 'error');
+                throw new Error('Failed to update certificate');
+            }
             return res.json();
         })
         .then(resp => {
-            alert('Certificate updated successfully!');
-            loadContent('dashboard.html', 'Dashboard');
+            showToast('Certificate updated successfully!', 'success');
+            loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
         .catch(err => {
             console.error(err);
-            alert('Error updating certificate');
+            showToast('Error updating certificate', 'error');
         });
 }

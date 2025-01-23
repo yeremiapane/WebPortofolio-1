@@ -184,7 +184,10 @@
                 : '';
 
         // Teks ringkas? Silakan ambil sebagian Content
-        const shortContent = article.Content
+        // Menggunakan kolom `description` atau ringkasan dari `content`
+        const shortContent = article.Description
+                ? article.Description
+                : article.Content
                 ? article.Content.substring(0, 100) + '...'
                 : 'No description';
 

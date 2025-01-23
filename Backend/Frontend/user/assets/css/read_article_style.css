@@ -330,6 +330,15 @@ pre.ql-syntax {
   color: #999;
 }
 
+#articleContent {
+  max-width: 900px; /* sesuaikan */
+  margin: 0 auto;   /* agar center */
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+
 /* =============== FOOTER =============== */
 footer {
   background: #f8f8f8;
@@ -386,4 +395,5 @@ footer p {
     margin-left: 1rem;
     padding-left: 0.5rem;
   }
+
 }
