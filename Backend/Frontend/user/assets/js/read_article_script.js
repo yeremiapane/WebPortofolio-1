@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
           imgEl.alt = 'No Image';
         }
         if (article.Caption) captionEl.textContent = article.Caption;
-
+        console.log(article.Content)
         // Content
         contentEl.innerHTML = article.Content || 'No content';
 
@@ -113,31 +113,44 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
   // 2. Load Comments
+  // 4. Load Comments
   function loadComments() {
     fetch(commentUrl)
         .then(res => {
           if (!res.ok) throw new Error('Failed to fetch comments');
           return res.json();
         })
-        .then(comments => {
-          renderComments(comments);
+        .then(data => {
+          // Jika data adalah array, langsung render.
+          // Jika data adalah objek tunggal, bungkus dalam array untuk konsistensi.
+          const comments = Array.isArray(data) ? data : [data];
+          comments.forEach(comment =>{
+            renderComments(comment);
+          })
         })
         .catch(err => {
           showAlert(`Error fetching comments: ${err.message}`, 'error');
         });
   }
 
+// Render Comments
   function renderComments(comments) {
-    commentList.innerHTML = '';
+    commentList.innerHTML = ''; // Bersihkan list sebelumnya
+    if (!comments.length) {
+      commentList.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+      commentCountEl.textContent = 0;
+      return;
+    }
+
     let total = 0;
     comments.forEach(c => {
-      // Tampilkan only approved (asumsi backend filter, or check c.Approved)
       total += 1;
-      const commentItem = createCommentItem(c);
-      commentList.appendChild(commentItem);
+      const item = createCommentItem(c);
+      commentList.appendChild(item);
     });
-    commentCountEl.textContent = total;
+    commentCountEl.textContent = total; // Total jumlah komentar
   }
+
 
   function createCommentItem(comment) {
     const wrapper = document.createElement('div');
@@ -375,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const link = document.createElement('a');
       link.classList.add('related-title');
-      link.href = `read_article.html?id=${a.ID}`;
+      link.href = `/article/${a.ID}`;
       link.textContent = a.Title || 'Untitled';
 
       const date = document.createElement('div');

@@ -139,19 +139,19 @@ function loadArticlesForHomepage() {
 
           card.innerHTML = `
           <div class="blog__img-wrapper">
-            <img src="${article.image_url}" alt="${article.title}" class="blog__img">
+            <img src="${article.MainImage}" alt="${article.Title}" class="blog__img">
           </div>
           <div class="blog__content">
             <h3 class="blog__title">
-              <a href="article?${article.id}" style="text-decoration: none; color: inherit;">
-                ${article.title}
+              <a href="article/${article.ID}" style="text-decoration: none; color: inherit;">
+                ${article.Title}
               </a>
             </h3>
-            <p class="blog__description">${truncateText(article.description, 35)}</p>
+            <p class="blog__description">${truncateText(article.Description, 35)}</p>
           </div>
           <div class="blog__footer">
-            <span class="blog__category">${article.category}</span>
-            <span class="blog__date">${formatDate(article.published_at)}</span>
+            <span class="blog__category">${article.Category}</span>
+            <span class="blog__date">${formatDate(article.UpdateAt)}</span>
           </div>
         `;
 

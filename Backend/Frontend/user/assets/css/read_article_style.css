@@ -1,9 +1,4 @@
 /* =============== GLOBAL RESET / LAYOUT =============== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 html, body {
   height: 100%;
@@ -20,7 +15,6 @@ body {
   flex: 1; /* agar main melar, mendorong footer ke bawah */
 }
 
-/* =============== NAVBAR SUDAH DIASUMSI DI FILE LAIN =============== */
 /* =============== MAIN ARTICLE =============== */
 #mainArticle {
   /* Perlebar hingga 1200px agar tampak lebih lega */
@@ -98,8 +92,8 @@ body {
 }
 
 #articleImage {
-  max-width: 100%;
-  height: auto;
+  max-width: 130%;
+  max-height: 800px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -108,34 +102,6 @@ body {
   font-size: 0.9rem;
   color: #555;
   margin-top: 0.5rem;
-}
-
-/* Article Content */
-#articleContent {
-  font-size: 1.15rem;
-  line-height: 1.8;
-  margin-bottom: 2rem;
-}
-
-/* Blockquote */
-#articleContent blockquote {
-  font-style: italic;
-  color: #555;
-  border-left: 4px solid #567b95;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background: #f9f9f9;
-  border-radius: 4px;
-}
-
-/* Quill code blocks */
-pre.ql-syntax {
-  background: #2d2d2d;
-  color: #f8f8f2;
-  padding: 1rem;
-  overflow-x: auto;
-  border-radius: 4px;
-  margin: 1.5rem 0;
 }
 
 /* =============== ACTIONS (LIKE, COMMENTS) AFTER ARTICLE =============== */

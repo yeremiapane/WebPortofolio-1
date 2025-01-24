@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Read Article - Maze</title>
 
+  <link rel="stylesheet" href="/assets/css/navbar.css" />
+  <link rel="stylesheet" href="/assets/css/read_article_style.css" />
+
   <!-- Favicon -->
   <link rel="icon" href="/assets/img/Designer.ico" type="image/png">
 
@@ -15,12 +18,15 @@
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- and it's easy to individually load additional languages -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
   <!-- Quill CSS (SIMPLE THEME) -->
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+<!--  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />-->
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
-  <link rel="stylesheet" href="/assets/css/navbar.css" />
-  <link rel="stylesheet" href="/assets/css/read_article_style.css" />
 </head>
 
 <body>
@@ -35,7 +41,7 @@
 
       <div class="nav__perfil">
         <div class="nav__img">
-          <img src="assets/img/logo.png" alt="Maze-Logo">
+          <img src="/assets/img/logo.png" alt="Maze-Logo">
         </div>
         <div>
           <a href="#" class="nav__name">Maze.</a>
@@ -148,9 +154,7 @@
 </div>
 
 <!-- Navbar JS -->
-<script src="assets/js/navbar.js"></script>
-<!-- Quill JS -->
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script src="/assets/js/navbar.js"></script>
 <!-- Main JS -->
 <script src="/assets/js/read_article_script.js"></script>
 </body>

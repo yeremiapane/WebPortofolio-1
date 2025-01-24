@@ -44,7 +44,6 @@ func SetupRoutes() *gin.Engine {
 	// Certificate routes
 	r.GET("/certificates", controllers.GetAllCertificates)
 	r.GET("/certificates/:id", controllers.GetCertificateByID)
-
 	// Articles routes
 	r.GET("/articles", controllers.GetAllArticles)
 	r.GET("/articles/:id", controllers.GetArticleDetail)
