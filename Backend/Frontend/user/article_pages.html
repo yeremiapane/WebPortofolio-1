@@ -1,326 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Article Pages</title>
+  <meta charset="UTF-8" />
+  <title>Articles - Maze Blog (Revised)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Favicon -->
-  <link rel="icon" href="assets/img/Designer.ico" type="image/png">
+  <!-- Ionicons (ikon navigasi, sosial media, dll.) -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
-  <!-- CSS styles -->
-  <link rel="stylesheet" href="assets/css/article_styles.css">
-  <link rel="stylesheet" href="assets/css/navbar.css">
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+          rel="stylesheet"
+  />
 
-  <!-- Google Fonts (sesuaikan jika mau) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-
-<body>
-
-<header class="header">
-  <a href="#" class="header__logo">Maze.</a>
-  <ion-icon name="menu-outline" class="header__toggle" id="nav-toggle"></ion-icon>
-
-  <nav class="nav" id="nav-menu">
-    <div class="nav__content bd-grid">
-      <ion-icon name="close-outline" class="nav__close" id="nav-close"></ion-icon>
-      <div class="nav__perfil">
-        <div class="nav__img">
-          <img src="assets/img/logo.png" alt="Maze-Logo">
-        </div>
-        <div>
-          <a href="#" class="nav__name">Maze.</a>
-          <span class="nav__profesion">Read Whole World!</span>
-        </div>
-      </div>
-
-      <div class="nav__menu">
-        <ul class="nav__list">
-          <li class="nav__item"><a href="#" class="nav__link active">Home</a></li>
-          <li class="nav__item"><a href="index.html" class="nav__link">About</a></li>
-          <li class="nav__item"><a href="mailto:yeremiayosefanpane@hotmail.com" class="nav__link">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="nav__social">
-        <a href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/" class="nav__social-icon"><ion-icon name="logo-linkedin"></ion-icon></a>
-        <a href="https://github.com/yeremiapane" class="nav__social-icon"><ion-icon name="logo-github"></ion-icon></a>
-        <a href="#" class="nav__social-icon"><ion-icon name="mail-outline"></ion-icon></a>
-      </div>
-    </div>
-  </nav>
-</header>
-
-<div id="container">
-  <main id="mainContainer">
-    <!-- Artikel akan dimasukkan via JavaScript -->
-  </main>
-
-  <aside>
-    <section id="searchContainer">
-      <h3>Search</h3>
-      <form id="inputContainer">
-        <input type="text" name="searchInput" id="searchInput" placeholder="Search the blog">
-        <input type="submit" name="searchBtn" id="searchBtn" value="Search">
-      </form>
-    </section>
-
-    <section id="categoriesContainer">
-      <h3>Categories</h3>
-      <ul id="categoriesUl">
-        <!-- Popular categories dimasukkan via JS -->
-      </ul>
-    </section>
-
-    <section id="tagsContainer">
-      <h3>Tags</h3>
-      <ul id="tagsUl">
-        <!-- Popular tags dimasukkan via JS -->
-      </ul>
-    </section>
-  </aside>
-</div>
-
-<footer>
-  <h2>BLOG</h2>
-  <p>LETS CREATE OUR IMAGINATION</p>
-  <p>© Yeremia Yosefan Pane</p>
-</footer>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // ====================================
-    // 1) Konfigurasi endpoint backend
-    // ====================================
-    // Ganti ini ke base URL backend Anda
-    const BASE_URL = 'http://localhost:8080';
-
-    // Ambil parameter dari URL (contoh: ?page=2&tag=xxx)
-    const params = new URLSearchParams(window.location.search);
-    const pageParam = parseInt(params.get('page') || '1');
-    const tagParam = params.get('tag');
-    const categoryParam = params.get('category');
-
-    // Membangun URL fetch utama (/articles)
-    // Kalau backend mendukung query param paging/limit, silakan tambahkan
-    let articlesApiUrl = `${BASE_URL}/articles`;
-    // Contoh: jika API Anda butuh ?page=..., dsb
-    // articlesApiUrl += `?page=${pageParam}`;
-
-    // (Sesuai log GIN, Anda punya /articles?search=&category=&tags=&limit=&page=...
-    //  silakan tambahkan sendiri jika ingin filter. Contoh:
-    // articlesApiUrl += \`?page=${pageParam}&category=${categoryParam || ''}&tags=${tagParam || ''}\`
-    // dst.)
-
-    // Variabel penampung artikel
-    let allArticles = [];
-    let currentIndex = 0;
-    const articlesPerPage = 10; // Batas "Load More"
-    const mainContainer = document.getElementById('mainContainer');
-
-    // ====================================
-    // 2) Ambil data artikel
-    // ====================================
-    fetch(articlesApiUrl)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Gagal mengambil data artikel, status: ' + response.status);
-              }
-              return response.json();
-            })
-            .then(articles => {
-              // Simpan semua artikel
-              allArticles = articles;
-              // Tampilkan artikel awal (10 pertama)
-              displayArticles();
-              // Buat tombol Load More jika jumlah artikel > 10
-              createLoadMoreButton();
-            })
-            .catch(err => {
-              console.error('Error fetching articles:', err);
-            });
-
-    // ====================================
-    // 3) Fungsi untuk menampilkan artikel
-    // ====================================
-    function displayArticles() {
-      const slicedArticles = allArticles.slice(currentIndex, currentIndex + articlesPerPage);
-
-      slicedArticles.forEach(article => {
-        // Ambil properti dari JSON backend:
-        // Berdasarkan contoh respons:
-        // {
-        //   "ID": 2,
-        //   "Title": "ini adalah title 2",
-        //   "Publisher": "semua",
-        //   "MainImage": "uploads/article/20250116003945_Face (1).png",
-        //   "Category": "beda",
-        //   "Tags": "dua, duas",
-        //   "Content": "ini adalah konten pertama2",
-        //   "Likes": 0,
-        //   "ReadingTime": 1,
-        //   "CreatedAt": "...",
-        //   "UpdatedAt": "..."
-        //   ...
-        // }
-
-        const title = article.Title || 'Untitled';
-        const image = article.MainImage ? `${BASE_URL}/${article.MainImage}` : 'assets/img/no-image.png';
-        const publisher = article.Publisher || 'Unknown';
-        const category = article.Category || 'Uncategorized';
-        const readingTime = article.ReadingTime || 'N/A';
-        const likes = article.Likes || 0;
-        // Anda belum punya "comments" di respons -> asumsikan 0
-        const comments = 0;
-        // Cek apakah article di-update (jika UpdatedAt != CreatedAt)
-        const isUpdated = article.UpdatedAt && article.UpdatedAt !== article.CreatedAt;
-
-        // Tampilkan label "Updated" jika isUpdated = true
-        const updatedMarkup = isUpdated
-                ? `<span class="updated"><ion-icon name="alert-circle-outline"></ion-icon> <span class="semi-bold">Updated</span></span>`
-                : '';
-
-        // Teks ringkas? Silakan ambil sebagian Content
-        // Menggunakan kolom `description` atau ringkasan dari `content`
-        const shortContent = article.Description
-                ? article.Description
-                : article.Content
-                ? article.Content.substring(0, 100) + '...'
-                : 'No description';
-
-        // Tags di respons adalah string "dua, duas". Kita bisa split koma:
-        let tagsArray = [];
-        if (article.Tags) {
-          tagsArray = article.Tags.split(',').map(t => t.trim());
-        }
-
-        // Bangun markup artikel
-        const articleElement = `
-        <article class="post">
-          <div class="image-container">
-            <img src="${image}" alt="${title}">
-          </div>
-          <h2 class="title">${title}</h2>
-
-          <div class="article-meta">
-            <span class="reading-time">
-              <ion-icon name="time-outline"></ion-icon> ${readingTime} min read
-            </span>
-            <span class="likes">
-              <ion-icon name="heart-outline"></ion-icon> ${likes}
-            </span>
-            <span class="comments">
-              <ion-icon name="chatbubble-outline"></ion-icon> ${comments}
-            </span>
-            ${updatedMarkup}
-          </div>
-
-          <div class="category">
-            <ion-icon name="pricetag-outline"></ion-icon> ${category}
-          </div>
-
-          <p class="description">${shortContent}</p>
-          <p class="author">By ${publisher}</p>
-
-          <div class="tag-list">
-            ${
-                tagsArray.map(tag => `
-                <span class="tag">
-                  <ion-icon name="pricetag-outline"></ion-icon> ${tag}
-                </span>
-              `).join('')
-        }
-          </div>
-
-          <!-- Contoh link ke detail -->
-          <a class="more" href="/article/${article.ID}">Read More</a>
-        </article>
-      `;
-        mainContainer.insertAdjacentHTML('beforeend', articleElement);
-      });
-
-      currentIndex += slicedArticles.length;
+  <style>
+    /* RESET & GLOBAL */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: #ffffff;
+      color: #333;
+      line-height: 1.6;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #0073e6;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+    ul {
+      list-style: none; /* Hilangkan bullet default */
     }
 
-    // ====================================
-    // 4) Fungsi tombol Load More
-    // ====================================
-    function createLoadMoreButton() {
-      if (document.getElementById('loadMoreBtn')) return; // Cegah dobel
+    /* HEADER */
+    header {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 2rem;
+      position: relative;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .brand:hover {
+      color: #0073e6;
+    }
 
-      const loadMoreBtn = document.createElement('button');
-      loadMoreBtn.id = 'loadMoreBtn';
-      loadMoreBtn.textContent = 'Load More';
-      // Sisipkan di bawah mainContainer
-      mainContainer.insertAdjacentElement('afterend', loadMoreBtn);
+    /* NAVBAR */
+    nav {
+      position: relative;
+    }
+    .navbar-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .navbar-links li {
+      list-style: none;
+    }
+    .navbar-links a {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+    .navbar-links a:hover {
+      color: #0073e6;
+    }
 
-      loadMoreBtn.addEventListener('click', () => {
-        displayArticles();
-        if (currentIndex >= allArticles.length) {
-          loadMoreBtn.style.display = 'none';
-        }
-      });
+    /* HAMBURGER ICON */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-      if (allArticles.length <= articlesPerPage) {
-        loadMoreBtn.style.display = 'none';
+    /* RESPONSIVE NAV */
+    @media (max-width: 768px) {
+      .navbar-links {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background-color: #fff;
+        flex-direction: column;
+        padding: 1rem 2rem;
+        gap: 1rem;
+        transform: translateY(-200%);
+        transition: transform 0.3s ease;
+        width: 200px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .navbar-links.active {
+        transform: translateY(0);
+      }
+      .hamburger {
+        display: block;
       }
     }
 
-    // ====================================
-    // 5) Fetch popular-tags (opsional)
-    //    Jika tidak ada route ini di backend,
-    //    silakan hapus/komentari kode berikut.
-    // ====================================
-    // fetch(`${BASE_URL}/popular-tags`)
-    //         .then(response => {
-    //           if (!response.ok) {
-    //             // Kalau 404, mungkin route belum tersedia
-    //             // Boleh di-log / diabaikan
-    //             throw new Error('No popular-tags route');
-    //           }
-    //           return response.json();
-    //         })
-    //         .then(tags => {
-    //           const tagsUl = document.getElementById('tagsUl');
-    //           tagsUl.innerHTML = '';
-    //           tags.forEach(tag => {
-    //             const tagElement = `<li><a href="?tag=${encodeURIComponent(tag)}">${tag}</a></li>`;
-    //             tagsUl.insertAdjacentHTML('beforeend', tagElement);
-    //           });
-    //         })
-    //         .catch(err => console.error('Error fetching tags:', err));
+    /* MAIN SECTION */
+    .main-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .main-title {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
 
-    // ====================================
-    // 6) Fetch popular-categories (opsional)
-    //    Jika tidak ada route ini di backend,
-    //    silakan hapus/komentari kode berikut.
-    // ====================================
-    // fetch(`${BASE_URL}/popular-categories`)
-    //         .then(response => {
-    //           if (!response.ok) {
-    //             throw new Error('No popular-categories route');
-    //           }
-    //           return response.json();
-    //         })
-    //         .then(categories => {
-    //           const categoriesUl = document.getElementById('categoriesUl');
-    //           categoriesUl.innerHTML = '';
-    //           categories.forEach(ctg => {
-    //             const categoryElement = `<li><a href="?category=${encodeURIComponent(ctg)}">${ctg}</a></li>`;
-    //             categoriesUl.insertAdjacentHTML('beforeend', categoryElement);
-    //           });
-    //         })
-    //         .catch(err => console.error('Error fetching categories:', err));
+    /* FILTER SECTION */
+    .filter-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    .filter-select,
+    .filter-input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    /* BLOG GRID */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 2 kolom */
+      gap: 2rem;
+    }
+    .blog-card {
+      background-color: #fafafa;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s;
+    }
+    .blog-card:hover {
+      transform: translateY(-5px);
+    }
+    .blog-card img {
+      border-bottom: 1px solid #ddd;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .blog-card:hover img {
+      transform: scale(1.02);
+    }
+
+    .blog-card-content {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .blog-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .blog-desc {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+    .blog-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: #777;
+      margin-bottom: 1rem;
+    }
+    .blog-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .blog-readmore {
+      font-weight: 500;
+      color: #0073e6;
+      transition: color 0.3s ease;
+    }
+    .blog-readmore:hover {
+      color: #004a99;
+    }
+
+    /* LOAD MORE BUTTON */
+    #loadMoreBtn {
+      display: block;
+      margin: 2rem auto 0 auto;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #loadMoreBtn:hover {
+      background-color: #555;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: #20232a;
+      color: #fff;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .footer-social {
+      margin-bottom: 1rem;
+    }
+    .footer-social a {
+      margin: 0 0.5rem;
+      color: #fff;
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+    .footer-social a:hover {
+      color: #0073e6;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .blog-grid {
+        grid-template-columns: 1fr; /* 1 kolom di layar kecil */
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="nav-container">
+    <div class="brand">Maze.</div>
+    <button class="hamburger" id="hamburgerBtn">
+      <ion-icon name="menu-outline"></ion-icon>
+    </button>
+    <nav>
+      <ul class="navbar-links" id="navbarLinks">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="/">About</a></li>
+        <li><a href="/pages/contact-form.html">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- MAIN SECTION -->
+<div class="main-section">
+  <h1 class="main-title">Blog Articles</h1>
+
+  <!-- Filter and Search -->
+  <div class="filter-section">
+    <label class="filter-label" for="categorySelect">Category:</label>
+    <select id="categorySelect" class="filter-select">
+      <option value="">All Categories</option>
+      <!-- Category options diisi dinamis oleh JS -->
+    </select>
+
+    <label class="filter-label" for="searchInput">Search:</label>
+    <input type="text" id="searchInput" class="filter-input" placeholder="Search articles..." />
+  </div>
+
+  <!-- Grid Container -->
+  <div class="blog-grid" id="blogGrid">
+    <!-- Artikel akan dimuat di sini via JS -->
+  </div>
+
+  <!-- Load More Button -->
+  <button id="loadMoreBtn" style="display:none;">Load More</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-social">
+    <a href="#" target="_blank"><ion-icon name="logo-facebook"></ion-icon></a>
+    <a href="#" target="_blank"><ion-icon name="logo-twitter"></ion-icon></a>
+    <a href="#" target="_blank"><ion-icon name="logo-instagram"></ion-icon></a>
+    <a href="#" target="_blank"><ion-icon name="logo-linkedin"></ion-icon></a>
+    <a href="#" target="_blank"><ion-icon name="logo-github"></ion-icon></a>
+  </div>
+  <p>© 2025 Maze. All rights reserved.</p>
+  <p>Let's create our imagination!</p>
+</footer>
+
+<script>
+  // NAVBAR TOGGLE (Responsive)
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navbarLinks = document.getElementById('navbarLinks');
+
+  hamburgerBtn.addEventListener('click', () => {
+    navbarLinks.classList.toggle('active');
+  });
+
+  // ==========================
+  // Konfigurasi Endpoint
+  // ==========================
+  const BASE_URL = 'http://localhost:8080'; // Ganti sesuai server Anda
+  const ARTICLES_ENDPOINT = `${BASE_URL}/articles`;
+  const CATEGORIES_ENDPOINT = `${BASE_URL}/categories`;
+  // Jika Anda punya endpoint lain (mis. /articles/filter?category=xxx), sesuaikan.
+
+  // ==========================
+  // Variabel Global
+  // ==========================
+  let allArticles = [];
+  let currentIndex = 0;
+  const articlesPerPage = 10; // Tampilkan 10 artikel per load
+  const blogGrid = document.getElementById('blogGrid');
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  const categorySelect = document.getElementById('categorySelect');
+  const searchInput = document.getElementById('searchInput');
+
+  // Data yang sedang kita tampilkan = allArticles (di-filter search => displayedArticles)
+  // Agar realtime search mudah, kita simpan "latest filtered data" di displayedArticles.
+  let displayedArticles = [];
+
+  // ==========================
+  // Ambil Daftar Kategori
+  // ==========================
+  fetch(CATEGORIES_ENDPOINT)
+          .then(resp => {
+            if (!resp.ok) throw new Error('Failed to fetch categories');
+            return resp.json();
+          })
+          .then(categories => {
+            categorySelect.innerHTML = '<option value="">All Categories</option>';
+            categories.forEach(cat => {
+              const opt = document.createElement('option');
+              opt.value = cat;
+              opt.textContent = cat;
+              categorySelect.appendChild(opt);
+            });
+          })
+          .catch(err => console.error('Error fetching categories:', err));
+
+  // ==========================
+  // Fungsi Fetch Articles
+  // ==========================
+  function fetchArticles(category = '') {
+    let url = ARTICLES_ENDPOINT;
+    if (category) {
+      url += `?category=${encodeURIComponent(category)}`;
+    }
+    fetch(url)
+            .then(resp => {
+              if (!resp.ok) throw new Error('Failed to fetch articles');
+              return resp.json();
+            })
+            .then(articles => {
+              allArticles = articles;
+              applySearchFilter(); // Akan set displayedArticles sesuai input
+            })
+            .catch(err => console.error('Error fetching articles:', err));
+  }
+
+  // ==========================
+  // Tampilkan Subset Artikel
+  // ==========================
+  function displayArticles() {
+    // Hapus terlebih dahulu isi blogGrid
+    blogGrid.innerHTML = '';
+
+    // Subset berdasarkan currentIndex
+    const subset = displayedArticles.slice(0, currentIndex);
+
+    subset.forEach(article => {
+      // Asumsi property: {ID,Title,MainImage,Category,Description,Publisher,ReadingTime,Likes}
+      const id = article.ID || 0;
+      const title = article.Title || 'Untitled';
+      const category = article.Category || 'Uncategorized';
+      const desc = article.Description || 'No description';
+      const image = article.MainImage
+              ? `${BASE_URL}/${article.MainImage}`
+              : 'https://via.placeholder.com/400x200?text=No+Image';
+      const publisher = article.Publisher || 'Anonymous';
+      const readingTime = article.ReadingTime || 0;
+      const likes = article.Likes || 0;
+
+      const card = document.createElement('div');
+      card.classList.add('blog-card');
+
+      card.innerHTML = `
+        <img src="${image}" alt="${title}">
+        <div class="blog-card-content">
+          <span class="blog-category">${category}</span>
+          <h3 class="blog-title">${title}</h3>
+          <p class="blog-desc">${desc.substring(0, 100)}...</p>
+          <div class="blog-meta">
+            <span>
+              <ion-icon name="time-outline"></ion-icon> ${readingTime} min
+            </span>
+            <span>
+              <ion-icon name="heart-outline"></ion-icon> ${likes}
+            </span>
+          </div>
+          <div class="blog-footer">
+            <span>By ${publisher}</span>
+            <a href="/article/${id}" class="blog-readmore">Read More</a>
+          </div>
+        </div>
+      `;
+      blogGrid.appendChild(card);
+    });
+
+    // Cek load more
+    if (currentIndex >= displayedArticles.length) {
+      loadMoreBtn.style.display = 'none';
+    } else {
+      loadMoreBtn.style.display = 'block';
+    }
+  }
+
+  // ==========================
+  // LOAD MORE
+  // ==========================
+  loadMoreBtn.addEventListener('click', () => {
+    // Tambah 10 lagi
+    currentIndex += articlesPerPage;
+    displayArticles();
+  });
+
+  // ==========================
+  // Filter by search (Local)
+  // ==========================
+  // Re-run filter setiap kali mengetik
+  searchInput.addEventListener('input', () => {
+    applySearchFilter();
+  });
+
+  function applySearchFilter() {
+    const searchVal = searchInput.value.toLowerCase();
+    // Filter dari allArticles berdasarkan Title / Description dsb.
+    displayedArticles = allArticles.filter(a => {
+      const title = (a.Title || '').toLowerCase();
+      const desc = (a.Description || '').toLowerCase();
+      return title.includes(searchVal) || desc.includes(searchVal);
+    });
+
+    // Reset index
+    currentIndex = articlesPerPage;
+    displayArticles();
+  }
+
+  // ==========================
+  // Category Change
+  // ==========================
+  categorySelect.addEventListener('change', (e) => {
+    const selectedCat = e.target.value;
+    searchInput.value = '';
+    fetchArticles(selectedCat);
+  });
+
+  // ==========================
+  // On DOM Loaded
+  // ==========================
+  document.addEventListener('DOMContentLoaded', () => {
+    // Pertama load all categories = '' (semua)
+    fetchArticles('');
   });
 </script>
-
-<!-- Ionicons -->
-<script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-<!-- Navbar JS (jika ada) -->
-<script src="assets/js/navbar.js"></script>
-
 </body>
 </html>

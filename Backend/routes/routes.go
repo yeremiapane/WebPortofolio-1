@@ -33,6 +33,7 @@ func SetupRoutes() *gin.Engine {
 	r.Static("/Frontend", "./Frontend")
 	r.Static("/uploads", "./uploads")
 	r.Static("/assets", "./Frontend/user/assets")
+	r.Static("/pages", "./Frontend/user")
 	r.Static("/admin_user", "./Frontend/admin/src/pages")
 	r.Static("/admin_login_assets", "./Frontend/admin/src/pages/login/assets")
 	r.Static("/admin_register_assets", "./Frontend/admin/src/pages/register/assets")
