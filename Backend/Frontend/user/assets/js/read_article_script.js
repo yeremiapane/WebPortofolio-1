@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-
   // Endpoint
   const articleUrl = `${BASE_URL}/articles/${articleId}`;
   const commentUrl = `${BASE_URL}/articles/${articleId}/comments`;

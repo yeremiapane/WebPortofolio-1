@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
+	"gorm.io/gorm"
 	"math"
 	"net/http"
 	"os"
@@ -166,17 +168,123 @@ func DeleteArticle(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Article deleted"})
 }
 
-// Fitur Like Article
-func LikeArticle(c *gin.Context) {
+// ToggleLikeArticle mengatur status like/unlike berdasarkan Session ID
+func ToggleLikeArticle(c *gin.Context) {
 	id := c.Param("id")
-	var article models.Article
-	if err := config.DB.First(&article, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+	sessionID, err := c.Cookie("session_id")
+	if err != nil || sessionID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: Session ID missing"})
 		return
 	}
-	article.Likes += 1
-	config.DB.Save(&article)
-	c.JSON(http.StatusOK, gin.H{"likes": article.Likes})
+
+	// Validasi Article ID
+	articleID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid article ID"})
+		return
+	}
+
+	var article models.Article
+	if err := config.DB.First(&article, articleID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	// Cek apakah sesi sudah menyukai artikel ini
+	var existingLike models.ArticleLike
+	err = config.DB.Where("article_id = ? AND session_id = ?", article.ID, sessionID).First(&existingLike).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Belum like, lakukan like
+		newLike := models.ArticleLike{
+			ArticleID: article.ID,
+			SessionID: sessionID,
+		}
+		if err := config.DB.Create(&newLike).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to like article"})
+			return
+		}
+		article.Likes += 1
+		if err := config.DB.Save(&article).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update like count"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"likes":   article.Likes,
+			"liked":   true,
+			"message": "Article liked",
+		})
+	} else if err == nil {
+		// Sudah like, lakukan unlike
+		if err := config.DB.Delete(&existingLike).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unlike article"})
+			return
+		}
+		if article.Likes > 0 {
+			article.Likes -= 1
+			if err := config.DB.Save(&article).Error; err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update like count"})
+				return
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"likes":   article.Likes,
+			"liked":   false,
+			"message": "Article unliked",
+		})
+	} else {
+		// Error lain
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+}
+
+// GetLikeStatus mengembalikan apakah sesi saat ini sudah menyukai artikel
+func GetLikeStatus(c *gin.Context) {
+	id := c.Param("id")
+	sessionID, err := c.Cookie("session_id")
+	if err != nil || sessionID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: Session ID missing"})
+		return
+	}
+
+	// Validasi Article ID
+	articleID, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid article ID"})
+		return
+	}
+
+	var article models.Article
+	if err := config.DB.First(&article, articleID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	// Cek apakah sesi sudah menyukai artikel ini
+	var existingLike models.ArticleLike
+	err = config.DB.Where("article_id = ? AND session_id = ?", article.ID, sessionID).First(&existingLike).Error
+
+	liked := false
+	if err == nil {
+		liked = true
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		// Error lain
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"likes": article.Likes,
+		"liked": liked,
+	})
 }
 
 func GetArticleDetail(c *gin.Context) {

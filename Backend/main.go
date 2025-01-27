@@ -17,6 +17,7 @@ func main() {
 		&models.Certificate{},
 		&models.Comments{},
 		&models.Visitor{},
+		&models.ArticleLike{},
 	)
 
 	if err != nil {

@@ -17,6 +17,9 @@ func SetupRoutes() *gin.Engine {
 	// Middleware CORS
 	r.Use(middleware.CORSMiddleware())
 
+	// Tambahkan SessionMiddleware setelah CORS Middleware
+	r.Use(middleware.SessionMiddleware())
+
 	// Rate limiting: 100 requests per hour
 	rate, err := limiter.NewRateFromFormatted("100-H")
 	if err != nil {
@@ -52,8 +55,12 @@ func SetupRoutes() *gin.Engine {
 	r.GET("/articles/:id/comments", controllers.GetCommentsByArticle)
 
 	r.GET("/stats", controllers.GetDashboardStats)
+
+	// Tambahkan di bagian public routes
+	r.POST("/articles/:id/toggle_like", controllers.ToggleLikeArticle)
+	r.GET("/articles/:id/like_status", controllers.GetLikeStatus)
+
 	// Admin group routes
-	r.POST("/articles/:id/like", controllers.LikeArticle)
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthMiddleware())
 	{
