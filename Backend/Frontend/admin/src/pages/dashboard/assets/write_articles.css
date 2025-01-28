@@ -148,6 +148,27 @@ button[type="submit"]:hover {
     font-size: 16px;
 }
 
+/* Mapping CSS untuk font kustom */
+.ql-font-Roboto {
+    font-family: 'Roboto', sans-serif;
+}
+
+.ql-font-Montserrat {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.ql-font-Nunito-Sans {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.ql-font-Mulish {
+    font-family: 'Mulish', sans-serif;
+}
+
+.ql-font-Poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
 /* Spinner */
 .spinner {
     width: 50px;

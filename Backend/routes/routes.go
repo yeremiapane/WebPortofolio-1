@@ -79,6 +79,7 @@ func SetupRoutes() *gin.Engine {
 		admin.DELETE("/articles/:id", controllers.DeleteArticle)
 
 		// Comments moderation
+		admin.GET("/comments", controllers.GetAllAdminComments)
 		admin.GET("/comments/:id", controllers.GetCommentDetail)
 		admin.POST("/comments/:id/reply", controllers.ReplyComments)
 		admin.GET("/articles/:id/comments", controllers.GetCommentsByArticle)

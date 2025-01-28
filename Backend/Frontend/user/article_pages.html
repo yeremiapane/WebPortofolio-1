@@ -16,264 +16,263 @@
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
           rel="stylesheet"
   />
-
-  <style>
-    /* RESET & GLOBAL */
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    body {
-      font-family: "Inter", sans-serif;
-      background-color: #ffffff;
-      color: #333;
-      line-height: 1.6;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-      transition: color 0.3s ease;
-    }
-    a:hover {
-      color: #0073e6;
-    }
-    img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-    ul {
-      list-style: none; /* Hilangkan bullet default */
-    }
-
-    /* HEADER */
-    header {
-      background-color: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 1rem 2rem;
-      position: relative;
-    }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .brand {
-      font-size: 1.5rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-    .brand:hover {
-      color: #0073e6;
-    }
-
-    /* NAVBAR */
-    nav {
-      position: relative;
-    }
-    .navbar-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-    .navbar-links li {
-      list-style: none;
-    }
-    .navbar-links a {
-      font-size: 1rem;
-      font-weight: 500;
-      color: #333;
-      transition: color 0.3s ease;
-    }
-    .navbar-links a:hover {
-      color: #0073e6;
-    }
-
-    /* HAMBURGER ICON */
-    .hamburger {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    /* RESPONSIVE NAV */
-    @media (max-width: 768px) {
-      .navbar-links {
-        position: absolute;
-        top: 60px;
-        right: 0;
-        background-color: #fff;
-        flex-direction: column;
-        padding: 1rem 2rem;
-        gap: 1rem;
-        transform: translateY(-200%);
-        transition: transform 0.3s ease;
-        width: 200px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
-      .navbar-links.active {
-        transform: translateY(0);
-      }
-      .hamburger {
-        display: block;
-      }
-    }
-
-    /* MAIN SECTION */
-    .main-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    .main-title {
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-    }
-
-    /* FILTER SECTION */
-    .filter-section {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-    .filter-label {
-      font-weight: 500;
-      font-size: 1rem;
-    }
-    .filter-select,
-    .filter-input {
-      padding: 0.5rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      outline: none;
-    }
-
-    /* BLOG GRID */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 kolom */
-      gap: 2rem;
-    }
-    .blog-card {
-      background-color: #fafafa;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s;
-    }
-    .blog-card:hover {
-      transform: translateY(-5px);
-    }
-    .blog-card img {
-      border-bottom: 1px solid #ddd;
-      height: 200px;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    .blog-card:hover img {
-      transform: scale(1.02);
-    }
-
-    .blog-card-content {
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .blog-category {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
-    .blog-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .blog-desc {
-      font-size: 0.95rem;
-      color: #555;
-      margin-bottom: 1rem;
-      flex: 1;
-    }
-    .blog-meta {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.85rem;
-      color: #777;
-      margin-bottom: 1rem;
-    }
-    .blog-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .blog-readmore {
-      font-weight: 500;
-      color: #0073e6;
-      transition: color 0.3s ease;
-    }
-    .blog-readmore:hover {
-      color: #004a99;
-    }
-
-    /* LOAD MORE BUTTON */
-    #loadMoreBtn {
-      display: block;
-      margin: 2rem auto 0 auto;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #loadMoreBtn:hover {
-      background-color: #555;
-    }
-
-    /* FOOTER */
-    footer {
-      background-color: #20232a;
-      color: #fff;
-      padding: 2rem;
-      text-align: center;
-      margin-top: 2rem;
-    }
-    .footer-social {
-      margin-bottom: 1rem;
-    }
-    .footer-social a {
-      margin: 0 0.5rem;
-      color: #fff;
-      font-size: 1.2rem;
-      transition: color 0.3s ease;
-    }
-    .footer-social a:hover {
-      color: #0073e6;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .blog-grid {
-        grid-template-columns: 1fr; /* 1 kolom di layar kecil */
-      }
-    }
-  </style>
 </head>
+<style>
+  /* RESET & GLOBAL */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  body {
+    font-family: "Inter", sans-serif;
+    background-color: #ffffff;
+    color: #333;
+    line-height: 1.6;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+  }
+  a:hover {
+    color: #0073e6;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  ul {
+    list-style: none; /* Hilangkan bullet default */
+  }
+
+  /* HEADER */
+  header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 1rem 2rem;
+    position: relative;
+  }
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .brand:hover {
+    color: #0073e6;
+  }
+
+  /* NAVBAR */
+  nav {
+    position: relative;
+  }
+  .navbar-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .navbar-links li {
+    list-style: none;
+  }
+  .navbar-links a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  .navbar-links a:hover {
+    color: #0073e6;
+  }
+
+  /* HAMBURGER ICON */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  /* RESPONSIVE NAV */
+  @media (max-width: 768px) {
+    .navbar-links {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      background-color: #fff;
+      flex-direction: column;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      transform: translateY(-200%);
+      transition: transform 0.3s ease;
+      width: 200px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .navbar-links.active {
+      transform: translateY(0);
+    }
+    .hamburger {
+      display: block;
+    }
+  }
+
+  /* MAIN SECTION */
+  .main-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .main-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  /* FILTER SECTION */
+  .filter-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  .filter-select,
+  .filter-input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+  }
+
+  /* BLOG GRID */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 kolom */
+    gap: 2rem;
+  }
+  .blog-card {
+    background-color: #fafafa;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s;
+  }
+  .blog-card:hover {
+    transform: translateY(-5px);
+  }
+  .blog-card img {
+    border-bottom: 1px solid #ddd;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .blog-card:hover img {
+    transform: scale(1.02);
+  }
+
+  .blog-card-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  .blog-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .blog-desc {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+  .blog-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 1rem;
+  }
+  .blog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .blog-readmore {
+    font-weight: 500;
+    color: #0073e6;
+    transition: color 0.3s ease;
+  }
+  .blog-readmore:hover {
+    color: #004a99;
+  }
+
+  /* LOAD MORE BUTTON */
+  #loadMoreBtn {
+    display: block;
+    margin: 2rem auto 0 auto;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #loadMoreBtn:hover {
+    background-color: #555;
+  }
+
+  /* FOOTER */
+  footer {
+    background-color: #20232a;
+    color: #fff;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .footer-social {
+    margin-bottom: 1rem;
+  }
+  .footer-social a {
+    margin: 0 0.5rem;
+    color: #fff;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+  }
+  .footer-social a:hover {
+    color: #0073e6;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .blog-grid {
+      grid-template-columns: 1fr; /* 1 kolom di layar kecil */
+    }
+  }
+</style>
 <body>
 
 <!-- HEADER -->
@@ -331,181 +330,6 @@
   <p>Let's create our imagination!</p>
 </footer>
 
-<script>
-  // NAVBAR TOGGLE (Responsive)
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const navbarLinks = document.getElementById('navbarLinks');
-
-  hamburgerBtn.addEventListener('click', () => {
-    navbarLinks.classList.toggle('active');
-  });
-
-  // ==========================
-  // Konfigurasi Endpoint
-  // ==========================
-  const BASE_URL = 'http://localhost:8080'; // Ganti sesuai server Anda
-  const ARTICLES_ENDPOINT = `${BASE_URL}/articles`;
-  const CATEGORIES_ENDPOINT = `${BASE_URL}/categories`;
-  // Jika Anda punya endpoint lain (mis. /articles/filter?category=xxx), sesuaikan.
-
-  // ==========================
-  // Variabel Global
-  // ==========================
-  let allArticles = [];
-  let currentIndex = 0;
-  const articlesPerPage = 10; // Tampilkan 10 artikel per load
-  const blogGrid = document.getElementById('blogGrid');
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  const categorySelect = document.getElementById('categorySelect');
-  const searchInput = document.getElementById('searchInput');
-
-  // Data yang sedang kita tampilkan = allArticles (di-filter search => displayedArticles)
-  // Agar realtime search mudah, kita simpan "latest filtered data" di displayedArticles.
-  let displayedArticles = [];
-
-  // ==========================
-  // Ambil Daftar Kategori
-  // ==========================
-  fetch(CATEGORIES_ENDPOINT)
-          .then(resp => {
-            if (!resp.ok) throw new Error('Failed to fetch categories');
-            return resp.json();
-          })
-          .then(categories => {
-            categorySelect.innerHTML = '<option value="">All Categories</option>';
-            categories.forEach(cat => {
-              const opt = document.createElement('option');
-              opt.value = cat;
-              opt.textContent = cat;
-              categorySelect.appendChild(opt);
-            });
-          })
-          .catch(err => console.error('Error fetching categories:', err));
-
-  // ==========================
-  // Fungsi Fetch Articles
-  // ==========================
-  function fetchArticles(category = '') {
-    let url = ARTICLES_ENDPOINT;
-    if (category) {
-      url += `?category=${encodeURIComponent(category)}`;
-    }
-    fetch(url)
-            .then(resp => {
-              if (!resp.ok) throw new Error('Failed to fetch articles');
-              return resp.json();
-            })
-            .then(articles => {
-              allArticles = articles;
-              applySearchFilter(); // Akan set displayedArticles sesuai input
-            })
-            .catch(err => console.error('Error fetching articles:', err));
-  }
-
-  // ==========================
-  // Tampilkan Subset Artikel
-  // ==========================
-  function displayArticles() {
-    // Hapus terlebih dahulu isi blogGrid
-    blogGrid.innerHTML = '';
-
-    // Subset berdasarkan currentIndex
-    const subset = displayedArticles.slice(0, currentIndex);
-
-    subset.forEach(article => {
-      // Asumsi property: {ID,Title,MainImage,Category,Description,Publisher,ReadingTime,Likes}
-      const id = article.ID || 0;
-      const title = article.Title || 'Untitled';
-      const category = article.Category || 'Uncategorized';
-      const desc = article.Description || 'No description';
-      const image = article.MainImage
-              ? `${BASE_URL}/${article.MainImage}`
-              : 'https://via.placeholder.com/400x200?text=No+Image';
-      const publisher = article.Publisher || 'Anonymous';
-      const readingTime = article.ReadingTime || 0;
-      const likes = article.Likes || 0;
-
-      const card = document.createElement('div');
-      card.classList.add('blog-card');
-
-      card.innerHTML = `
-        <img src="${image}" alt="${title}">
-        <div class="blog-card-content">
-          <span class="blog-category">${category}</span>
-          <h3 class="blog-title">${title}</h3>
-          <p class="blog-desc">${desc.substring(0, 100)}...</p>
-          <div class="blog-meta">
-            <span>
-              <ion-icon name="time-outline"></ion-icon> ${readingTime} min
-            </span>
-            <span>
-              <ion-icon name="heart-outline"></ion-icon> ${likes}
-            </span>
-          </div>
-          <div class="blog-footer">
-            <span>By ${publisher}</span>
-            <a href="/article/${id}" class="blog-readmore">Read More</a>
-          </div>
-        </div>
-      `;
-      blogGrid.appendChild(card);
-    });
-
-    // Cek load more
-    if (currentIndex >= displayedArticles.length) {
-      loadMoreBtn.style.display = 'none';
-    } else {
-      loadMoreBtn.style.display = 'block';
-    }
-  }
-
-  // ==========================
-  // LOAD MORE
-  // ==========================
-  loadMoreBtn.addEventListener('click', () => {
-    // Tambah 10 lagi
-    currentIndex += articlesPerPage;
-    displayArticles();
-  });
-
-  // ==========================
-  // Filter by search (Local)
-  // ==========================
-  // Re-run filter setiap kali mengetik
-  searchInput.addEventListener('input', () => {
-    applySearchFilter();
-  });
-
-  function applySearchFilter() {
-    const searchVal = searchInput.value.toLowerCase();
-    // Filter dari allArticles berdasarkan Title / Description dsb.
-    displayedArticles = allArticles.filter(a => {
-      const title = (a.Title || '').toLowerCase();
-      const desc = (a.Description || '').toLowerCase();
-      return title.includes(searchVal) || desc.includes(searchVal);
-    });
-
-    // Reset index
-    currentIndex = articlesPerPage;
-    displayArticles();
-  }
-
-  // ==========================
-  // Category Change
-  // ==========================
-  categorySelect.addEventListener('change', (e) => {
-    const selectedCat = e.target.value;
-    searchInput.value = '';
-    fetchArticles(selectedCat);
-  });
-
-  // ==========================
-  // On DOM Loaded
-  // ==========================
-  document.addEventListener('DOMContentLoaded', () => {
-    // Pertama load all categories = '' (semua)
-    fetchArticles('');
-  });
-</script>
+<script src="/assets/js/article_pages.js"></script>
 </body>
 </html>

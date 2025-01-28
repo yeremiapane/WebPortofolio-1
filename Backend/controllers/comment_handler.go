@@ -480,3 +480,61 @@ func GetCommentDetail(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 }
+
+// GetAllAdminComments menampilkan list komentar dengan paging & search
+func GetAllAdminComments(c *gin.Context) {
+	db := config.DB
+
+	// Ambil query param
+	pageStr := c.Query("page")
+	if pageStr == "" {
+		pageStr = "1"
+	}
+	page, _ := strconv.Atoi(pageStr)
+
+	limitStr := c.Query("limit")
+	if limitStr == "" {
+		limitStr = "10"
+	}
+	limit, _ := strconv.Atoi(limitStr)
+
+	search := c.Query("search")
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	// Query builder
+	query := db.Model(&models.Comments{})
+
+	// Jika ada search, cari di name / content / email dsb.
+	if search != "" {
+		likeStr := "%" + search + "%"
+		query = query.Where("name LIKE ? OR content LIKE ? OR email LIKE ?", likeStr, likeStr, likeStr)
+	}
+
+	var total int64
+	query.Count(&total)
+
+	var comments []models.Comments
+	err := query.Order("id DESC").Limit(limit).Offset(offset).Find(&comments).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	totalPages := (total + int64(limit) - 1) / int64(limit) // hitung total page
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":       comments,
+		"total_data": total,
+		"page":       page,
+		"limit":      limit,
+		"total_page": totalPages,
+	})
+}

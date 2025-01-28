@@ -22,11 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/Frontend/admin/src/pages/login/index.html';
         return;
     }
-
     // Global header auth
-    window.authHeader = {
-        'Authorization': `Bearer ${token}`
-    };
+    window.authHeader = { 'Authorization': `Bearer ${token}` };
 
     // Load dashboard secara default
     const dynamicContent = document.getElementById('dynamic-content');
@@ -79,7 +76,7 @@ function loadContent(page, title) {
                 loadStats();
             } else if (page === '/admin_dashboard_pages/write_articles.html') {
                 initializeWriteArticles();
-                setupArticlePreview();      // setup preview button
+                setupArticlePreview(); // setup preview
                 const form = document.getElementById('writeArticleForm');
                 if (form) {
                     form.addEventListener('submit', e => {
@@ -137,13 +134,10 @@ function showToast(message, type = 'info') {
             toast.classList.add('toast-info');
     }
 
-    // Isi pesan
     toast.textContent = message;
 
-    // Masukkan ke container
     container.appendChild(toast);
 
-    // Hapus setelah beberapa detik
     setTimeout(() => {
         if (toast.parentElement) {
             container.removeChild(toast);
@@ -153,9 +147,7 @@ function showToast(message, type = 'info') {
 
 /** STATS (DASHBOARD) **/
 function loadStats() {
-    fetch('/stats', {
-        headers: window.authHeader
-    })
+    fetch('/stats', { headers: window.authHeader })
         .then(res => {
             if (!res.ok) {
                 showToast(`Failed to fetch stats (Status ${res.status})`, 'error');
@@ -255,7 +247,7 @@ function initializeComments() {
 function loadComments(page = 1) {
     currentCommentsPage = page;
     const searchVal = document.getElementById('searchComments')?.value.trim() || '';
-    const url = `http://localhost:8080/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(searchVal)}`;
+    const url = `/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(searchVal)}`;
 
     fetch(url, { headers: window.authHeader })
         .then(res => {
@@ -303,8 +295,16 @@ function loadComments(page = 1) {
             commentsPageInfo.textContent = `Page ${data.page} of ${totalPages}`;
             const prevBtn = document.getElementById('commentsPrev');
             const nextBtn = document.getElementById('commentsNext');
-            prevBtn.style.display = (page > 1) ? 'inline-block' : 'none';
-            nextBtn.style.display = (page < totalPages) ? 'inline-block' : 'none';
+            if (data.page > 1) {
+                prevBtn.style.display = 'inline-block';
+            } else {
+                prevBtn.style.display = 'none';
+            }
+            if (data.page < totalPages) {
+                nextBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
 
             showToast('Comments loaded successfully', 'success');
         })
@@ -316,7 +316,7 @@ function loadComments(page = 1) {
 
 function detailComment(commentId) {
     currentCommentID = commentId;
-    fetch(`http://localhost:8080/admin/comments/${commentId}`, {
+    fetch(`/admin/comments/${commentId}`, {
         headers: window.authHeader
     })
         .then(res => {
@@ -333,7 +333,14 @@ function detailComment(commentId) {
             document.getElementById('detailName').textContent = comment.name || 'Anonymous';
             document.getElementById('detailEmail').textContent = comment.email || '';
             document.getElementById('detailStatus').textContent = comment.status;
-            document.getElementById('detailContent').textContent = comment.content;
+            // Misalnya Anda menerima string hasil Quill dalam variabel content
+            const content = comment.content;
+
+            // Untuk keamanan, lakukan sanitasi
+            const safeContent = DOMPurify.sanitize(content);
+
+            // Lalu, render di elemen detailContent
+            document.getElementById('detailContent').innerHTML = safeContent;
 
             document.getElementById('commentDetailSection').style.display = 'block';
             document.getElementById('replyContainer').style.display = 'none';
@@ -345,7 +352,7 @@ function detailComment(commentId) {
 }
 
 function approveComment(commentId) {
-    fetch(`http://localhost:8080/admin/comments/${commentId}/approve`, {
+    fetch(`/admin/comments/${commentId}/approve`, {
         method: 'PATCH',
         headers: window.authHeader
     })
@@ -365,7 +372,7 @@ function approveComment(commentId) {
 }
 
 function rejectComment(commentId) {
-    fetch(`http://localhost:8080/admin/comments/${commentId}/reject`, {
+    fetch(`/admin/comments/${commentId}/reject`, {
         method: 'PATCH',
         headers: window.authHeader
     })
@@ -385,7 +392,7 @@ function rejectComment(commentId) {
 }
 
 function resetComment(commentId) {
-    fetch(`http://localhost:8080/admin/comments/${commentId}/reset`, {
+    fetch(`/admin/comments/${commentId}/reset`, {
         method: 'PATCH',
         headers: window.authHeader
     })
@@ -418,7 +425,7 @@ function submitReply() {
     const formData = new FormData();
     formData.append('content', replyText);
 
-    fetch(`http://localhost:8080/admin/comments/${currentCommentID}/reply`, {
+    fetch(`/admin/comments/${currentCommentID}/reply`, {
         method: 'POST',
         headers: window.authHeader,
         body: formData
@@ -470,17 +477,17 @@ function loadArticles(page = 1) {
             articlesTableBody.innerHTML = '';
             data.data.forEach(article => {
                 const row = `
-          <tr>
-            <td>${article.ID}</td>
-            <td>${article.Title}</td>
-            <td>${article.CreatedAt || 'N/A'}</td>
-            <td>${article.Publisher || 'N/A'}</td>
-            <td>
-              <button onclick="updateArticle(${article.ID})">Update</button>
-              <button onclick="deleteArticle(${article.ID})">Delete</button>
-            </td>
-          </tr>
-        `;
+                <tr>
+                    <td>${article.ID}</td>
+                    <td>${article.Title}</td>
+                    <td>${article.CreatedAt || 'N/A'}</td>
+                    <td>${article.Publisher || 'N/A'}</td>
+                    <td>
+                        <button onclick="updateArticle(${article.ID})">Update</button>
+                        <button onclick="deleteArticle(${article.ID})">Delete</button>
+                    </td>
+                </tr>
+            `;
                 articlesTableBody.insertAdjacentHTML('beforeend', row);
             });
 
@@ -492,10 +499,9 @@ function loadArticles(page = 1) {
 }
 
 function updateArticle(id) {
-    window.currentArticleId = id; // simpan agar nanti di update_articles.html dipakai
+    window.currentArticleId = id;
     loadContent('/admin_dashboard_pages/update_articles.html', 'Update Article');
 }
-
 window.updateArticle = updateArticle;
 
 function deleteArticle(id) {
@@ -540,9 +546,7 @@ function submitArticleForm() {
     formData.append('tags', tags);
     formData.append('description', description);
     formData.append('content', content);
-    if (mainImageFile) {
-        formData.append('main_image', mainImageFile);
-    }
+    if (mainImageFile) formData.append('main_image', mainImageFile);
 
     fetch('/admin/articles', {
         method: 'POST',
@@ -571,9 +575,7 @@ function initializeUpdateArticle() {
         return;
     }
 
-    fetch(`/articles/${articleId}`, {
-        headers: window.authHeader
-    })
+    fetch(`/articles/${articleId}`, { headers: window.authHeader })
         .then(res => {
             if (!res.ok) {
                 showToast('Failed to fetch article detail', 'error');
@@ -636,18 +638,16 @@ function setupArticlePreview() {
                 return;
             }
 
-            // Buat HTML preview
-            // misalnya menampilkan title, author, description, image, dsb.
             const sanitizedContent = DOMPurify.sanitize(content);
             let htmlPreview = `
-        <h2>${title}</h2>
-        <h4>By ${author}</h4>
-        <p><strong>Category:</strong> ${category}</p>
-        <p><strong>Tags:</strong> ${tags}</p>
-        <p><strong>Description:</strong> ${description}</p>
-        ${imagePreviewUrl ? `<img src="${imagePreviewUrl}" alt="${title}" style="max-width:200px;" />` : ''}
-        <div>${sanitizedContent}</div>
-      `;
+                <h2>${title}</h2>
+                <h4>By ${author}</h4>
+                <p><strong>Category:</strong> ${category}</p>
+                <p><strong>Tags:</strong> ${tags}</p>
+                <p><strong>Description:</strong> ${description}</p>
+                ${imagePreviewUrl ? `<img src="${imagePreviewUrl}" alt="${title}" style="max-width:200px;" />` : ''}
+                <div>${sanitizedContent}</div>
+            `;
 
             previewContent.innerHTML = htmlPreview;
             previewModal.style.display = 'block';
@@ -655,7 +655,6 @@ function setupArticlePreview() {
             if (closePreview) {
                 closePreview.addEventListener('click', () => {
                     previewModal.style.display = 'none';
-                    // Bersihkan URL object
                     if (imagePreviewUrl) {
                         URL.revokeObjectURL(imagePreviewUrl);
                     }
@@ -681,9 +680,7 @@ function updateArticleSubmit(articleId) {
     formData.append('tags', tags);
     formData.append('description', description);
     formData.append('content', content);
-    if (mainImageFile) {
-        formData.append('main_image', mainImageFile);
-    }
+    if (mainImageFile) formData.append('main_image', mainImageFile);
 
     fetch(`/admin/articles/${articleId}`, {
         method: 'PUT',
@@ -711,13 +708,16 @@ function updateArticleSubmit(articleId) {
 function initializeWriteArticles() {
     console.log("initializeWriteArticles: setting up Quill");
     Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+    const Font = Quill.import('formats/font');
+    Font.whitelist = ['Roboto', 'Montserrat', 'Nunito Sans', 'Mulish']
+    Quill.register(Font, true);
 
     const editorEl = document.getElementById('quillEditor');
     if (!editorEl) return;
 
     const toolbarOptions = [
         [{ 'header': [1, 2, 3, false] }],
-        [{ 'font': [] }],
+        [{ 'font': Font.whitelist }],
         [{ 'size': ['small', false, 'large', 'huge'] }],
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'color': [] }, { 'background': [] }],
@@ -774,17 +774,17 @@ function loadCertificates(page = 1) {
 
             certData.forEach(cert => {
                 const row = `
-          <tr>
-            <td>${cert.id}</td>
-            <td>${cert.title}</td>
-            <td>${cert.published_at || 'N/A'}</td>
-            <td>${cert.author || 'N/A'}</td>
-            <td>
-              <button onclick="updateCertificate(${cert.id})">Update</button>
-              <button onclick="deleteCertificate(${cert.id})">Delete</button>
-            </td>
-          </tr>
-        `;
+                <tr>
+                    <td>${cert.id}</td>
+                    <td>${cert.title}</td>
+                    <td>${cert.published_at || 'N/A'}</td>
+                    <td>${cert.author || 'N/A'}</td>
+                    <td>
+                        <button onclick="updateCertificate(${cert.id})">Update</button>
+                        <button onclick="deleteCertificate(${cert.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
                 certificatesTableBody.insertAdjacentHTML('beforeend', row);
             });
             showToast('Certificates loaded', 'success');
@@ -876,9 +876,7 @@ function initializeUpdateCertificate() {
         return;
     }
 
-    fetch(`/certificates/${certId}`, {
-        headers: window.authHeader
-    })
+    fetch(`/certificates/${certId}`, { headers: window.authHeader })
         .then(res => {
             if(!res.ok) {
                 showToast('Failed to fetch certificate detail', 'error');
@@ -926,12 +924,8 @@ function updateCertificateSubmit(certId) {
     formData.append('category', category);
     formData.append('tags', tags);
     formData.append('description', description);
-    if (imageFile) {
-        formData.append('cert_image', imageFile);
-    }
-    if (link) {
-        formData.append('link', link);
-    }
+    if (imageFile) formData.append('cert_image', imageFile);
+    if (link) formData.append('link', link);
 
     fetch(`/admin/certificates/${certId}`, {
         method: 'PUT',

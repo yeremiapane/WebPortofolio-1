@@ -1,436 +1,502 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const BASE_URL = 'http://localhost:8080'; // Sesuaikan dengan backend Anda
+// =====================================================
+// 1) Ambil articleId dari URL (misal path: /article/123)
+// =====================================================
+const articleId = (() => {
+  const pathParts = window.location.pathname.split("/");
+  return pathParts[pathParts.length - 1];
+})();
 
-  // Misal URL: http://localhost:8080/article/123
-  const pathSegments = window.location.pathname.split('/');
-  const articleId = pathSegments[pathSegments.length - 1]; // ambil segmen terakhir sebagai ID
-  if (!articleId) {
-    showAlert('Article ID is missing!', 'error');
+// Quill toolbar dengan Font.whitelist yang sudah diperbaiki
+const Font = Quill.import('formats/font');
+Font.whitelist = ['roboto', 'montserrat', 'nunito-sans', 'mulish', 'poppins'];
+Quill.register(Font, true);
+
+const toolbarOptions = [
+  ['bold','italic','underline','strike'],
+  ['blockquote','code-block'],
+  ['link','image','video','formula'],
+  [{ 'header':1 },{ 'header':2 }],
+  [{ 'list':'ordered' },{ 'list':'bullet' },{ 'list':'check' }],
+  [{ 'script':'sub' },{ 'script':'super' }],
+  [{ 'indent':'-1' },{ 'indent':'+1' }],
+  [{ 'direction':'rtl' }],
+  [{ 'size':['small',false,'large','huge'] }],
+  [{ 'header':[1,2,3,4,5,6,false] }],
+  [{ 'color':[] },{ 'background':[] }],
+  [{ 'font': Font.whitelist }],
+  [{ 'align':[] }],
+  ['clean']
+];
+
+// =====================================================
+// 2) Inisialisasi Quill Editor
+// =====================================================
+const commentEditor = new Quill('#comment-editor', {
+  modules: {
+    syntax: true,
+    toolbar: toolbarOptions
+  },
+  theme: 'snow'
+});
+
+// =====================================================
+// 3) Fetch Detail Artikel
+// =====================================================
+async function fetchArticleDetail() {
+  try {
+    const response = await fetch(`/articles/${articleId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch article detail');
+    }
+    const article = await response.json();
+
+    document.getElementById('articleTitle').textContent = article.Title;
+    document.getElementById('articleCategory').textContent = article.Category || 'Kategori';
+
+    const infoEl = document.getElementById('articleInfo');
+    let htmlInfo = `Author: <strong>${article.Publisher}</strong> | Published at: <strong>${new Date(article.CreatedAt).toLocaleDateString()}</strong>`;
+    const createdTime = new Date(article.CreatedAt);
+    const updatedTime = new Date(article.UpdatedAt);
+    if (updatedTime > createdTime) {
+      htmlInfo += ` | Updated at: <strong>${updatedTime.toLocaleDateString()}</strong>`;
+    }
+    htmlInfo += ` | ${article.ReadingTime} menit baca`;
+    infoEl.innerHTML = htmlInfo;
+
+    const mainImageEl = document.getElementById('articleMainImage');
+    if (article.MainImage) {
+      mainImageEl.src = `/${article.MainImage}`;
+    } else {
+      mainImageEl.style.display = 'none';
+    }
+
+    const tagsWrap = document.getElementById('tagsWrap');
+    tagsWrap.innerHTML = '';
+    if (article.Tags) {
+      const tagArr = article.Tags.split(',');
+      tagArr.forEach(tag => {
+        const t = tag.trim();
+        if (t) {
+          const span = document.createElement('span');
+          span.classList.add('tag-item');
+          span.textContent = t;
+          tagsWrap.appendChild(span);
+        }
+      });
+    }
+
+    const articleContent = document.getElementById('articleContent');
+    articleContent.innerHTML = article.Content || '';
+
+    document.getElementById('likeCount').textContent = article.Likes || 0;
+
+  } catch (error) {
+    console.error('Error fetching article detail:', error);
+  }
+}
+
+// =====================================================
+// 4) Fetch Status Like
+// =====================================================
+let liked = false;
+async function fetchLikeStatus() {
+  try {
+    const resp = await fetch(`/articles/${articleId}/like_status`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!resp.ok) {
+      throw new Error('Failed to get like status');
+    }
+    const data = await resp.json();
+    const likeCountEl = document.getElementById('likeCount');
+    likeCountEl.textContent = data.likes;
+    liked = data.liked;
+
+    const likeBtn = document.getElementById('likeBtn');
+    likeBtn.classList.toggle('liked', liked);
+    const icon = likeBtn.querySelector('ion-icon');
+    if (liked) {
+      icon.setAttribute('name','heart');
+    } else {
+      icon.setAttribute('name','heart-outline');
+    }
+  } catch (error) {
+    console.error('Error fetching like status:', error);
+  }
+}
+
+// 5) Toggle Like
+const likeBtn = document.getElementById('likeBtn');
+likeBtn.addEventListener('click', async () => {
+  try {
+    const resp = await fetch(`/articles/${articleId}/toggle_like`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (!resp.ok) {
+      throw new Error('Failed to toggle like');
+    }
+    const data = await resp.json();
+    const likeCountEl = document.getElementById('likeCount');
+    likeCountEl.textContent = data.likes;
+    liked = data.liked;
+
+    likeBtn.classList.toggle('liked', liked);
+    const icon = likeBtn.querySelector('ion-icon');
+    if (liked) {
+      icon.setAttribute('name','heart');
+      showAlert('Berhasil menyukai artikel!, Terima kasih😇','success');
+    } else {
+      icon.setAttribute('name','heart-outline');
+      showAlert('Berhasil membatalkan like!','success');
+    }
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    showAlert('Gagal melakukan like/unlike.','error');
+  }
+});
+
+// =====================================================
+// 6) Fetch Comments
+// =====================================================
+async function fetchComments() {
+  try {
+    const resp = await fetch(`/articles/${articleId}/comments`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!resp.ok) {
+      throw new Error('Failed to fetch comments');
+    }
+    const data = await resp.json();
+    const comments = data.comments || [];
+    renderComments(comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+  }
+}
+
+function renderComments(commentTree) {
+  const commentsList = document.getElementById('commentsList');
+  commentsList.innerHTML = '<h3>Daftar Komentar</h3>'; // reset
+
+  if (!Array.isArray(commentTree)) {
+    console.warn('Comment tree is not an array:', commentTree);
     return;
   }
 
-  // Endpoint
-  const articleUrl = `${BASE_URL}/articles/${articleId}`;
-  const commentUrl = `${BASE_URL}/articles/${articleId}/comments`;
-  const likeUrl = `${BASE_URL}/articles/${articleId}/like`;
-  const allArticlesUrl = `${BASE_URL}/articles`;
+  let totalComments = 0;
 
-  // DOM Elements
-  const titleEl = document.getElementById('articleTitle');
-  const categoryEl = document.getElementById('articleCategory');
-  const tagsContainer = document.getElementById('articleTags');
-  const authorEl = document.getElementById('articleAuthor');
-  const dateEl = document.getElementById('articleDate');
-  const updatedEl = document.getElementById('articleUpdated');
-  const readingTimeEl = document.getElementById('articleReadingTime');
+  function createCommentElement(cmt) {
+    totalComments++;
 
-  const likeIconEl = document.getElementById('likeIcon');
-  const likeCountEl = document.getElementById('likeCount');
-  const commentCountEl = document.getElementById('commentCount');
+    const singleComment = document.createElement('div');
+    singleComment.classList.add('single-comment');
+    singleComment.dataset.commentid = cmt.id;
 
-  const imgEl = document.getElementById('articleImage');
-  const captionEl = document.getElementById('articleCaption');
-  const contentEl = document.getElementById('articleContent');
+    // Author
+    const authorDiv = document.createElement('div');
+    authorDiv.classList.add('comment-author');
+    authorDiv.textContent = cmt.name;
+    singleComment.appendChild(authorDiv);
 
-  const commentList = document.getElementById('commentList');
-  const commentForm = document.getElementById('commentForm');
-  const anonymousToggle = document.getElementById('anonymousToggle');
-  const nameField = document.getElementById('nameField');
-  const emailField = document.getElementById('emailField');
-
-  const commentNameInput = document.getElementById('commentName');
-  const commentEmailInput = document.getElementById('commentEmail');
-  const quillContainer = document.getElementById('quillEditor');
-
-  const relatedPostsContainer = document.getElementById('relatedPostsContainer');
-
-  // Alert
-  const customAlert = document.getElementById('customAlert');
-  const alertMessage = document.getElementById('alertMessage');
-
-  // Init Quill
-  const quill = new Quill(quillContainer, {
-    theme: 'snow',
-    placeholder: 'Write your comment here...',
-  });
-
-  // 1. Fetch Article Detail
-  fetch(articleUrl)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch article');
-        return res.json();
-      })
-      .then(article => {
-        // Title, Category, Tags
-        titleEl.textContent = article.Title || 'Untitled';
-        categoryEl.textContent = article.Category || 'Uncategorized';
-        if (article.Tags) {
-          tagsContainer.innerHTML = '';
-          const tagArr = article.Tags.split(',').map(t => t.trim());
-          tagArr.forEach(tag => {
-            const span = document.createElement('span');
-            span.classList.add('tag-item');
-            span.textContent = tag;
-            tagsContainer.appendChild(span);
-          });
-        }
-
-        // Author & Date
-        authorEl.textContent = `By ${article.Publisher || 'Unknown'}`;
-        const createdDate = new Date(article.CreatedAt);
-        dateEl.textContent = createdDate.toLocaleDateString();
-
-        // Updated
-        if (article.UpdatedAt && article.UpdatedAt !== article.CreatedAt) {
-          updatedEl.textContent = 'Updated';
-        }
-        // Reading Time
-        readingTimeEl.textContent = `${article.ReadingTime || 1} min read`;
-
-        // Likes
-        likeCountEl.textContent = article.Likes || 0;
-        if (article.likedByUser) likeIconEl.style.color = 'red'; // opsional
-
-        // Image
-        if (article.MainImage) {
-          imgEl.src = `${BASE_URL}/${article.MainImage}`;
-          imgEl.alt = article.Title;
-        } else {
-          imgEl.src = 'assets/img/no-image.png';
-          imgEl.alt = 'No Image';
-        }
-        if (article.Caption) captionEl.textContent = article.Caption;
-        console.log(article.Content)
-        // Content
-        contentEl.innerHTML = article.Content || 'No content';
-
-        // Load Comments
-        loadComments();
-      })
-      .catch(err => {
-        showAlert(`Error loading article: ${err.message}`, 'error');
-      });
-
-  // 2. Load Comments
-  // 4. Load Comments
-  function loadComments() {
-    fetch(commentUrl)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch comments');
-          return res.json();
-        })
-        .then(data => {
-          // Jika data adalah array, langsung render.
-          // Jika data adalah objek tunggal, bungkus dalam array untuk konsistensi.
-          const comments = Array.isArray(data) ? data : [data];
-          comments.forEach(comment =>{
-            renderComments(comment);
-          })
-        })
-        .catch(err => {
-          showAlert(`Error fetching comments: ${err.message}`, 'error');
-        });
-  }
-
-// Render Comments
-  function renderComments(comments) {
-    commentList.innerHTML = ''; // Bersihkan list sebelumnya
-    if (!comments.length) {
-      commentList.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
-      commentCountEl.textContent = 0;
-      return;
-    }
-
-    let total = 0;
-    comments.forEach(c => {
-      total += 1;
-      const item = createCommentItem(c);
-      commentList.appendChild(item);
-    });
-    commentCountEl.textContent = total; // Total jumlah komentar
-  }
-
-
-  function createCommentItem(comment) {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('comment-item');
-
-    const header = document.createElement('div');
-    header.classList.add('comment-header');
-
-    const author = document.createElement('span');
-    author.classList.add('comment-author');
-    author.textContent = comment.Name || 'Anonymous';
-
-    const date = document.createElement('span');
-    date.classList.add('comment-date');
-    date.textContent = new Date(comment.CreatedAt).toLocaleString();
-
-    const text = document.createElement('div');
-    text.classList.add('comment-text');
-    text.innerHTML = comment.Content; // jika plaintext, pakai textContent
-
-    header.appendChild(author);
-    header.appendChild(date);
-
-    wrapper.appendChild(header);
-    wrapper.appendChild(text);
+    // Content
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('comment-content');
+    contentDiv.innerHTML = cmt.content;
+    singleComment.appendChild(contentDiv);
 
     // Actions
-    const actions = document.createElement('div');
-    actions.classList.add('comment-actions');
-    const replyBtn = document.createElement('span');
-    replyBtn.textContent = 'Reply';
-    replyBtn.addEventListener('click', () => {
-      // Tampilkan form reply
-      const replyForm = createReplyForm(comment.ID);
-      wrapper.appendChild(replyForm);
-    });
-    actions.appendChild(replyBtn);
-    wrapper.appendChild(actions);
+    const actionsDiv = document.createElement('div');
+    actionsDiv.classList.add('comment-actions');
+    const replySpan = document.createElement('span');
+    replySpan.classList.add('reply-btn');
+    replySpan.textContent = 'Balas';
+    replySpan.setAttribute('data-replyto', cmt.id);
+    actionsDiv.appendChild(replySpan);
+    singleComment.appendChild(actionsDiv);
 
-    // Jika ada replies
-    if (comment.replies && comment.replies.length > 0) {
-      comment.replies.forEach(child => {
-        const childWrapper = document.createElement('div');
-        childWrapper.classList.add('comment-reply-form');
-        childWrapper.appendChild(createCommentItem(child));
-        wrapper.appendChild(childWrapper);
+    // Buat .reply-list agar balasan bisa ditempel di mana pun
+    const replyList = document.createElement('div');
+    replyList.classList.add('reply-list');
+    singleComment.appendChild(replyList);
+
+    // Jika ada children
+    if (Array.isArray(cmt.children) && cmt.children.length > 0) {
+      cmt.children.forEach(child => {
+        const childEl = createCommentElement(child);
+        replyList.appendChild(childEl);
       });
     }
 
-    return wrapper;
+    return singleComment;
   }
 
-  function createReplyForm(parentId) {
-    const formWrapper = document.createElement('div');
-    formWrapper.classList.add('comment-reply-form');
+  commentTree.forEach(cmt => {
+    const cmtEl = createCommentElement(cmt);
+    commentsList.appendChild(cmtEl);
+  });
 
-    const replyForm = document.createElement('form');
-    replyForm.classList.add('comment-form');
-    replyForm.innerHTML = `
-      <label>
-        <input type="checkbox" class="anonymous-reply" />
-        Reply as Anonymous
-      </label>
-      <div class="form-group reply-name-field">
-        <label>Your Name</label>
-        <input type="text" class="replyName" required />
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" class="replyEmail" required />
-      </div>
-      <div class="form-group">
-        <label>Your Reply</label>
-        <div class="replyQuill" style="height: 100px;"></div>
-      </div>
-      <button type="submit" class="btn-submit">Submit Reply</button>
-    `;
-    formWrapper.appendChild(replyForm);
+  document.getElementById('commentCountText').textContent = totalComments + ' Komentar';
+}
 
-    // Inisialisasi Quill
-    const quillEl = replyForm.querySelector('.replyQuill');
-    const replyQuill = new Quill(quillEl, {
-      theme: 'snow',
-      placeholder: 'Write your reply here...',
-    });
+// =====================================================
+// 7) Submit Comment
+// =====================================================
+const anonymousToggle = document.getElementById('anonymousToggle');
+const namedFields = document.getElementById('namedFields');
+const nameInput = document.getElementById('name');
+const emailInput = document.getElementById('email');
 
-    const anonymousCheckbox = replyForm.querySelector('.anonymous-reply');
-    const replyNameField = replyForm.querySelector('.reply-name-field');
-    anonymousCheckbox.addEventListener('change', () => {
-      replyNameField.style.display = anonymousCheckbox.checked ? 'none' : 'flex';
-    });
+anonymousToggle.addEventListener('change', (e) => {
+  if (e.target.checked) {
+    namedFields.style.display = 'none';
+    nameInput.value = '';
+    emailInput.value = '';
+    nameInput.removeAttribute('required');
+    emailInput.removeAttribute('required');
+  } else {
+    namedFields.style.display = 'block';
+    nameInput.setAttribute('required','');
+    emailInput.setAttribute('required','');
+  }
+});
 
-    replyForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const nameVal = anonymousCheckbox.checked
-          ? 'Anonymous'
-          : replyForm.querySelector('.replyName').value.trim();
-      const emailVal = replyForm.querySelector('.replyEmail').value.trim();
-      const contentVal = replyQuill.root.innerHTML;
+const commentForm = document.getElementById('commentForm');
+let activeReplyTo = null;
+commentForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const commentContent = commentEditor.root.innerHTML.trim();
 
-      if (!emailVal || !contentVal) {
-        showAlert('Please fill required fields!', 'warning');
-        return;
-      }
+  let isAnon = anonymousToggle.checked;
+  let nameVal = nameInput.value.trim();
+  let emailVal = emailInput.value.trim();
 
-      const payload = {
-        Name: nameVal,
-        Email: emailVal,
-        Content: contentVal,
-        ParentID: parentId
-      };
-
-      fetch(commentUrl, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      })
-          .then(res => {
-            if (!res.ok) throw new Error('Failed to submit reply');
-            return res.json();
-          })
-          .then(_data => {
-            showAlert('Reply submitted (awaiting approval)', 'success');
-            // Remove form or keep for more replies
-            formWrapper.remove();
-          })
-          .catch(err => {
-            showAlert(`Error: ${err.message}`, 'error');
-          });
-    });
-
-    return formWrapper;
+  if (!isAnon && (!nameVal || !emailVal)) {
+    showAlert('Nama dan Email wajib diisi jika tidak anonim.','error');
+    return;
+  }
+  if (commentContent === '' || commentContent === '<p><br></p>') {
+    showAlert('Komentar tidak boleh kosong.','error');
+    return;
+  }
+  if (isAnon) {
+    nameVal = 'Anonymous';
+    emailVal = '';
   }
 
-  // 3. Comment Form (New Comment)
-  commentForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const isAnonymous = anonymousToggle.checked;
-    const nameVal = isAnonymous ? 'Anonymous' : commentNameInput.value.trim();
-    const emailVal = isAnonymous ? 'Anonymous' :commentEmailInput.value.trim();
-    const contentVal = quill.root.innerHTML;
+  // parent_id
+  const parentId = activeReplyTo || '';
 
-    if (isAnonymous === false && (!emailVal || !contentVal)) {
-      showAlert('Please fill all required fields!', 'warning');
+  const formData = new FormData();
+  formData.append('parent_id', parentId);
+  formData.append('name', nameVal);
+  formData.append('email', emailVal);
+  formData.append('content', commentContent);
+  formData.append('is_anonymous', isAnon ? 'true' : 'false');
+
+  try {
+    const resp = await fetch(`/articles/${articleId}/comments`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include'
+    });
+    if (!resp.ok) {
+      throw new Error('Gagal mengirim komentar');
+    }
+    const result = await resp.json();
+    console.log('Komentar terkirim:', result);
+    showAlert('Komentar berhasil dikirim!, Terima kasih atas masukannya','success');
+
+    // Reset form
+    commentEditor.root.innerHTML = '';
+    if (!isAnon) {
+      nameInput.value = '';
+      emailInput.value = '';
+    }
+    activeReplyTo = null;
+
+    // Taruh form kembali ke .comments-section
+    document.getElementById('commentsSection').appendChild(commentForm);
+
+    // Refresh
+    fetchComments();
+  } catch (error) {
+    console.error('Error posting comment:', error);
+    alert('Terjadi kesalahan saat mengirim komentar.');
+    showAlert(`Gagal mengirim komentar! ${error.message}`);
+  }
+});
+
+// =====================================================
+// 8) Handle Balas Komentar (Memindah form)
+// =====================================================
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('reply-btn')) {
+    const commentId = e.target.getAttribute('data-replyto');
+    const parentComment = document.querySelector(`.single-comment[data-commentid="${commentId}"]`);
+    if (!parentComment) {
+      console.error(`Parent comment with ID ${commentId} not found.`);
+      showAlert('Komentar induk tidak ditemukan.', 'error');
+      return;
+    }
+    const replyList = parentComment.querySelector('.reply-list');
+    if (!replyList) {
+      console.error(`Reply list for comment ID ${commentId} not found.`);
+      showAlert('Wadah balasan tidak ditemukan.', 'error');
       return;
     }
 
-    const payload = {
-      Name: nameVal,
-      Email: emailVal,
-      Content: contentVal,
-      ParentID: null
-    };
+    // Pindahkan form ke .reply-list
+    replyList.appendChild(commentForm);
+    activeReplyTo = commentId;
 
-    fetch(commentUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to post comment');
-          return res.json();
-        })
-        .then(_data => {
-          showAlert('Comment submitted (awaiting approval)', 'success');
-          // Reset
-          quill.setText('');
-          commentNameInput.value = '';
-          commentEmailInput.value = '';
-          anonymousToggle.checked = false;
-          nameField.style.display = 'flex';
-        })
-        .catch(err => {
-          showAlert(`Error: ${err.message}`, 'error');
-        });
-  });
-
-  anonymousToggle.addEventListener('change', () => {
-    if (anonymousToggle.checked) {
-      nameField.style.display = 'none';  // sembunyikan nama
-      emailField.style.display = 'none'; // sembunyikan email
-    } else {
-      nameField.style.display = 'flex';
-      emailField.style.display = 'flex';
+    // Kosongkan editor, dsb.
+    commentEditor.root.innerHTML = '';
+    if (!anonymousToggle.checked) {
+      nameInput.value = '';
+      emailInput.value = '';
     }
-  });
+  }
+});
 
-  // 4. Like Toggle
-  let isLiked = false;
-  likeIconEl.addEventListener('click', () => {
-    fetch(likeUrl, { method: 'POST' })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to toggle like');
-          return res.json();
-        })
-        .then(data => {
-          // { liked: boolean, likes: number }
-          isLiked = data.liked;
-          likeCountEl.textContent = data.likes;
-          likeIconEl.style.color = isLiked ? 'red' : '';
-        })
-        .catch(err => {
-          showAlert(`Error: ${err.message}`, 'error');
-        });
-  });
-
-  // 5. Related Posts
-  fetch(allArticlesUrl)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch all articles');
-        return res.json();
-      })
-      .then(articles => {
-        let others = articles.filter(a => a.ID != articleId);
-        shuffleArray(others);
-        others = others.slice(0, 3);
-        renderRelatedPosts(others);
-      })
-      .catch(err => {
-        console.error('Error fetching related articles:', err);
-      });
-
-  function renderRelatedPosts(articles) {
-    relatedPostsContainer.innerHTML = '';
-    articles.forEach(a => {
-      const item = document.createElement('div');
-      item.classList.add('related-item');
-
-      const thumb = document.createElement('img');
-      thumb.src = a.MainImage ? `${BASE_URL}/${a.MainImage}` : 'assets/img/no-image.png';
-      thumb.alt = a.Title || 'Untitled';
-
-      const info = document.createElement('div');
-      info.classList.add('related-info');
-
-      const link = document.createElement('a');
-      link.classList.add('related-title');
-      link.href = `/article/${a.ID}`;
-      link.textContent = a.Title || 'Untitled';
-
-      const date = document.createElement('div');
-      date.classList.add('related-date');
-      date.textContent = new Date(a.CreatedAt).toLocaleDateString();
-
-      info.appendChild(link);
-      info.appendChild(date);
-
-      item.appendChild(thumb);
-      item.appendChild(info);
-      relatedPostsContainer.appendChild(item);
+// =====================================================
+// 9) Fetch Artikel Terkait
+// =====================================================
+async function fetchAnotherPosts() {
+  try {
+    const resp = await fetch('/articles', {
+      method: 'GET',
+      credentials: 'include'
     });
-  }
-
-  // Utils
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+    if (!resp.ok) {
+      throw new Error('Failed to fetch related articles');
     }
+    const allArticles = await resp.json();
+    // Exclude current
+    const filtered = allArticles.filter(a => a.ID !== parseInt(articleId));
+    const relatedContainer = document.getElementById('relatedArticles');
+    relatedContainer.innerHTML = '';
+
+    // Tampilkan 3 pertama
+    const top3 = filtered.slice(0, 3);
+    top3.forEach(a => {
+      const card = document.createElement('div');
+      card.classList.add('related-article-card');
+
+      const img = document.createElement('img');
+      img.classList.add('related-article-image');
+      img.src = `/${a.MainImage}` || '';
+      img.alt = a.Title;
+      card.appendChild(img);
+
+      const content = document.createElement('div');
+      content.classList.add('related-article-content');
+
+      const title = document.createElement('a');
+      title.classList.add('related-article-title');
+      title.href = `/article/${a.ID}`;
+      title.textContent = a.Title;
+      content.appendChild(title);
+
+      // Meta info
+      const meta = document.createElement('div');
+      meta.classList.add('related-article-meta');
+
+      // Author
+      const author = document.createElement('div');
+      author.classList.add('meta-item');
+      const authorIcon = document.createElement('ion-icon');
+      authorIcon.setAttribute('name','person-outline');
+      author.appendChild(authorIcon);
+      author.appendChild(document.createTextNode(a.Publisher));
+      meta.appendChild(author);
+
+      // Likes
+      const likes = document.createElement('div');
+      likes.classList.add('meta-item');
+      const likeIcon = document.createElement('ion-icon');
+      likeIcon.setAttribute('name','heart-outline');
+      likes.appendChild(likeIcon);
+      likes.appendChild(document.createTextNode(a.Likes));
+      meta.appendChild(likes);
+
+      // Comments
+      const comments = document.createElement('div');
+      comments.classList.add('meta-item');
+      const commentIcon = document.createElement('ion-icon');
+      commentIcon.setAttribute('name','chatbubble-outline');
+      comments.appendChild(commentIcon);
+      comments.appendChild(document.createTextNode(a.Comments || 0));
+      meta.appendChild(comments);
+
+      content.appendChild(meta);
+      card.appendChild(content);
+      relatedContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Error fetching related articles:', error);
   }
+}
 
-  function showAlert(message, type='success') {
-    alertMessage.textContent = message;
-    customAlert.style.backgroundColor = getAlertColor(type);
+// =====================================================
+// Alert System
+// =====================================================
+function showAlert(message, type='success') {
+  const alertContainer = document.getElementById('alertContainer');
+  if (!alertContainer) return;
 
-    customAlert.classList.remove('hidden');
-    customAlert.classList.add('show');
+  const alert = document.createElement('div');
+  alert.classList.add('alert', type === 'success' ? 'success' : 'error');
 
-    setTimeout(() => {
-      customAlert.classList.remove('show');
-      customAlert.classList.add('hidden');
-    }, 3000);
-  }
+  // Icon
+  const icon = document.createElement('span');
+  icon.classList.add('alert-icon');
+  icon.innerHTML = (type === 'success')
+      ? '<ion-icon name="checkmark-circle-outline"></ion-icon>'
+      : '<ion-icon name="close-circle-outline"></ion-icon>';
+  alert.appendChild(icon);
 
-  function getAlertColor(type) {
-    switch(type) {
-      case 'error': return '#d9534f';
-      case 'warning': return '#f0ad4e';
-      case 'info': return '#5bc0de';
-      default:
-        return '#2e5077'; // success
-    }
-  }
+  // Message
+  const msg = document.createElement('span');
+  msg.classList.add('alert-message');
+  msg.textContent = message;
+  alert.appendChild(msg);
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.classList.add('close-btn');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.onclick = () => {
+    alert.classList.remove('show');
+    setTimeout(() => alert.remove(),300);
+  };
+  alert.appendChild(closeBtn);
+
+  alertContainer.appendChild(alert);
+
+  // Show
+  setTimeout(() => {
+    alert.classList.add('show');
+  },10);
+
+  // Auto hide after 3s
+  setTimeout(() => {
+    alert.classList.remove('show');
+    setTimeout(() => alert.remove(),300);
+  },3000);
+}
+
+// =====================================================
+// 10) Inisialisasi Setelah DOM Loaded
+// =====================================================
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchArticleDetail();
+  await fetchLikeStatus();
+  await fetchComments();
+  await fetchAnotherPosts();
 });
