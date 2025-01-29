@@ -123,7 +123,7 @@ func SetupRoutes() *gin.Engine {
 
 	// Tangani rute tak dikenal (404)
 	r.NoRoute(func(c *gin.Context) {
-		c.File("Frontend/admin/src/pages/404.html")
+		c.File("Frontend/user/404.html")
 	})
 
 	return r
