@@ -9,7 +9,7 @@ hamburgerBtn.addEventListener('click', () => {
 // ==========================
 // Konfigurasi Endpoint
 // ==========================
-const BASE_URL = 'http://localhost:8080'; // Ganti sesuai server Anda
+const BASE_URL = 'http://157.245.57.235:8080'; // Ganti sesuai server Anda
 const ARTICLES_ENDPOINT = `${BASE_URL}/articles`;
 const CATEGORIES_ENDPOINT = `${BASE_URL}/categories`;
 // Jika Anda punya endpoint lain (mis. /articles/filter?category=xxx), sesuaikan.
