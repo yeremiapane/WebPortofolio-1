@@ -169,6 +169,7 @@ function formatDate(dateString) {
   return date.toLocaleDateString(undefined, options);
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
   // Inisialisasi modal dan referensi elemen terkait
   const modal = document.getElementById('certificateModal');
@@ -195,35 +196,114 @@ document.addEventListener('DOMContentLoaded', () => {
           wrapper.innerHTML = '';
 
           certificates.forEach(cert => {
+            // Helper: build Issue date string
+            let issueString = '';
+            if (cert.IssueMonth && cert.IssueYear) {
+              const monthName = getMonthName(cert.IssueMonth);
+              issueString = `${monthName} ${cert.IssueYear}`;
+            }
+
+            // Helper: build End date string
+            let endString = '';
+            if (cert.EndMonth && cert.EndYear) {
+              const endMonthName = getMonthName(cert.EndMonth);
+              endString = `${endMonthName} ${cert.EndYear}`;
+            } else {
+              endString = 'No Expiry'; // Atau kosong jika tidak perlu menampilkan
+            }
+
+            // Buat card
             const card = document.createElement('div');
             card.classList.add('certification__card', 'swiper-slide');
             card.setAttribute('data-id', cert.id);
 
             card.innerHTML = `
-            <div class="certification__img-wrapper">
-              <img src="${cert.image_path}" alt="${cert.issued_by}" class="certification__img">
-            </div>
-            <div class="certification__content">
-              <h1 class="certification__category">${cert.title}</h1>
-              <h3 class="certification__publisher">${cert.issued_by}</h3>
-              <p class="certification__description">${cert.description}</p>
-            </div>
-          `;
+          <div class="certification__img-wrapper">
+            <img src="${cert.Images}" alt="${cert.Publisher}" class="certification__img">
+          </div>
+          <div class="certification__content">
+            <h1 class="certification__title">${cert.Title}</h1>
+            <h3 class="certification__publisher">${cert.Publisher}</h3>
+            <p class="certification__description">${cert.Description}</p>
+            <!-- Tambahkan info Issue & End -->
+            <p class="certification__dates">
+              <strong>Issue:</strong> ${issueString}<br>
+              <strong>End:</strong> ${endString}
+            </p>
+          </div>
+        `;
 
+            // Card onClick => fetch detail, buka modal
             card.addEventListener('click', () => {
               const certId = card.getAttribute('data-id');
               if (!certId) return;
 
               fetch(`/certificates/${certId}`)
-                  .then(response => response.json())
-                  .then(cert => {
-                    modalContent.innerHTML = `
-                  <h1>${cert.title}</h1>
-                  <p><strong>Issued By:</strong> ${cert.issued_by}</p>
-                  <img src="${cert.image_path}" alt="${cert.publisher}" style="max-width:100%; margin: 1rem 0;">
-                  <p>${cert.description}</p>
-                  <p><strong>Published At:</strong> ${new Date(cert.created_at).toLocaleDateString()}</p>
+                  .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch certificate detail');
+                    return response.json();
+                  })
+                  .then(certDetail => {
+                    // Build detail Issue & End
+                    let detailIssue = '';
+                    if (certDetail.IssueMonth && certDetail.IssueYear) {
+                      const imStr = getMonthName(certDetail.IssueMonth);
+                      detailIssue = `${imStr} ${certDetail.IssueYear}`;
+                    }
+
+                    let detailEnd = '';
+                    if (certDetail.EndMonth && certDetail.EndYear) {
+                      const emStr = getMonthName(certDetail.EndMonth);
+                      detailEnd = `${emStr} ${certDetail.EndYear}`;
+                    } else {
+                      detailEnd = 'No Expiry';
+                    }
+
+                    // Tampilkan skill (jika misal `certDetail.skills` = "ML, CV, UL")
+                    let skillsStr = '';
+                    if (certDetail.Skills) {
+                      skillsStr = `<p><strong>Skills:</strong> ${certDetail.Skills}</p>`;
+                    }
+
+                    // Tampilkan verification link (jika ada)
+                    let verifyLink = '';
+                    if (certDetail.VerificationLink) {
+                      verifyLink = `
+                  <p>
+                    <strong>Verification Link:</strong> 
+                    <a href="${certDetail.VerificationLink}" target="_blank">Open Link</a>
+                  </p>
                 `;
+                    }
+
+                    // Tampilkan category (opsional)
+                    let categoryStr = '';
+                    if (certDetail.Category) {
+                      categoryStr = `<p><strong>Category:</strong> ${certDetail.Category}</p>`;
+                    }
+
+                    const dateCreated = certDetail.CreatedAt ? new Date(certDetail.CreatedAt).toLocaleDateString() : 'N/A';
+
+                    modalContent.innerHTML = `
+                <h1>${certDetail.Title}</h1>
+                <p><strong>Issued By:</strong> ${certDetail.Publisher}</p>
+                
+                <img 
+                  src="${certDetail.Images}" 
+                  alt="${certDetail.Publisher}" 
+                  style="max-width:100%; margin: 1rem 0;"
+                >
+                <p>${certDetail.Description}</p>
+                
+                <p><strong>Issue:</strong> ${detailIssue}</p>
+                <p><strong>End:</strong> ${detailEnd}</p>
+                
+                ${categoryStr}
+                ${skillsStr}
+                ${verifyLink}
+                
+                <p><strong>Created At:</strong> ${dateCreated}</p>
+              `;
                     modal.classList.add('active');
                   })
                   .catch(err => {
@@ -234,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             wrapper.appendChild(card);
           });
 
+          // Update Swiper
           if (window.mySwiper) {
             window.mySwiper.update();
           } else {
@@ -249,6 +330,16 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Error loading certificates:', error);
         });
   }
+
+// Helper function: month number -> month name
+  function getMonthName(num) {
+    const months = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+    return months[num - 1] || "";
+  }
+
 
   // Panggil fungsi untuk memuat sertifikat
   loadCertificatesForHomepage();

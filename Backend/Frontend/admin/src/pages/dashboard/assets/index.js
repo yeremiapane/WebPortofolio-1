@@ -772,18 +772,39 @@ function loadCertificates(page = 1) {
             certificatesPagination.style.display = 'block';
             certificatesTableBody.innerHTML = '';
 
+            function getMonthName(num) {
+                const months = [
+                    "January","February","March","April","May","June",
+                    "July","August","September","October","November","December"
+                ];
+                return months[num - 1] || "";
+            }
+
             certData.forEach(cert => {
+                let issueString = '';
+                if (cert.IssueMonth && cert.IssueYear){
+                    const monthName = getMonthName(cert.IssueMonth);
+                    issueString = `${monthName} ${cert.IssueYear}`;
+                }
+
+                let endString = '';
+                if (cert.EndMonth && cert.EndYear){
+                    const monthName = getMonthName(cert.EndMonth);
+                    endString = `${monthName} ${cert.EndYear}`;
+                }else{
+                    endString = 'No Expiry Date';
+                }
+
+
                 const row = `
                 <tr>
                     <td>${cert.ID}</td>
                     <td>${cert.Title}</td>
                     <td>${cert.Publisher || 'N/A'}</td>
+                    <td>${cert.Category}</td>
+                    <td>${issueString}</td>
+                    <td>${endString}</td>
                     <td>${cert.CreatedAt || 'N/A'}</td>
-                    <td>${cert.IssueMonth}</td>
-                    <td>${cert.IssueYear}</td>
-                    <td>${cert.IssueYear}</td>
-                    <td>${cert.IssueMonth}</td>
-                    <td>${cert.CreatedAt}</td>
                     
                     <td>
                         <button onclick="updateCertificate(${cert.ID})">Update</button>

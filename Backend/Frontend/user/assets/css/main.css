@@ -725,7 +725,6 @@ body {
   font-weight: bold;
 }
 
-
 /* Modal styling */
 #certificateModal {
   position: fixed;
@@ -745,7 +744,7 @@ body {
 }
 
 #certificateModal.active {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-70%, -70%) scale(1);
   opacity: 1;
 }
 
@@ -815,7 +814,6 @@ body {
 
 .blog__img {
   transition: var(--transition);
-  height: 400px;
 }
 
 .blog__content,
@@ -1015,6 +1013,18 @@ body {
     justify-content: center;
   }
 
+  #certificateModal {
+    width: 90%;
+    height: auto;
+    max-height: 80%;
+    padding: 1rem;
+  }
+
+  #closeModal {
+    top: 5px;
+    right: 5px;
+  }
+
   .footer__wrapper {
     flex-direction: initial;
     align-items: center;
@@ -1023,6 +1033,13 @@ body {
 
   .footer__copyright {
     text-align: right;
+  }
+}
+
+@media (max-width: 480px) {
+  #certificateModal {
+    width: 95%;
+    padding: 0.5rem;
   }
 }
 
