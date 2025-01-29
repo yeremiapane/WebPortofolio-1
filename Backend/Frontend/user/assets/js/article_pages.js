@@ -9,9 +9,8 @@ hamburgerBtn.addEventListener('click', () => {
 // ==========================
 // Konfigurasi Endpoint
 // ==========================
-const BASE_URL = 'http://157.245.57.235:8080'; // Ganti sesuai server Anda
-const ARTICLES_ENDPOINT = `${BASE_URL}/articles`;
-const CATEGORIES_ENDPOINT = `${BASE_URL}/categories`;
+const ARTICLES_ENDPOINT = `/articles`;
+const CATEGORIES_ENDPOINT = `/categories`;
 // Jika Anda punya endpoint lain (mis. /articles/filter?category=xxx), sesuaikan.
 
 // ==========================
@@ -85,7 +84,7 @@ function displayArticles() {
         const category = article.Category || 'Uncategorized';
         const desc = article.Description || 'No description';
         const image = article.MainImage
-            ? `${BASE_URL}/${article.MainImage}`
+            ? `/${article.MainImage}`
             : 'https://via.placeholder.com/400x200?text=No+Image';
         const publisher = article.Publisher || 'Anonymous';
         const readingTime = article.ReadingTime || 0;

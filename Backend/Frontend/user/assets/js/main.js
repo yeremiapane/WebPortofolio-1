@@ -215,11 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Buat card
             const card = document.createElement('div');
             card.classList.add('certification__card', 'swiper-slide');
-            card.setAttribute('data-id', cert.id);
+            card.setAttribute('data-id', cert.ID);
 
             card.innerHTML = `
           <div class="certification__img-wrapper">
-            <img src="${cert.Images}" alt="${cert.Publisher}" class="certification__img">
+            <img src="/uploads/certificate/${cert.Images}" alt="${cert.Publisher}" class="certification__img">
           </div>
           <div class="certification__content">
             <h1 class="certification__title">${cert.Title}</h1>
@@ -285,15 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dateCreated = certDetail.CreatedAt ? new Date(certDetail.CreatedAt).toLocaleDateString() : 'N/A';
 
                     modalContent.innerHTML = `
-                <h1>${certDetail.Title}</h1>
-                <p><strong>Issued By:</strong> ${certDetail.Publisher}</p>
+                <h1 style="text-align: center; font-size:45px;">${certDetail.Title}</h1>
+                <p style="text-align: center; font-size : 20px;"><strong>Issued By:</strong> ${certDetail.Publisher}</p>
                 
                 <img 
-                  src="${certDetail.Images}" 
-                  alt="${certDetail.Publisher}" 
+                  src="/uploads/certificate/${certDetail.Images}" 
+                  alt="${certDetail.Publisher}"
                   style="max-width:100%; margin: 1rem 0;"
                 >
-                <p>${certDetail.Description}</p>
+                <p style="font-size : 15px;"><strong>Description:</strong> ${certDetail.Description}</p>
                 
                 <p><strong>Issue:</strong> ${detailIssue}</p>
                 <p><strong>End:</strong> ${detailEnd}</p>

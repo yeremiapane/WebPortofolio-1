@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	_ "fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
@@ -27,6 +28,7 @@ type CertificateInput struct {
 }
 
 func CreateCertificate(c *gin.Context) {
+	fmt.Println("Hit Create Certificate")
 	title := c.PostForm("title")
 	publisher := c.PostForm("publisher")
 	category := c.PostForm("category")
@@ -49,6 +51,13 @@ func CreateCertificate(c *gin.Context) {
 		endYear = &ey
 	}
 
+	fmt.Println("Check Certificate Folder Uploads")
+	if err := os.MkdirAll("uploads/certificate", os.ModePerm); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create uploads folder"})
+		return
+	}
+
+	fmt.Println("Input Data images")
 	// Mengambil beberapa file
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -85,6 +94,7 @@ func CreateCertificate(c *gin.Context) {
 		Images:           imagesStr,
 	}
 
+	fmt.Println("Certificate Input")
 	if err := config.DB.Create(&certificate).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

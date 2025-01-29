@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Endpoint register (sesuaikan dengan register.go)
     // Berdasarkan code, Anda sepertinya pakai "/admin/register"
-    const BASE_URL = 'http://157.245.57.235:8080';
-    const registerEndpoint = `${BASE_URL}/admin/register`;
+    const registerEndpoint = `/admin/register`;
 
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();

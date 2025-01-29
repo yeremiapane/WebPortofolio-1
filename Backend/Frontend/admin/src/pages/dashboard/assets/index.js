@@ -869,7 +869,7 @@ function submitCertificateForm() {
     const imageFile = document.getElementById('Certificate_image').files[0];
 
     // Validasi minimal
-    if (!title || !publisher || !category || !skills || !description) {
+    if (!title || !publisher || !category || !skills || !description || !imageFile) {
         showToast('Please fill all required fields.', 'warning');
         return;
     }
@@ -895,7 +895,7 @@ function submitCertificateForm() {
     // Jika user upload file
     if (imageFile) {
         // images = single path
-        formData.append('certificate_image', imageFile);
+        formData.append('images', imageFile);
     }
 
     // Kirim ke endpoint backend (contoh: /admin/certificates)
@@ -921,7 +921,6 @@ function submitCertificateForm() {
             showToast(`Error: ${err}`, 'error');
         });
 }
-
 
 /** Update Certificate **/
 function initializeUpdateCertificate() {
@@ -1020,7 +1019,7 @@ function updateCertificateSubmit(certId) {
     if (verificationLink) formData.append('verification_link', verificationLink);
 
     if (imageFile) {
-        formData.append('certificate_image', imageFile);
+        formData.append('images', imageFile);
     }
 
     fetch(`/admin/certificates/${certId}`, {

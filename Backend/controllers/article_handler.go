@@ -34,6 +34,11 @@ func CreateArticle(c *gin.Context) {
 	content := c.PostForm("content")
 	description := c.PostForm("description") // <-- Baru
 
+	if err := os.MkdirAll("uploads/article/", os.ModePerm); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create uploads folder"})
+		return
+	}
+
 	// Upload file
 	file, err := c.FormFile("main_image")
 	var mainImagePath string
