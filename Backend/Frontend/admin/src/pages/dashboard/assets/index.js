@@ -775,13 +775,19 @@ function loadCertificates(page = 1) {
             certData.forEach(cert => {
                 const row = `
                 <tr>
-                    <td>${cert.id}</td>
-                    <td>${cert.title}</td>
-                    <td>${cert.published_at || 'N/A'}</td>
-                    <td>${cert.author || 'N/A'}</td>
+                    <td>${cert.ID}</td>
+                    <td>${cert.Title}</td>
+                    <td>${cert.Publisher || 'N/A'}</td>
+                    <td>${cert.CreatedAt || 'N/A'}</td>
+                    <td>${cert.IssueMonth}</td>
+                    <td>${cert.IssueYear}</td>
+                    <td>${cert.IssueYear}</td>
+                    <td>${cert.IssueMonth}</td>
+                    <td>${cert.CreatedAt}</td>
+                    
                     <td>
-                        <button onclick="updateCertificate(${cert.id})">Update</button>
-                        <button onclick="deleteCertificate(${cert.id})">Delete</button>
+                        <button onclick="updateCertificate(${cert.ID})">Update</button>
+                        <button onclick="deleteCertificate(${cert.ID})">Delete</button>
                     </td>
                 </tr>
             `;
