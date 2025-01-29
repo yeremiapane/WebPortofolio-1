@@ -117,7 +117,7 @@ func SetupRoutes() *gin.Engine {
 		c.File("Frontend/admin/src/pages/dashboard/index.html")
 	})
 
-	r.GET("admin/articles", func(c *gin.Context) {
+	r.GET("/admin/articles", func(c *gin.Context) {
 		c.File("Frontend/admin/src/pages/dashboard/write_articles.html")
 	})
 
