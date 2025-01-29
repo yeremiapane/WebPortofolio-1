@@ -12,14 +12,14 @@ let currentCertificateId = null;
 function logoutUser() {
     localStorage.removeItem('authToken');
     showToast('You have logged out.', 'info');
-    window.location.href = '/Frontend/admin/src/pages/login/index.html'; // Sesuaikan path login
+    window.location.href = '/admin/login'; // Sesuaikan path login
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
         showToast('You must log in first.', 'error');
-        window.location.href = '/Frontend/admin/src/pages/login/index.html';
+        window.location.href = '/admin/login';
         return;
     }
     // Global header auth
@@ -825,37 +825,60 @@ function initializeWriteCertificates() {
 
 /** Submit Certificate (Write) **/
 function submitCertificateForm() {
-    const title = document.getElementById('Certificate_title').value.trim();
+    // Ambil nilai input
+    const title     = document.getElementById('Certificate_title').value.trim();
     const publisher = document.getElementById('Certificate_publisher').value.trim();
-    const category = document.getElementById('Certificate_category').value.trim();
-    const tags = document.getElementById('Certificate_tags').value.trim();
+    const category  = document.getElementById('Certificate_category').value.trim();
+    const skills    = document.getElementById('Certificate_skills').value.trim();
+
+    const issueMonth = document.getElementById('Certificate_issue_month').value.trim();
+    const issueYear  = document.getElementById('Certificate_issue_year').value.trim();
+    const endMonth   = document.getElementById('Certificate_end_month').value.trim();
+    const endYear    = document.getElementById('Certificate_end_year').value.trim();
+
     const description = document.getElementById('Certificate_description').value.trim();
-    const imageFile = document.getElementById('Certificate_image').files[0];
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
 
-    if (!title || !publisher || !category || !tags || !description || !imageFile) {
-        showToast('Please fill all fields and select an image', 'warning');
+    const imageFile = document.getElementById('Certificate_image').files[0];
+
+    // Validasi minimal
+    if (!title || !publisher || !category || !skills || !description) {
+        showToast('Please fill all required fields.', 'warning');
         return;
     }
 
+    // Buat FormData
     const formData = new FormData();
     formData.append('title', title);
     formData.append('publisher', publisher);
     formData.append('category', category);
-    formData.append('tags', tags);
+    formData.append('skills', skills);
     formData.append('description', description);
-    formData.append('cert_image', imageFile);
+
+    // Jika user mengisi issueMonth / issueYear
+    if (issueMonth)  formData.append('issue_month', issueMonth);
+    if (issueYear)   formData.append('issue_year', issueYear);
+    if (endMonth)    formData.append('end_month', endMonth);
+    if (endYear)     formData.append('end_year', endYear);
+
     if (verificationLink) {
-        formData.append('link', verificationLink);
+        formData.append('verification_link', verificationLink);
     }
 
+    // Jika user upload file
+    if (imageFile) {
+        // images = single path
+        formData.append('certificate_image', imageFile);
+    }
+
+    // Kirim ke endpoint backend (contoh: /admin/certificates)
     fetch('/admin/certificates', {
         method: 'POST',
         headers: window.authHeader,
         body: formData
     })
         .then(res => {
-            if(!res.ok) {
+            if (!res.ok) {
                 showToast('Failed to create certificate', 'error');
                 throw new Error('Failed to create certificate');
             }
@@ -863,43 +886,69 @@ function submitCertificateForm() {
         })
         .then(resp => {
             showToast('Certificate created successfully!', 'success');
+            // Mungkin redirect ke dashboard
             loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
         })
-        .catch(err => console.error('Error create certificate:', err));
+        .catch(err => {
+            console.error('Error create certificate:', err);
+            showToast(`Error: ${err}`, 'error');
+        });
 }
+
 
 /** Update Certificate **/
 function initializeUpdateCertificate() {
+    // 1) Ambil ID certificate yang mau di-update
+    //    Biasanya disimpan di global variable "window.currentCertificateId"
     const certId = window.currentCertificateId;
     if(!certId) {
-        showToast('Missing certificate ID', 'error');
+        showToast('Missing certificate ID.', 'error');
         return;
     }
 
+    // 2) Ambil data certificate dari backend (GET /certificates/:id)
     fetch(`/certificates/${certId}`, { headers: window.authHeader })
         .then(res => {
-            if(!res.ok) {
+            if (!res.ok) {
                 showToast('Failed to fetch certificate detail', 'error');
                 throw new Error('Failed to fetch certificate detail');
             }
             return res.json();
         })
         .then(cert => {
-            document.getElementById('Certificate_title').value = cert.title || '';
-            document.getElementById('Certificate_publisher').value = cert.publisher || '';
-            document.getElementById('Certificate_category').value = cert.category || '';
-            document.getElementById('Certificate_tags').value = cert.tags || '';
-            document.getElementById('Certificate_description').value = cert.description || '';
-            if(cert.link) {
-                document.getElementById('Certificate_verification_link').value = cert.link;
+            // 3) Isi form fields sesuai data
+            document.getElementById('Certificate_title').value = cert.Title || '';
+            document.getElementById('Certificate_publisher').value = cert.Publisher || '';
+            document.getElementById('Certificate_category').value = cert.Category || '';
+            document.getElementById('Certificate_skills').value = cert.Skills || '';
+
+            if (cert.IssueMonth) {
+                document.getElementById('Certificate_issue_month').value = cert.IssueMonth;
             }
+            if (cert.IssueYear) {
+                document.getElementById('Certificate_issue_year').value = cert.IssueYear;
+            }
+            if (cert.EndMonth) {
+                document.getElementById('Certificate_end_month').value = cert.EndMonth;
+            }
+            if (cert.EndYear) {
+                document.getElementById('Certificate_end_year').value = cert.EndYear;
+            }
+
+            document.getElementById('Certificate_description').value = cert.Description || '';
+
+            if (cert.VerificationLink) {
+                document.getElementById('Certificate_verification_link').value = cert.VerificationLink;
+            }
+
             showToast('Certificate detail loaded', 'success');
         })
         .catch(err => {
-            console.error(err);
-            showToast('Error load certificate detail', 'error');
+            console.error('Error load certificate detail:', err);
+            showToast('Error loading certificate detail', 'error');
         });
 
+    // 4) Tangani event submit form
     const form = document.getElementById('updateCertificateForm');
     if (form) {
         form.addEventListener('submit', e => {
@@ -909,23 +958,43 @@ function initializeUpdateCertificate() {
     }
 }
 
+
 function updateCertificateSubmit(certId) {
-    const title = document.getElementById('Certificate_title').value.trim();
+    const title     = document.getElementById('Certificate_title').value.trim();
     const publisher = document.getElementById('Certificate_publisher').value.trim();
-    const category = document.getElementById('Certificate_category').value.trim();
-    const tags = document.getElementById('Certificate_tags').value.trim();
+    const category  = document.getElementById('Certificate_category').value.trim();
+    const skills    = document.getElementById('Certificate_skills').value.trim();
+
+    const issueMonth = document.getElementById('Certificate_issue_month').value.trim();
+    const issueYear  = document.getElementById('Certificate_issue_year').value.trim();
+    const endMonth   = document.getElementById('Certificate_end_month').value.trim();
+    const endYear    = document.getElementById('Certificate_end_year').value.trim();
+
     const description = document.getElementById('Certificate_description').value.trim();
+    const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
     const imageFile = document.getElementById('Certificate_image').files[0];
-    const link = document.getElementById('Certificate_verification_link').value.trim();
+
+    // Validasi minimal
+    if (!title || !publisher || !category || !skills || !description) {
+        showToast('Please fill all required fields.', 'warning');
+        return;
+    }
 
     const formData = new FormData();
     formData.append('title', title);
     formData.append('publisher', publisher);
     formData.append('category', category);
-    formData.append('tags', tags);
+    formData.append('skills', skills);
     formData.append('description', description);
-    if (imageFile) formData.append('cert_image', imageFile);
-    if (link) formData.append('link', link);
+    if (issueMonth)  formData.append('issue_month', issueMonth);
+    if (issueYear)   formData.append('issue_year', issueYear);
+    if (endMonth)    formData.append('end_month', endMonth);
+    if (endYear)     formData.append('end_year', endYear);
+    if (verificationLink) formData.append('verification_link', verificationLink);
+
+    if (imageFile) {
+        formData.append('certificate_image', imageFile);
+    }
 
     fetch(`/admin/certificates/${certId}`, {
         method: 'PUT',
@@ -945,6 +1014,7 @@ function updateCertificateSubmit(certId) {
         })
         .catch(err => {
             console.error(err);
-            showToast('Error updating certificate', 'error');
+            showToast(`Error updating certificate: ${err}`, 'error');
         });
 }
+

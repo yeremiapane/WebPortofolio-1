@@ -1,28 +1,113 @@
 <div class="content-container">
-  <h2>Write Certificates</h2>
+  <h2>Write Certificate</h2>
   <form id="writeCertificateForm">
+
+    <!-- Title -->
     <label for="Certificate_title">Title:</label>
-    <input type="text" id="Certificate_title" name="title" placeholder="Certificate Title" required />
+    <input
+            type="text"
+            id="Certificate_title"
+            name="title"
+            placeholder="Certificate Title"
+            required
+    />
 
+    <!-- Publisher -->
     <label for="Certificate_publisher">Publisher:</label>
-    <input type="text" id="Certificate_publisher" name="author" placeholder="Certificate Publisher" required />
+    <input
+            type="text"
+            id="Certificate_publisher"
+            name="publisher"
+            placeholder="Certificate Publisher"
+            required
+    />
 
-    <label for="Certificate_image">Certification Image:</label>
-    <input type="file" id="Certificate_image" name="image" accept="image/*" />
-
+    <!-- Category -->
     <label for="Certificate_category">Category:</label>
-    <input type="text" id="Certificate_category" name="category" placeholder="Add Category" required />
+    <input
+            type="text"
+            id="Certificate_category"
+            name="category"
+            placeholder="e.g. Technology, Web Dev..."
+            required
+    />
 
-    <label for="Certificate_tags">Tags:</label>
-    <input type="text" id="Certificate_tags" name="tags" placeholder="Add tags separated by commas" required />
+    <!-- Skills (dulu Tags) -->
+    <label for="Certificate_skills">Skills:</label>
+    <input
+            type="text"
+            id="Certificate_skills"
+            name="skills"
+            placeholder="Add skills separated by commas"
+            required
+    />
 
+    <!-- Issue Month & Year -->
+    <label for="Certificate_issue_month">Issue Month (1-12):</label>
+    <input
+            type="number"
+            id="Certificate_issue_month"
+            name="issue_month"
+            min="1"
+            max="12"
+            placeholder="Month number"
+    />
+
+    <label for="Certificate_issue_year">Issue Year:</label>
+    <input
+            type="number"
+            id="Certificate_issue_year"
+            name="issue_year"
+            placeholder="e.g. 2025"
+    />
+
+    <!-- End Month & Year -->
+    <label for="Certificate_end_month">End Month (optional):</label>
+    <input
+            type="number"
+            id="Certificate_end_month"
+            name="end_month"
+            min="1"
+            max="12"
+            placeholder="Month number or empty if no expiry"
+    />
+
+    <label for="Certificate_end_year">End Year (optional):</label>
+    <input
+            type="number"
+            id="Certificate_end_year"
+            name="end_year"
+            placeholder="Year or empty"
+    />
+
+    <!-- Description -->
     <label for="Certificate_description">Description:</label>
-    <textarea id="Certificate_description" name="description" placeholder="Short description" required></textarea>
+    <textarea
+            id="Certificate_description"
+            name="description"
+            placeholder="Short description"
+            required
+    ></textarea>
 
+    <!-- Verification Link -->
     <label for="Certificate_verification_link">Verification Link (optional):</label>
-    <input type="url" id="Certificate_verification_link" name="verification_link" placeholder="https://example.com/verify" />
+    <input
+            type="url"
+            id="Certificate_verification_link"
+            name="verification_link"
+            placeholder="https://example.com/verify"
+    />
 
-    <button type="submit" id="submit">Submit</button>
+    <!-- Certification Image -->
+    <label for="Certificate_image">Certification Image (optional):</label>
+    <input
+            type="file"
+            id="Certificate_image"
+            name="certificate_image"
+            accept="image/*"
+    />
+
+    <button type="submit" id="submitCertificateBtn">Submit</button>
   </form>
 </div>
 <div class="loading-spinner" style="display: none;">Loading...</div>
