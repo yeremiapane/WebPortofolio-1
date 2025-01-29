@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
 
-    const BASE_URL = 'http://localhost:8080';
+    const BASE_URL = 'http://157.245.57.235:8080';
     const loginEndpoint = `${BASE_URL}/login`;
 
     loginForm.addEventListener('submit', async (e) => {
