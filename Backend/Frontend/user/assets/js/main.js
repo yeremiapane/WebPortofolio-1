@@ -224,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="certification__content">
             <h1 class="certification__title">${cert.Title}</h1>
             <h3 class="certification__publisher">${cert.Publisher}</h3>
-            // <p class="certification__description">${cert.Description}</p>
             <!-- Tambahkan info Issue & End -->
             <p class="certification__dates">
               <strong>Issue:</strong> ${issueString}<br>
