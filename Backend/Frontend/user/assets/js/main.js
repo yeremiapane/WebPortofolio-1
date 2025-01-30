@@ -151,7 +151,7 @@ function loadArticlesForHomepage() {
           </div>
           <div class="blog__footer">
             <span class="blog__category">${article.Category}</span>
-            <span class="blog__date">${formatDate(article.UpdateAt)}</span>
+            <span class="blog__date">${formatDate(article.UpdatedAt)}</span>
           </div>
         `;
 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="certification__content">
             <h1 class="certification__title">${cert.Title}</h1>
             <h3 class="certification__publisher">${cert.Publisher}</h3>
-            <p class="certification__description">${cert.Description}</p>
+            // <p class="certification__description">${cert.Description}</p>
             <!-- Tambahkan info Issue & End -->
             <p class="certification__dates">
               <strong>Issue:</strong> ${issueString}<br>
@@ -291,9 +291,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img 
                   src="/uploads/certificate/${certDetail.Images}" 
                   alt="${certDetail.Publisher}"
-                  style="max-width:100%; margin: 1rem 0;"
+                  style="max-width:85%; margin: 1rem 0;"
                 >
-                <p style="font-size : 15px;"><strong>Description:</strong> ${certDetail.Description}</p>
+                <p style="font-size : 18px;"><strong>Description:</strong> ${certDetail.Description}</p>
                 
                 <p><strong>Issue:</strong> ${detailIssue}</p>
                 <p><strong>End:</strong> ${detailEnd}</p>
