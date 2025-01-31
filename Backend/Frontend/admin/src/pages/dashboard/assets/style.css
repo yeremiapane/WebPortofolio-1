@@ -1,268 +1,147 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+/* RESET */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-.sidebar{
+
+/* Body Layout */
+body {
+    background: #E4E9F7;
+}
+
+/* SIDEBAR */
+.sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     height: 100%;
     width: 260px;
     background: #11101d;
     z-index: 100;
     transition: all 0.5s ease;
 }
-.sidebar.close{
+.sidebar.close {
     width: 78px;
 }
-.sidebar .logo-details{
+.sidebar .logo-details {
     height: 60px;
-    width: 100%;
     display: flex;
     align-items: center;
 }
-.sidebar .logo-details i{
-    font-size: 30px;
-    color: #fff;
-    height: 50px;
-    min-width: 78px;
-    text-align: center;
-    line-height: 50px;
+.sidebar .logo-details i {
+    font-size: 30px; color: #fff;
+    min-width: 78px; text-align: center; line-height: 50px;
 }
-.sidebar .logo-details .logo_name{
-    font-size: 22px;
-    color: #fff;
-    font-weight: 600;
-    transition: 0.3s ease;
-    transition-delay: 0.1s;
+.sidebar .logo-details .logo_name {
+    font-size: 22px; color: #fff; font-weight: 600;
+    transition: 0.3s ease; transition-delay: 0.1s;
 }
-.sidebar.close .logo-details .logo_name{
-    transition-delay: 0s;
-    opacity: 0;
-    pointer-events: none;
+.sidebar.close .logo-details .logo_name {
+    opacity: 0; pointer-events: none;
 }
-.sidebar .nav-links{
-    height: 100%;
-    padding: 30px 0 150px 0;
+.sidebar .nav-links {
+    height: 100%; padding: 30px 0 150px;
     overflow: auto;
 }
-.sidebar.close .nav-links{
-    overflow: visible;
+.sidebar.close .nav-links { overflow: visible; }
+.sidebar .nav-links::-webkit-scrollbar { display: none; }
+.sidebar .nav-links li {
+    position: relative; list-style: none; transition: all 0.4s ease;
 }
-.sidebar .nav-links::-webkit-scrollbar{
-    display: none;
-}
-.sidebar .nav-links li{
-    position: relative;
-    list-style: none;
-    transition: all 0.4s ease;
-}
-.sidebar .nav-links li:hover{
+.sidebar .nav-links li:hover {
     background: #1d1b31;
 }
-.sidebar .nav-links li .iocn-link{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.sidebar.close .nav-links li .iocn-link{
-    display: block
-}
-.sidebar .nav-links li i{
-    height: 50px;
-    min-width: 78px;
-    text-align: center;
-    line-height: 50px;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-.sidebar .nav-links li.showMenu i.arrow{
-    transform: rotate(-180deg);
-}
-.sidebar.close .nav-links i.arrow{
-    display: none;
-}
-.sidebar .nav-links li a{
-    display: flex;
-    align-items: center;
+
+.sidebar .nav-links .iocn-link > a {
+    display: flex; align-items: center;
     text-decoration: none;
 }
-.sidebar .nav-links li a .link_name{
-    font-size: 18px;
-    font-weight: 400;
-    color: #fff;
-    transition: all 0.4s ease;
-}
-.sidebar.close .nav-links li a .link_name{
-    opacity: 0;
-    pointer-events: none;
-}
-.sidebar .nav-links li .sub-menu{
-    padding: 6px 6px 14px 80px;
-    margin-top: -10px;
-    background: #1d1b31;
-    display: none;
-}
-.sidebar .nav-links li.showMenu .sub-menu{
-    display: block;
-}
-.sidebar .nav-links li .sub-menu a{
-    color: #fff;
-    font-size: 15px;
-    padding: 5px 0;
-    white-space: nowrap;
-    opacity: 0.6;
+.sidebar .nav-links li i {
+    height: 50px; min-width: 78px;
+    text-align: center; line-height: 50px;
+    color: #fff; font-size: 20px; cursor: pointer;
     transition: all 0.3s ease;
 }
-.sidebar .nav-links li .sub-menu a:hover{
-    opacity: 1;
-}
-.sidebar.close .nav-links li .sub-menu{
-    position: absolute;
-    left: 100%;
-    top: -10px;
-    margin-top: 0;
-    padding: 10px 20px;
-    border-radius: 0 6px 6px 0;
-    opacity: 0;
-    display: block;
-    pointer-events: none;
-    transition: 0s;
-}
-.sidebar.close .nav-links li:hover .sub-menu{
-    top: 0;
-    opacity: 1;
-    pointer-events: auto;
+.sidebar .nav-links li a .link_name {
+    font-size: 18px; color: #fff; font-weight: 400;
     transition: all 0.4s ease;
 }
-.sidebar .nav-links li .sub-menu .link_name{
-    display: none;
+.sidebar.close .nav-links li a .link_name {
+    opacity: 0; pointer-events: none;
 }
-.sidebar.close .nav-links li .sub-menu .link_name{
-    font-size: 18px;
-    opacity: 1;
+.sidebar .nav-links li .sub-menu {
+    padding: 6px 6px 14px 80px;
+    margin-top: -10px; background: #1d1b31; display: none;
+}
+.sidebar .nav-links li.showMenu .sub-menu {
     display: block;
 }
-.sidebar .nav-links li .sub-menu.blank{
+.sidebar .nav-links li .sub-menu a {
+    color: #fff; font-size: 15px; padding: 5px 0;
+    opacity: 0.6; transition: all 0.3s ease;
+    display: block;
+    text-decoration: none;
+}
+.sidebar .nav-links li .sub-menu a:hover {
     opacity: 1;
-    pointer-events: auto;
-    padding: 3px 20px 6px 16px;
-    opacity: 0;
-    pointer-events: none;
 }
-.sidebar .nav-links li:hover .sub-menu.blank{
-    top: 50%;
-    transform: translateY(-50%);
-}
-.sidebar .profile-details{
-    position: fixed;
-    bottom: 0;
+
+/* Profile details (Logout) */
+.sidebar .profile-details {
+    position: fixed; bottom: 0;
     width: 260px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #1d1b31;
-    padding: 12px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #1d1b31; padding: 12px 0;
     transition: all 0.5s ease;
 }
-.sidebar.close .profile-details{
-    background: none;
+.sidebar.close .profile-details { background: none; width: 78px; }
+.sidebar .profile-details .profile_name {
+    color: #fff; font-size: 18px; font-weight: 500;
 }
-.sidebar.close .profile-details{
-    width: 78px;
-}
-.sidebar .profile-details .profile-content{
-    display: flex;
-    align-items: center;
-}
-.sidebar .profile-details img{
-    height: 52px;
-    width: 52px;
-    object-fit: cover;
-    border-radius: 16px;
-    margin: 0 14px 0 12px;
-    background: #1d1b31;
-    transition: all 0.5s ease;
-}
-.sidebar.close .profile-details img{
-    padding: 10px;
-}
-.sidebar .profile-details .profile_name,
-.sidebar .profile-details .job{
-    color: #fff;
-    font-size: 18px;
-    font-weight: 500;
-    white-space: nowrap;
-}
-.sidebar.close .profile-details i,
-.sidebar.close .profile-details .profile_name,
-.sidebar.close .profile-details .job{
-    display: none;
-}
-.sidebar .profile-details .job{
-    font-size: 12px;
-}
-.home-section{
+
+
+/*Home Section*/
+.home-section {
     position: relative;
-    background: #E4E9F7;
-    height: 100vh;
     left: 260px;
     width: calc(100% - 260px);
     transition: all 0.5s ease;
+    min-height: 100vh;
+    background: #E4E9F7;
 }
-.sidebar.close ~ .home-section{
+.sidebar.close ~ .home-section {
     left: 78px;
     width: calc(100% - 78px);
 }
-.home-section .home-content{
+.home-section .home-content {
     height: 60px;
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
 }
-.home-section .home-content .bx-menu,
-.home-section .home-content .text{
+.home-content .bx-menu {
+    margin: 0 15px; cursor: pointer;
+    font-size: 35px; color: #11101d;
+}
+.home-content .text {
+    font-size: 26px; font-weight: 600;
     color: #11101d;
-    font-size: 35px;
-}
-.home-section .home-content .bx-menu{
-    margin: 0 15px;
-    cursor: pointer;
-}
-.home-section .home-content .text{
-    font-size: 26px;
-    font-weight: 600;
 }
 
+/*Table*/
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
+    width: 100%; border-collapse: collapse; margin: 20px 0;
 }
-
 table th, table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
+    border: 1px solid #ddd; padding: 10px; text-align: left;
 }
-
 table th {
     background-color: #f4f4f4;
 }
-
 button {
-    padding: 5px 10px;
-    margin: 0 5px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
+    padding: 5px 10px; margin: 0 5px; border: none;
+    background-color: #007BFF; color: white;
+    cursor: pointer; transition: background 0.3s ease;
 }
-
 button:hover {
     background-color: #0056b3;
 }
@@ -282,6 +161,19 @@ button:hover {
     position: absolute;
     pointer-events: all;
 }
+
+/* LOADING SPINNER */
+.loading-spinner {
+    display: none;
+}
+
+/* Resize handles (jika digunakan) */
+.resize-handles {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+}
+.resize-handles div {
+    width: 10px; height: 10px; background: red; position: absolute; pointer-events: all;
+}
 .resize-handles .top-left { top: -5px; left: -5px; cursor: nwse-resize; }
 .resize-handles .top-right { top: -5px; right: -5px; cursor: nesw-resize; }
 .resize-handles .bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
@@ -291,48 +183,110 @@ button:hover {
     margin-top : 10px;
 }
 
-/* Styling untuk modal preview */
-#previewModal {
-    display: none; /* disembunyikan secara default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    overflow-y: auto;
-    z-index: 9999;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Kontainer konten dalam modal */
-#previewContent {
-    background-color: #fff;
-    margin: 0 auto;
-    padding: 20px;
-    max-width: 800px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    border-radius: 5px;
-}
-
 /* Contoh styling menu comments */
-.comments-container {
+/* ... existing styles ... */
+
+/* Flex Container for Comments Table and Detail Section */
+.comments-main {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
     margin-top: 20px;
+}
+
+/* Comments Table Container */
+.comments-table-container {
+    flex: 2;
+    min-width: 300px;
+}
+
+/* Comment Detail Section */
+.comment-detail-section {
+    flex: 1;
+    min-width: 300px;
+    background: #f8f8f8;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Hide table and pagination initially */
+#commentsTable,
+#commentsPagination {
+    display: none;
+}
+
+/* Styling for Delete Button */
+.btn-delete {
+    background-color: #ff4444; /* Bright Red */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px; /* More Rounded Corners */
+    cursor: pointer;
+    margin-left: 5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 3px 6px rgba(231, 76, 60, 0.2); /* Red Shadow */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Space between text and icon */
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-delete:hover {
+    background-color: #ff2d2d;
+    transform: translateY(-2px); /* Hover Effect */
+    box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4); /* More Intense Shadow */
+}
+
+.btn-delete:active {
+    transform: translateY(0) scale(0.98); /* Active Press Effect */
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);
+}
+
+.btn-delete::before {
+    content: "🗑️"; /* Trash Emoji Icon */
+    filter: brightness(0) invert(1); /* Make Icon White */
+    transition: transform 0.2s ease;
+}
+
+.btn-delete::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg) translate(-20%, 100%);
+    transition: all 0.5s ease;
+}
+
+.btn-delete:hover::after {
+    transform: rotate(45deg) translate(20%, -100%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .comments-main {
+        flex-direction: column;
+    }
+
+    .comment-detail-section {
+        max-height: none;
+    }
 }
 
 .search-input {
     width: 300px;
     padding: 8px;
     margin-bottom: 15px;
-}
-
-.comment-detail-section {
-    background: #f8f8f8;
-    padding: 15px;
-    border: 1px solid #ddd;
-    margin-top: 20px;
-    border-radius: 6px;
 }
 
 .comment-detail-section h3 {
@@ -434,6 +388,27 @@ button:hover {
     text-align: left;
 }
 
+/*Penambahan Style Font*/
+.ql-font-roboto {
+    font-family: 'Roboto', sans-serif;
+}
+
+.ql-font-mulish {
+    font-family: 'Mulish', sans-serif;
+}
+
+.ql-font-nunito-sans {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.ql-font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.ql-font-montserrat {
+    font-family: 'Montserrat', sans-serif;
+}
+
 
 /* Tombol untuk menutup modal preview */
 #closePreview {
@@ -450,240 +425,153 @@ button:hover {
 }
 
 /* Gunakan font Roboto dan Lora yang sudah di-include untuk konsistensi gaya */
-#previewContent body {
-    font-family: 'Roboto', sans-serif;
-}
-#previewContent h1, h2, h3, h4, h5, h6 {
-    font-family: 'Lora', serif;
+
+/* Styling untuk modal preview */
+#previewModal {
+    display: none; /* disembunyikan secara default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-/* Pastikan preview mengadopsi styling artikel yang sudah ada */
-#previewContent h1 {
-    font-size: 40px;
-    padding: 10px;
-    border-bottom: 1px solid #000;
-    font-style: italic;
-    text-align: center;
+/* Kontainer konten dalam modal */
+/* PREVIEW Modal */
+#previewModal {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); overflow-y: auto; z-index: 9999;
+    padding: 20px; box-sizing: border-box;
+}
+#previewContent {
+    background-color: #fff;
+    margin: 0 auto; padding: 20px; max-width: 800px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    border-radius: 5px;
+    /* read_article-ish styling */
+    font-family: 'Poppins', sans-serif;
+}
+#closePreview {
+    position: absolute; top: 20px; right: 20px;
+    background: #567b95; color: #fff; border: none;
+    padding: 8px 12px; font-weight: bold; cursor: pointer;
+    border-radius: 3px;
 }
 
-#previewContent .content p {
-    padding: 5px 0;
-    font-size: 20px;
-    line-height: 30px;
+/* READ_ARTICLE-LIKE STYLING (untuk #previewContent) */
+#previewContent h2 {
+    font-size: 32px; margin-bottom: 10px; text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 8px;
 }
-
+#previewContent h4 {
+    text-align: center; font-size: 18px; color: #666; margin-bottom: 15px;
+}
+#previewContent p {
+    margin-bottom: 10px; line-height: 1.6;
+}
+#previewContent img {
+    display: block; max-width: 100%; height: auto;
+    margin: 15px auto;
+}
 #previewContent blockquote {
-    font-style: italic;
-    color: #555;
-    border-left: 4px solid #ddd;
-    margin: 1.5em 10px;
-    padding: 0.5em 10px;
-    background-color: #f4f4f4;
-    border-radius: 4px;
+    font-style: italic; color: #555;
+    border-left: 4px solid #ddd; margin: 1.5em 10px; padding: 0.5em 10px;
+    background-color: #f4f4f4; border-radius: 4px;
 }
-
 #previewContent pre.ql-syntax,
 #previewContent pre code {
     background-color: #2d2d2d;
-    color: #f8f8f2;
-    padding: 1em;
-    border-radius: 4px;
-    overflow-x: auto;
-    font-family: monospace;
-    font-size: 0.9em;
-    margin: 1em 0;
+    color: #f8f8f2; padding: 1em;
+    border-radius: 4px; overflow-x: auto;
+    font-family: monospace; font-size: 0.9em; margin: 1em 0;
 }
 
-#previewContent img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 1em auto;
-    object-fit: contain;
-}
-
-#main_article_image {
-    width: clamp(70%, 700px, 95%);
-    margin-top: 15px;
-}
-
-blockquote {
-    font-style: italic;
-    color: #555;
-    border-left: 4px solid #ddd;
-    margin: 1.5em 10px;
-    padding: 0.5em 10px;
-    background-color: #f4f4f4;
-    border-radius: 4px;
-}
-
-/* Container untuk menampung semua toast */
+/* TOAST */
 .toast-container {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    width: 300px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    position: fixed; top: 1rem; right: 1rem;
+    width: 300px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 0.5rem;
 }
-
-/* Style dasar untuk setiap toast */
 .toast {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 5px;
-    color: #fff;
-    animation: slideIn 0.4s ease, fadeOut 0.5s ease 3s forwards; /* 3s => waktu tampil, fadeOut => menghilang */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 5px; color: #fff;
+    animation: slideIn 0.4s ease, fadeOut 0.5s ease 3s forwards;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-
-/* Animasi muncul dari kanan ke kiri */
 @keyframes slideIn {
-    0% {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    0%   { opacity: 0; transform: translateX(100%); }
+    100% { opacity: 1; transform: translateX(0); }
 }
-
-/* Animasi hilang (fade out) */
 @keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(100%);
-    }
+    0%   { opacity: 1; }
+    100% { opacity: 0; transform: translateX(100%); }
 }
+.toast-success { background-color: #27ae60; }
+.toast-error   { background-color: #e74c3c; }
+.toast-warning { background-color: #f39c12; }
+.toast-info    { background-color: #2980b9; }
 
-/* Variasi warna untuk tipe alert */
-.toast-success {
-    background-color: #27ae60; /* hijau */
-}
-
-.toast-error {
-    background-color: #e74c3c; /* merah */
-}
-
-.toast-warning {
-    background-color: #f39c12; /* oranye */
-}
-
-.toast-info {
-    background-color: #2980b9; /* biru */
-}
-
-
-pre.ql-syntax, pre code {
-    background-color: #2d2d2d;
-    color: #f8f8f2;
-    padding: 1em;
-    border-radius: 4px;
-    overflow-x: auto;
-    /*font-family: 'Roboto Mono', monospace; */
-    font-size: 0.9em;
-    margin: 1em 0;
-}
-
-/* Jika menggunakan inline code (<code> di dalam teks): */
-p code {
-    background-color: #f4f4f4;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9em;
-}
-
-/* Statistik di Dashboard */
+/* STAT-CARD (DASHBOARD) */
 .dashboard-stats {
     display: grid;
-    /* Grid responsif: min width card 200px, menyesuaikan lebar container */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
     gap: 20px;
     margin: 20px 0;
     padding: 0 10px;
 }
-
 .stat-card {
-    position: relative; /* untuk meletakkan pseudo-element di belakang */
+    position: relative;
     background: #fff;
     border-radius: 12px;
     border: 1px solid #ddd;
     padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden; /* agar pseudo-element tidak keluar */
-    cursor: pointer; /* agar kelihatan bisa di-hover */
+    overflow: hidden;
+    cursor: pointer;
 }
-
-/* Pseudo-element background shape */
 .stat-card::before {
     content: "";
     position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
+    top: -50%; right: -50%;
+    width: 200%; height: 200%;
     background: linear-gradient(135deg, #6dd5ed, #2193b0);
-    /* Warna gradasi: biru muda ke biru lebih gelap, boleh diganti */
     transform: rotate(45deg);
     opacity: 0.06;
-    pointer-events: none; /* agar tidak mengganggu interaksi */
+    pointer-events: none;
 }
-
-/* Judul statistk, misal h3 di dalam stat-card */
 .stat-card h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
+    margin-bottom: 10px; font-size: 18px; font-weight: 600; color: #333;
 }
-
-/* Angka statistik, misal p di dalam stat-card */
 .stat-card p {
-    font-size: 28px;
-    font-weight: 700;
-    color: #333;
+    font-size: 28px; font-weight: 700; color: #333;
 }
-
-/* Hover effect: sedikit naik + bayangan lebih besar */
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Responsive: jika Anda ingin tampilan 1 kolom di layar sangat kecil */
+/* RESPONSIVE SIDEBAR */
 @media (max-width: 400px) {
-    .dashboard-stats {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-@media (max-width: 400px) {
-    .sidebar.close .nav-links li .sub-menu{
+    .sidebar.close .nav-links li .sub-menu {
         display: none;
     }
-    .sidebar{
+    .sidebar {
         width: 78px;
     }
-    .sidebar.close{
+    .sidebar.close {
         width: 0;
     }
-    .home-section{
-        left: 78px;
-        width: calc(100% - 78px);
-        z-index: 100;
+    .home-section {
+        left: 78px; width: calc(100% - 78px); z-index: 100;
     }
-    .sidebar.close ~ .home-section{
-        width: 100%;
-        left: 0;
+    .sidebar.close ~ .home-section {
+        width: 100%; left: 0;
     }
 }

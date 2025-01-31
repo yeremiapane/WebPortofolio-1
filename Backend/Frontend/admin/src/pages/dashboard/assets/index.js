@@ -110,6 +110,7 @@ function loadContent(page, title) {
         });
 }
 
+
 /** TOAST ALERT **/
 function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
@@ -242,6 +243,14 @@ function initializeComments() {
             if (currentCommentID) resetComment(currentCommentID);
         });
     }
+
+    // Add Event Listener for Delete Button in Detail Section
+    const btnDelete = document.getElementById('btnDelete');
+    if (btnDelete) {
+        btnDelete.addEventListener('click', () => {
+            if (currentCommentID) deleteComment(currentCommentID);
+        });
+    }
 }
 
 function loadComments(page = 1) {
@@ -269,6 +278,7 @@ function loadComments(page = 1) {
             if (!items.length) {
                 commentsTable.style.display = 'none';
                 commentsPagination.style.display = 'none';
+                document.getElementById('commentDetailSection').style.display = 'none'; // Hide detail if no comments
                 return;
             }
             commentsTable.style.display = 'table';
@@ -277,18 +287,19 @@ function loadComments(page = 1) {
 
             items.forEach(cmt => {
                 const row = `
-          <tr>
-            <td>${cmt.ID}</td>
-            <td>${cmt.ArticleID}</td>
-            <td>${cmt.Name || 'Anonymous'}</td>
-            <td>${cmt.Email || ''}</td>
-            <td>${cmt.Content}</td>
-            <td>${cmt.Status}</td>
-            <td>
-              <button onclick="detailComment(${cmt.ID})">Detail</button>
-            </td>
-          </tr>
-        `;
+                    <tr>
+                        <td>${cmt.ID}</td>
+                        <td>${cmt.ArticleID}</td>
+                        <td>${cmt.Name || 'Anonymous'}</td>
+                        <td>${cmt.Email || ''}</td>
+                        <td>${cmt.Content}</td>
+                        <td>${cmt.Status}</td>
+                        <td>
+                            <button onclick="detailComment(${cmt.ID})">Detail</button>
+                            <button onclick="deleteComment(${cmt.ID})" class="btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `;
                 commentsTbody.insertAdjacentHTML('beforeend', row);
             });
 
@@ -333,15 +344,16 @@ function detailComment(commentId) {
             document.getElementById('detailName').textContent = comment.name || 'Anonymous';
             document.getElementById('detailEmail').textContent = comment.email || '';
             document.getElementById('detailStatus').textContent = comment.status;
-            // Misalnya Anda menerima string hasil Quill dalam variabel content
+            // Assuming content is sanitized on the server, but sanitize again for safety
             const content = comment.content;
 
-            // Untuk keamanan, lakukan sanitasi
+            // For security, perform sanitization
             const safeContent = DOMPurify.sanitize(content);
 
-            // Lalu, render di elemen detailContent
+            // Render sanitized content
             document.getElementById('detailContent').innerHTML = safeContent;
 
+            // Show the detail section
             document.getElementById('commentDetailSection').style.display = 'block';
             document.getElementById('replyContainer').style.display = 'none';
             showToast('Comment detail loaded', 'success');
@@ -409,6 +421,33 @@ function resetComment(commentId) {
             document.getElementById('detailStatus').textContent = 'pending';
         })
         .catch(err => console.error('resetComment error:', err));
+}
+
+function deleteComment(commentId) {
+    if (!confirm('Are you sure you want to delete this comment? This action cannot be undone.')) return;
+
+    fetch(`/admin/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: window.authHeader
+    })
+        .then(res => {
+            if (!res.ok) {
+                showToast('Failed to delete comment', 'error');
+                throw new Error('Failed to delete comment');
+            }
+            return res.json();
+        })
+        .then(data => {
+            showToast('Comment deleted successfully!', 'success');
+            // Refresh the comments list
+            loadComments(currentCommentsPage);
+            // Hide the detail section
+            document.getElementById('commentDetailSection').style.display = 'none';
+        })
+        .catch(err => {
+            console.error('Error deleting comment:', err);
+            showToast(`Error deleting comment: ${err}`, 'error');
+        });
 }
 
 function submitReply() {

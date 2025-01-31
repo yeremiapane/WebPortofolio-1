@@ -170,12 +170,13 @@
         // Kirim lewat EmailJS
         // Pastikan Template ID & Service ID sesuai dengan yang Anda buat di EmailJS
         emailjs.send("service_jjwqb5d", "template_drj53ug", {
+            to_name: "Yeremia Yosefan Pane", // Ganti dengan penerima yang sesuai
             from_name: nama,
             from_email: email,
-            subject: subjek,
             message: pesan
         })
-            .then(function(response) {
+
+                .then(function(response) {
                 // Jika berhasil
                 showAlert("success", "Pesan Anda berhasil dikirim!");
                 contactForm.reset(); // Kosongkan form

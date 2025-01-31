@@ -184,22 +184,109 @@ button:hover {
 }
 
 /* Contoh styling menu comments */
-.comments-container {
+/* ... existing styles ... */
+
+/* Flex Container for Comments Table and Detail Section */
+.comments-main {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
   margin-top: 20px;
+}
+
+/* Comments Table Container */
+.comments-table-container {
+  flex: 2;
+  min-width: 300px;
+}
+
+/* Comment Detail Section */
+.comment-detail-section {
+  flex: 1;
+  min-width: 300px;
+  background: #f8f8f8;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Hide table and pagination initially */
+#commentsTable,
+#commentsPagination {
+  display: none;
+}
+
+/* Styling for Delete Button */
+.btn-delete {
+  background-color: #ff4444; /* Bright Red */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px; /* More Rounded Corners */
+  cursor: pointer;
+  margin-left: 5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 6px rgba(231, 76, 60, 0.2); /* Red Shadow */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Space between text and icon */
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-delete:hover {
+  background-color: #ff2d2d;
+  transform: translateY(-2px); /* Hover Effect */
+  box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4); /* More Intense Shadow */
+}
+
+.btn-delete:active {
+  transform: translateY(0) scale(0.98); /* Active Press Effect */
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);
+}
+
+.btn-delete::before {
+  content: "🗑️"; /* Trash Emoji Icon */
+  filter: brightness(0) invert(1); /* Make Icon White */
+  transition: transform 0.2s ease;
+}
+
+.btn-delete::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg) translate(-20%, 100%);
+  transition: all 0.5s ease;
+}
+
+.btn-delete:hover::after {
+  transform: rotate(45deg) translate(20%, -100%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .comments-main {
+    flex-direction: column;
+  }
+
+  .comment-detail-section {
+    max-height: none;
+  }
 }
 
 .search-input {
   width: 300px;
   padding: 8px;
   margin-bottom: 15px;
-}
-
-.comment-detail-section {
-  background: #f8f8f8;
-  padding: 15px;
-  border: 1px solid #ddd;
-  margin-top: 20px;
-  border-radius: 6px;
 }
 
 .comment-detail-section h3 {
