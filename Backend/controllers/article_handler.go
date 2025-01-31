@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
@@ -153,7 +154,10 @@ func DeleteArticle(c *gin.Context) {
 
 	// Hapus main image
 	if article.MainImage != "" {
-		os.Remove(article.MainImage)
+		if err := os.Remove(article.MainImage); err != nil {
+			// Log error tetapi tetap lanjutkan penghapusan
+			fmt.Println("Failed to delete main image:", err)
+		}
 	}
 
 	// Hapus images (jika ada)
@@ -161,16 +165,21 @@ func DeleteArticle(c *gin.Context) {
 		oldImages := strings.Split(article.Images, ",")
 		for _, old := range oldImages {
 			if old != "" {
-				os.Remove("uploads/article/" + old)
+				if err := os.Remove("uploads/article/" + old); err != nil {
+					// Log error tetapi tetap lanjutkan penghapusan
+					fmt.Println("Failed to delete image:", err)
+				}
 			}
 		}
 	}
 
+	// Hapus artikel (akan menghapus komentar terkait karena cascade)
 	if err := config.DB.Delete(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Article deleted"})
+
+	c.JSON(http.StatusOK, gin.H{"message": "Article and associated comments deleted"})
 }
 
 // ToggleLikeArticle mengatur status like/unlike berdasarkan Session ID

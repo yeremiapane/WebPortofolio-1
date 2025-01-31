@@ -538,3 +538,36 @@ func GetAllAdminComments(c *gin.Context) {
 		"total_page": totalPages,
 	})
 }
+
+// ---------------------------------------------------
+// 6. ADMIN - Delete Comment
+// ---------------------------------------------------
+// DELETE /admin/comments/:id
+func DeleteComment(c *gin.Context) {
+	db := config.DB
+
+	idStr := c.Param("id")
+	idUint64, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment ID"})
+		return
+	}
+	commentID := uint(idUint64)
+
+	var comment models.Comments
+	if err := db.First(&comment, commentID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Comment not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	if err := db.Delete(&comment).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
+}

@@ -86,6 +86,7 @@ func SetupRoutes() *gin.Engine {
 		admin.PATCH("/comments/:id/approve", controllers.ApproveComment)
 		admin.PATCH("/comments/:id/reject", controllers.RejectComment)
 		admin.PATCH("/comments/:id/reset", controllers.ResetComment)
+		admin.DELETE("/comments/:id", controllers.DeleteComment)
 	}
 
 	// Serve file HTML untuk rute tertentu

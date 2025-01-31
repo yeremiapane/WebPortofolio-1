@@ -4,7 +4,7 @@ import "time"
 
 type Comments struct {
 	ID          uint   `gorm:"primaryKey"`
-	ArticleID   uint   `gorm:"not null"`
+	ArticleID   uint   `gorm:"not null;index"`
 	ParentID    *uint  `gorm:"null"` // Boleh null jika komentar utama
 	Name        string `gorm:"size:100;not null"`
 	Email       string `gorm:"size:100"` // Opsional
@@ -14,4 +14,6 @@ type Comments struct {
 	IsAnonymous bool   `gorm:"default:false"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	// Relasi ke Article
+	Article Article `gorm:"foreignKey:ArticleID;constraint:OnDelete:CASCADE;"`
 }

@@ -3,10 +3,11 @@ package models
 import "time"
 
 type Visitor struct {
-	ID        uint      `gorm:"primaryKey"`
-	ArticleId uint      `gorm:"not null"`
-	SessionId string    `gorm:"type:varchar(100);not null"`
-	IpAddress string    `gorm:"type:varchar(50)"`
-	UserAgent string    `gorm:"type:text"`
-	CreatedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP;not null"`
+	ID        uint   `gorm:"primaryKey"`
+	ArticleId uint   `gorm:"not null;index"`
+	SessionId string `gorm:"not null;index"`
+	IpAddress string
+	UserAgent string
+	CreatedAt time.Time
+	Article   Article `gorm:"foreignKey:ArticleId;constraint:OnDelete:CASCADE;"`
 }
