@@ -1,99 +1,175 @@
-* {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|PT+Sans+Narrow&display=swap');
 
 body {
-    padding: 0;
-    margin: 0;
+    overflow: hidden;
+    font-family: 'Open Sans', sans-serif;
 }
 
-#notfound {
+.not-found {
     position: relative;
-    height: 100vh;
+    overflow: hidden;
+    margin: 0 -20vw;
+    height: 110vh;
 }
 
-#notfound .notfound {
+.not-found [class*="wave"] {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
 }
 
-.notfound {
-    max-width: 520px;
+.not-found div {
+    position: absolute;
     width: 100%;
-    text-align: center;
-    line-height: 1.4;
+    bottom: 0;
+    left: 0;
 }
 
-.notfound .notfound-404 {
-    height: 190px;
+.not-found div.wave-1 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-1.svg');
 }
 
-.notfound .notfound-404 h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 146px;
-    font-weight: 700;
-    margin: 0px;
-    color: #232323;
+.not-found div.wave-2 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-2.svg');
 }
 
-.notfound .notfound-404 h1>span {
-    display: inline-block;
-    width: 120px;
-    height: 120px;
-    background-image: url('/Frontend/user/assets/img/404.png');
-    background-size: cover;
-    -webkit-transform: scale(1.4);
-    -ms-transform: scale(1.4);
-    transform: scale(1.4);
-    z-index: -1;
+.not-found div.wave-3 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-3.svg');
 }
 
-.notfound h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    color: #232323;
+.not-found div.wave-4 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-4.svg');
+    height: calc(100% - 430px);
 }
 
-.notfound p {
-    font-family: 'Montserrat', sans-serif;
-    color: #787878;
-    font-weight: 300;
+.not-found div.wave-5 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-5.svg');
 }
 
-.notfound a {
-    font-family: 'Montserrat', sans-serif;
-    display: inline-block;
-    padding: 12px 30px;
-    font-weight: 700;
-    background-color: #f99827;
+.not-found div.wave-6 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-6.svg');
+}
+
+.not-found div.wave-7 {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524501869/404/wave-7.svg');
+}
+
+.not-found .sky-bg {
+    background: url('http://res.cloudinary.com/andrewhani/image/upload/v1524821915/404/bg-1_gvybzk.svg');
+    height: 100%;
+}
+
+.not-found div[class*="wave"]:not(.wave-4) {
+    height: calc(100% - 250px);
+}
+
+.not-found .boat {
+    position: absolute;
+    top: 0;
+    right: 15%;
+    width: 150px;
+    animation: boat 15s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+}
+
+.not-found .wave-lost {
+    position: absolute;
+    top: 20%;
+    left: 50%;
     color: #fff;
-    border-radius: 40px;
-    text-decoration: none;
-    -webkit-transition: 0.2s all;
-    transition: 0.2s all;
+    font-size: 20rem;
+    animation: surf 2s;
 }
 
-.notfound a:hover {
-    opacity: 0.8;
+.not-found .wave-lost span {
+    float: left;
+    animation: float 3s ease-in infinite;
 }
 
-@media only screen and (max-width: 767px) {
-    .notfound .notfound-404 {
-        height: 115px;
+.not-found .wave-lost span:nth-child(2) {
+    animation-delay: 2.5s;
+}
+
+.not-found .wave-lost span:nth-child(3) {
+    animation-delay: 4.5s;
+}
+
+.not-found .wave-island {
+    position: absolute;
+    top: 130px;
+    left: 20%;
+    padding: 10px;
+    width: 170px;
+}
+
+.not-found .wave-message {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    padding-right: 50%;
+    height: auto !important;
+    color: #fff;
+    font-size: 3rem;
+    text-align: left;
+    animation: wave-message 1s;
+}
+
+/* Animations */
+
+@keyframes boat {
+    0% {
+        transform-origin: left;
+        transform: rotate(-15deg) translate3d(400px, 0px, 0px);
     }
-    .notfound .notfound-404 h1 {
-        font-size: 86px;
+    20% {
+        transform-origin: left;
+        transform: rotate(15deg) translate3d(-20vw, 0, 0px);
     }
-    .notfound .notfound-404 h1>span {
-        width: 86px;
-        height: 86px;
+    25% {
+        transform-origin: left;
+        transform: rotate(-7deg) translate3d(-25vw, 0, 0px);
+    }
+    50% {
+        transform-origin: left;
+        transform: rotate(5deg) translate3d(-50vw, 0, 0px);
+    }
+    60% {
+        transform-origin: left;
+        transform: rotate(-1deg) translate3d(-60vw, 0, 0px);
+    }
+    100% {
+        transform-origin: left;
+        transform: rotate(2deg) translate3d(-100vw, 0, 0px);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: rotate(3deg) translate3d(0px, -10px, 0px);
+    }
+    50% {
+        transform: rotate(-3deg) translate3d(0px, 10px, 0px);
+    }
+}
+
+@keyframes surf {
+    0% {
+        transform-origin: right;
+        transform: rotate(15deg) translate3d(0, 800px, 0);
+    }
+    30% {
+        transform-origin: right;
+        transform: rotate(15deg) translate3d(0, 500px, 0);
+    }
+    100% {
+        transform-origin: right;
+        transform: rotate(0) translate3d(0, 0, 0px);
+    }
+}
+
+@keyframes wave-message {
+    0%{
+        transform: translate3d(0, 120%, 0);
+    }
+    100%{
+        transform: translate3d(0, 0, 0);
     }
 }
