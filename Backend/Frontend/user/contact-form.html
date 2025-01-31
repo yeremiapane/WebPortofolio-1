@@ -132,7 +132,9 @@
 </div>
 
 <!-- Script EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.0/dist/email.min.js"></script>
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
 
 <script>
     // Inisialisasi EmailJS dengan Public Key (User ID) Anda
@@ -169,14 +171,14 @@
 
         // Kirim lewat EmailJS
         // Pastikan Template ID & Service ID sesuai dengan yang Anda buat di EmailJS
-        emailjs.send("service_jjwqb5d", "template_drj53ug", {
+        emailjs.send("service_gn9hinb", "template_drj53ug", {
             to_name: "Yeremia Yosefan Pane", // Ganti dengan penerima yang sesuai
             from_name: nama,
             from_email: email,
             message: pesan
         })
 
-                .then(function(response) {
+            .then(function(response) {
                 // Jika berhasil
                 showAlert("success", "Pesan Anda berhasil dikirim!");
                 contactForm.reset(); // Kosongkan form
