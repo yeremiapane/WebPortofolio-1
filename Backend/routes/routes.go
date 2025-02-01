@@ -21,7 +21,7 @@ func SetupRoutes() *gin.Engine {
 	r.Use(middleware.SessionMiddleware())
 
 	// Rate limiting: 100 requests per hour
-	rate, err := limiter.NewRateFromFormatted("100-H")
+	rate, err := limiter.NewRateFromFormatted("300-H")
 	if err != nil {
 		log.Fatalf("Failed to parse rate : %v", err)
 	}
