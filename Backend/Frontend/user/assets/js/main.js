@@ -295,12 +295,13 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!response.ok) throw new Error('Failed to fetch certificate detail');
           return response.json();
         })
+        // Inside your loadCertificateDetail(certId) function…
         .then(certDetail => {
-          // Set judul dan subjudul modal
+          // Set header texts
           modalTitle.textContent = certDetail.Title;
           modalSubtitle.textContent = `Issued by ${certDetail.Publisher}`;
 
-          // Format tanggal issue & end
+          // Format dates
           let detailIssue = '';
           if (certDetail.IssueMonth && certDetail.IssueYear) {
             const imStr = getMonthName(certDetail.IssueMonth);
@@ -313,54 +314,83 @@ document.addEventListener('DOMContentLoaded', () => {
           } else {
             detailEnd = 'No Expiry';
           }
-
-          // Tampilkan skills, verification link, dan category jika ada
-          let extraInfo = '';
-          if (certDetail.Skills) {
-            extraInfo += `<p><strong>Skills:</strong> ${certDetail.Skills}</p>`;
-          }
-          if (certDetail.VerificationLink) {
-            extraInfo += `<p><strong>Verification Link:</strong> <a href="${certDetail.VerificationLink}" target="_blank">Open Link</a></p>`;
-          }
-          if (certDetail.Category) {
-            extraInfo += `<p><strong>Category:</strong> ${certDetail.Category}</p>`;
-          }
           const dateCreated = certDetail.CreatedAt ? formatDate(certDetail.CreatedAt) : 'N/A';
 
-          // Gabungkan deskripsi lengkap
-          const sanitizedDescription = DOMPurify.sanitize(certDetail.Description);
-          modalDescription.innerHTML = `
-          <p style="font-size: 18px;"><strong>Description:</strong></p>
-          <div style="font-size: 16px;">${sanitizedDescription}</div>
-          <p><strong>Issue:</strong> ${detailIssue}</p>
-          <p><strong>End:</strong> ${detailEnd}</p>
-          ${extraInfo}
-          <p><strong>Created At:</strong> ${dateCreated}</p>
-        `;
+          // Prepare extra details: Skills and Category (splitting comma-separated values)
+          const skillsHTML = certDetail.Skills
+              ? certDetail.Skills.split(',')
+                  .map(skill => `<span class="skill-badge">${skill.trim()}</span>`)
+                  .join(' ')
+              : '';
+          const categoryHTML = certDetail.Category
+              ? certDetail.Category.split(',')
+                  .map(cat => `<span class="category-badge">${cat.trim()}</span>`)
+                  .join(' ')
+              : '';
 
-          // Tangani multiple images untuk modal (gunakan default jika tidak ada gambar)
+          const verificationLinkHTML = certDetail.VerificationLink
+              ? `<div class="detail-item verification">
+         <i class="fas fa-link"></i>
+         <span><strong>Verification Link/Code Certificate:</strong> <a href="${certDetail.VerificationLink}" target="_blank" rel="noopener noreferrer">Verify Certificate</a></span>
+       </div>`
+              : '';
+
+          // Sanitize description content
+          const sanitizedDescription = DOMPurify.sanitize(certDetail.Description);
+
+          // Build the inner HTML for the certificate details
+          modalDescription.innerHTML = `
+    <div class="modal-description-title">
+      <i class="fas fa-info-circle"></i>
+      <span>Description:</span>
+    </div>
+    <div class="modal-description-text">
+      ${sanitizedDescription}
+    </div>
+    <div class="detail-item issue">
+      <i class="fas fa-calendar-alt"></i>
+      <span><strong>Issued:</strong> ${detailIssue}</span>
+    </div>
+    <div class="detail-item end">
+      <i class="fas fa-calendar-check"></i>
+      <span><strong>Expires:</strong> ${detailEnd}</span>
+    </div>
+    ${skillsHTML ? `<div class="detail-item skills">
+      <i class="fas fa-cogs"></i>
+      <span><strong>Skills:</strong> ${skillsHTML}</span>
+    </div>` : '' }
+    ${categoryHTML ? `<div class="detail-item category">
+      <i class="fas fa-tags"></i>
+      <span><strong>Category:</strong> ${categoryHTML}</span>
+    </div>` : '' }
+    ${verificationLinkHTML}
+    <div class="detail-item created">
+      <i class="fas fa-clock"></i>
+      <span><strong>Created At:</strong> ${dateCreated}</span>
+    </div>
+  `;
+
+          // Handle multiple images for the modal slider
           const modalImagePaths = certDetail.Images ? certDetail.Images.split(',') : [];
           let modalImagesHTML = '';
           modalImagePaths.forEach(img => {
             if (img.trim() !== '') {
               modalImagesHTML += `<div class="swiper-slide">
-              <img src="/uploads/certificate/${encodeURIComponent(img.trim())}" alt="${certDetail.Publisher}" />
-            </div>`;
+        <img src="/uploads/certificate/${encodeURIComponent(img.trim())}" alt="${certDetail.Publisher}" />
+      </div>`;
             }
           });
           if (modalImagesHTML === '') {
             modalImagesHTML = `<div class="swiper-slide">
-            <img src="/uploads/certificate/default.jpg" alt="${certDetail.Publisher}" />
-          </div>`;
+      <img src="/uploads/certificate/default.jpg" alt="${certDetail.Publisher}" />
+    </div>`;
           }
-          // Muat ulang konten slider
           swiperWrapper.innerHTML = modalImagesHTML;
 
-          // Jika modalSwiper sudah diinisialisasi sebelumnya, hancurkan dulu agar tidak terjadi duplikasi
+          // Reinitialize the modal Swiper if needed
           if (modalSwiper) {
             modalSwiper.destroy(true, true);
           }
-          // Inisialisasi Swiper untuk modal
           modalSwiper = new Swiper('.modal-swiper', {
             loop: true,
             navigation: {
@@ -369,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
           });
 
-          // Tampilkan modal
+          // Show the modal
           modal.classList.add('active');
         })
         .catch(err => {

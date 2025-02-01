@@ -648,12 +648,16 @@ body {
   bottom: 2rem;
 }
 
-/* Certificates
--------------------------------------------------------------*/
+/* ==========================================================================
+   Certificate Cards (Landing Page) & Modal Base Styles
+   ========================================================================== */
 
+/* -------------------------------
+   Certificate Cards (Landing Page)
+-----------------------------------*/
 .certificates__wrapper {
   display: flex;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  flex-wrap: wrap;
   gap: 2rem;
   max-width: 700px;
   margin: 0 auto;
@@ -670,23 +674,20 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  cursor: pointer;
 }
-
 .certification__card:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* Wrapper gambar dengan aspek rasio tetap */
 .certification__img-wrapper {
   width: 100%;
-  padding-top: 75%; /* Menetapkan rasio aspek 4:3 */
+  padding-top: 75%; /* 4:3 Aspect Ratio */
   position: relative;
   overflow: hidden;
   background-color: #f4f4f4;
 }
-
-/* Gaya untuk gambar sertifikat */
 .certification__img {
   position: absolute;
   top: 0;
@@ -696,21 +697,44 @@ body {
   object-fit: cover;
   transition: transform 0.3s ease;
 }
-
 .certification__card:hover .certification__img {
   transform: scale(1.05);
 }
 
-/* Gaya kartu sertifikat (misalnya) */
-.certification__card {
-  cursor: pointer;
-  transition: transform 0.3s ease;
+.certification__content {
+  padding: 1rem;
 }
-.certification__card:hover {
-  transform: scale(1.02);
+.certification__title {
+  font-size: 3rem;
+  color: #2A3663;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.certification__publisher {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+.certification__dates {
+  font-size: 1.3rem;
+  color: #666;
+  line-height: 1.4;
 }
 
+/* Badge for additional images */
+.image-count {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 20px;
+}
 
+/* Swiper Navigation Buttons for Landing Page */
 .swiper__navigation {
   display: flex;
   justify-content: center;
@@ -718,7 +742,6 @@ body {
   gap: 1rem;
   margin-top: 3rem;
 }
-
 .swiper__button {
   display: inline-flex;
   align-items: center;
@@ -732,49 +755,13 @@ body {
   cursor: pointer;
   transition: var(--transition);
 }
-
 .swiper__button:hover {
   background-color: var(--color-primary);
 }
 
-/* Konten dalam kartu sertifikat */
-.certification__content {
-  padding: 1rem;
-}
-
-.certification__description {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 1rem;
-  line-height: 1.4;
-}
-
-.certification__publisher {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.certification__title {
-  font-size: 1rem;
-  color: #2A3663;
-  font-weight: bold;
-}
-
-.image-count {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 14px;
-}
-
-/* Modal styling */
-/* --- Modal Container & Overlay --- */
+/* -------------------------------
+   Modal & Certificate Detail Styling
+-----------------------------------*/
 .modal {
   position: fixed;
   top: 0;
@@ -794,7 +781,6 @@ body {
   visibility: visible;
 }
 
-/* Overlay gelap dengan efek blur (glassmorphism) */
 .modal-overlay {
   position: absolute;
   top: 0;
@@ -806,94 +792,72 @@ body {
   z-index: 1;
 }
 
-/* --- Konten Modal --- */
 .modal-content {
   position: relative;
   z-index: 2;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 10px;
-  padding: 1.5rem;           /* Mengurangi padding agar konten tidak terlalu besar */
   width: 90%;
   max-width: 900px;
-  max-height: 90vh;          /* Membatasi tinggi modal agar tidak melebihi 90% viewport */
-  overflow-y: auto;          /* Jika konten melebihi tinggi, akan muncul scroll vertical */
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   animation: scaleIn 0.5s ease;
 }
-
-/* Animasi muncul modal */
 @keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
-/* --- Tombol Close --- */
+/* --- Close Button (Increase z-index and contrast) --- */
 .modal-close {
   position: absolute;
-  top: 0.75rem;              /* Menggeser tombol close ke dalam agar tidak terpotong */
+  top: 0.75rem;
   right: 0.75rem;
   background: transparent;
   border: none;
   font-size: 2rem;
   color: #333;
   cursor: pointer;
-  z-index: 3;
+  z-index: 10; /* Increased from 3 */
   transition: transform 0.3s ease;
 }
-.modal-close:hover {
-  transform: scale(1.2);
-}
+.modal-close:hover { transform: scale(1.2); }
 
-/* --- Header Modal --- */
+/* ---------- Fixed Header (Title & Publisher) ---------- */
 .modal-header {
+  flex: 0 0 auto;
   text-align: center;
-  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
   position: sticky;
-  top: 0;                    /* Membuat header tetap di posisi atas saat scroll */
-  background: rgba(255, 255, 255, 0.95); /* Pastikan background header konsisten */
-  z-index: 2;
-  padding: 0.5rem 0;         /* Padding lebih ringkas untuk header */
+  top: 0;
+  z-index: 3;
 }
 .modal-title {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
   margin: 0;
   color: #2A3663;
 }
 .modal-subtitle {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   color: #666;
   margin: 0;
 }
 
-/* --- Body Modal --- */
-.modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
+/* ---------- Fixed Image/Swiper Section ---------- */
+.modal-swiper-wrapper {
+  flex: 0 0 auto;
+  position: relative;
+  height: 400px;
+  background: #f4f4f4;
 }
-
-/* Deskripsi sertifikat */
-.modal-description {
-  margin-top: 1rem;
-  font-size: 1rem;
-  color: #444;
-  text-align: justify;
-  width: 100%;
-  padding: 0 1rem;
-}
-
-/* --- Swiper Styling untuk Modal --- */
 .modal-swiper {
   width: 100%;
-  height: 400px;
-  margin-bottom: 1rem;
+  height: 100%;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -908,9 +872,7 @@ body {
   object-fit: contain;
   transition: transform 0.3s ease;
 }
-.modal-swiper img:hover {
-  transform: scale(1.05);
-}
+.modal-swiper img:hover { transform: scale(1.05); }
 
 .modal-swiper-next,
 .modal-swiper-prev {
@@ -918,32 +880,116 @@ body {
   transition: color 0.3s ease;
 }
 .modal-swiper-next:hover,
-.modal-swiper-prev:hover {
+.modal-swiper-prev:hover { color: var(--color-primary); }
+
+/* ---------- Guide Animation (Appears Briefly) ---------- */
+.guide-animation {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;             /* Increased font size */
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.75rem 1.5rem;       /* Increased padding */
+  border-radius: 20px;
+  /* This animation runs 3 times (12 seconds total) and then stays hidden */
+  animation: fadeInOut 4s ease-in-out 3 forwards;
+}
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  20%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+}
+
+/* ---------- Scrollable Description Area Only ---------- */
+.modal-scrollable {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #fff;
+}
+
+/* ---------- Certificate Details Styling with Icons ---------- */
+.modal-description {
+  font-size: 1.8rem;  /* Increased for better readability */
+  color: #444;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.modal-description .modal-description-title {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.modal-description .modal-description-text {
+  margin-bottom: 1rem;
+}
+
+/* Each detail item (issued date, expiry, skills, category, created at) */
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+.detail-item:last-child {
+  border-bottom: none;
+}
+.detail-item i {
+  font-size: 1.8rem;
   color: var(--color-primary);
 }
+.detail-item span {
+  font-size: 1.4rem;
+  color: #444;
+}
 
-/* --- Footer Modal (Navigasi Antar Sertifikat) --- */
+/* ---------- Skill Badge Hover with Color Change ---------- */
+.skill-badge {
+  display: inline-block;
+  background-color: #cfcccc;
+  color: #100f0f;
+  padding: 0.3rem 0.6rem;
+  margin: 0.2rem;
+  border-radius: 15px;
+  font-size: 1.8rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+.skill-badge:hover {
+  transform: scale(1.05);
+  background-color: var(--color-primary); /* New color on hover – adjust as needed */
+  cursor: pointer;
+}
+
+.category-badge {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 0.3rem 0.6rem;
+  margin: 0.2rem;
+  border-radius: 5px;
+  font-size: 1.8rem;
+}
+
+/* ---------- Fixed Footer Navigation ---------- */
 .modal-footer {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
-  margin-top: 1.5rem;
-  padding: 0 1rem;
-  position: sticky;
-  bottom: 0;                 /* Footer tetap terlihat di bagian bawah saat scroll */
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.95);
-  z-index: 2;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
 }
-.modal-footer .swiper-pagination {
-  margin-top: 0;
-}
-.modal-footer .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background: #ccc;
-  opacity: 1;
-  border-radius: 50%;
-}
-
 .modal-prev,
 .modal-next {
   background: var(--color-dark);
@@ -955,50 +1001,24 @@ body {
   transition: background 0.3s ease;
 }
 .modal-prev:hover,
-.modal-next:hover {
-  background: var(--color-primary);
+.modal-next:hover { background: var(--color-primary); }
+
+/* -------------------------------
+   Responsive Adjustments
+-----------------------------------*/
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    height: 95vh;
+  }
+  .modal-title { font-size: 1.5rem; }
+  .modal-subtitle { font-size: 1rem; }
+  .modal-swiper-wrapper { height: 250px; }
+  .certification__title { font-size: 1.5rem; }
+  .certification__publisher { font-size: 1.2rem; }
+  .detail-item { flex-direction: column; align-items: flex-start; }
 }
 
-/* --- Animasi Panduan --- */
-.guide-animation {
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1rem;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  animation: fadeInOut 3s ease-in-out infinite;
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  50% { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-
-#certificateModal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 1000;
-  background: #fff;
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;            /* Maksimal tinggi modal 90% viewport */
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  overflow: hidden;            /* Penting: agar kita bisa membagi header, body, dan footer */
-}
-
-#certificateModal.active {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
 
 /* Blog
 -------------------------------------------------------------*/

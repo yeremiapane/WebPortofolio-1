@@ -12,6 +12,7 @@
             href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
             rel="stylesheet"
     />
+    <script src="https://kit.fontawesome.com/253410a543.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="assets/lib/swiper/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.10/purify.min.js" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -468,43 +469,42 @@
         <div id="certificateModal" class="modal">
             <div class="modal-overlay"></div>
             <div class="modal-content">
-                <!-- Tombol Close dengan ikon × -->
+                <!-- Close Button -->
                 <button class="modal-close">&times;</button>
 
-                <!-- Header modal untuk judul dan subjudul -->
+                <!-- Fixed Header -->
                 <div class="modal-header">
                     <h2 class="modal-title"></h2>
                     <p class="modal-subtitle"></p>
                 </div>
 
-                <!-- Body modal: berisi slider gambar, deskripsi, dan animasi panduan -->
-                <div class="modal-body">
-                    <!-- Swiper Container untuk gambar sertifikat -->
+                <!-- Fixed Image / Swiper Section -->
+                <div class="modal-swiper-wrapper">
                     <div class="swiper-container modal-swiper">
                         <div class="swiper-wrapper">
-                            <!-- Slide gambar akan dimuat secara dinamis -->
+                            <!-- Slides are injected dynamically -->
                         </div>
-                        <!-- Tombol navigasi Swiper (untuk menggeser gambar) -->
                         <div class="swiper-button-next modal-swiper-next"></div>
                         <div class="swiper-button-prev modal-swiper-prev"></div>
                     </div>
-
-                    <!-- Deskripsi sertifikat -->
-                    <div class="modal-description"></div>
-
-                    <!-- Animasi panduan untuk swipe gambar -->
-                    <div class="guide-animation">Geser untuk melihat gambar</div>
+                    <!-- Guide animation will display briefly -->
+                    <div class="guide-animation">Swipe to view image</div>
                 </div>
 
-                <!-- Footer modal: tombol navigasi antar sertifikat -->
+                <!-- Scrollable Description Area -->
+                <div class="modal-scrollable">
+                    <div class="modal-description">
+                        <!-- Certificate details will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Fixed Footer Navigation -->
                 <div class="modal-footer">
-                    <button class="modal-prev">Sertifikat Sebelumnya</button>
-                    <button class="modal-next">Sertifikat Selanjutnya</button>
+                    <button class="modal-prev">Previous Certificate</button>
+                    <button class="modal-next">Next Certificate</button>
                 </div>
             </div>
         </div>
-
-
 
 
         <!--==================== Blog ========================-->
