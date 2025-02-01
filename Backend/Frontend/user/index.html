@@ -436,7 +436,7 @@
         <section class="section certificates" id="certificates">
             <div class="container">
                 <div class="section__header">
-                    <h2 class="section__title">My Certifications</h2>
+                    <h2 class="section__title">My Certificates</h2>
                     <p class="section__description">
                         These are the certificates I earned from some of the activities I participated in.
                         If you want to see the certificate details, please click the certificate you want to see.
@@ -464,12 +464,46 @@
         </section>
 
         <!-- Modal untuk detail sertifikat -->
-        <div id="certificateModal">
-            <button id="closeModal">Close</button>
-            <div id="modalContent">
-                <!-- Detail sertifikat akan dimuat di sini secara dinamis -->
+        <!-- Modal Certificate: Desain Ulang -->
+        <div id="certificateModal" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <!-- Tombol Close dengan ikon × -->
+                <button class="modal-close">&times;</button>
+
+                <!-- Header modal untuk judul dan subjudul -->
+                <div class="modal-header">
+                    <h2 class="modal-title"></h2>
+                    <p class="modal-subtitle"></p>
+                </div>
+
+                <!-- Body modal: berisi slider gambar, deskripsi, dan animasi panduan -->
+                <div class="modal-body">
+                    <!-- Swiper Container untuk gambar sertifikat -->
+                    <div class="swiper-container modal-swiper">
+                        <div class="swiper-wrapper">
+                            <!-- Slide gambar akan dimuat secara dinamis -->
+                        </div>
+                        <!-- Tombol navigasi Swiper (untuk menggeser gambar) -->
+                        <div class="swiper-button-next modal-swiper-next"></div>
+                        <div class="swiper-button-prev modal-swiper-prev"></div>
+                    </div>
+
+                    <!-- Deskripsi sertifikat -->
+                    <div class="modal-description"></div>
+
+                    <!-- Animasi panduan untuk swipe gambar -->
+                    <div class="guide-animation">Geser untuk melihat gambar</div>
+                </div>
+
+                <!-- Footer modal: tombol navigasi antar sertifikat -->
+                <div class="modal-footer">
+                    <button class="modal-prev">Sertifikat Sebelumnya</button>
+                    <button class="modal-next">Sertifikat Selanjutnya</button>
+                </div>
             </div>
         </div>
+
 
 
 

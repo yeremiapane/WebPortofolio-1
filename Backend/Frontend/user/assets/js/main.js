@@ -169,19 +169,26 @@ function formatDate(dateString) {
   return date.toLocaleDateString(undefined, options);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Inisialisasi modal dan referensi elemen terkait
-  const modal = document.getElementById('certificateModal');
-  const closeModalButton = document.getElementById('closeModal');
-  const modalContent = document.getElementById('modalContent');
+// Variabel global untuk daftar sertifikat dan index sertifikat yang sedang ditampilkan
+let certificatesList = [];
+let currentCertIndex = null;
+let modalSwiper = null;
 
-  // Fungsi untuk memuat sertifikat dan menambahkan event listener ke kartu
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('certificateModal');
+  const modalClose = modal.querySelector('.modal-close');
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalSubtitle = modal.querySelector('.modal-subtitle');
+  const modalDescription = modal.querySelector('.modal-description');
+  const swiperWrapper = modal.querySelector('.modal-swiper .swiper-wrapper');
+  const btnPrevCert = modal.querySelector('.modal-prev');
+  const btnNextCert = modal.querySelector('.modal-next');
+
+  // Fungsi untuk memuat daftar sertifikat pada halaman utama
   function loadCertificatesForHomepage() {
     fetch('/certificates?page=1')
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
+          if (!response.ok) throw new Error('Network response was not ok');
           return response.json();
         })
         .then(certificates => {
@@ -192,15 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           wrapper.innerHTML = '';
 
-          certificates.forEach(cert => {
-            // Helper: build Issue date string
+          // Simpan seluruh data sertifikat ke array global
+          certificatesList = certificates;
+
+          certificates.forEach((cert, index) => {
+            // Buat string tanggal issue dan end
             let issueString = '';
             if (cert.IssueMonth && cert.IssueYear) {
               const monthName = getMonthName(cert.IssueMonth);
               issueString = `${monthName} ${cert.IssueYear}`;
             }
 
-            // Helper: build End date string
             let endString = '';
             if (cert.EndMonth && cert.EndYear) {
               const endMonthName = getMonthName(cert.EndMonth);
@@ -209,168 +218,48 @@ document.addEventListener('DOMContentLoaded', () => {
               endString = 'No Expiry Date';
             }
 
-            // Menangani multiple images
+            // Tangani multiple images
             const imagePaths = cert.Images ? cert.Images.split(',') : [];
             const firstImage = imagePaths.length > 0 ? imagePaths[0].trim() : '';
             const additionalImagesCount = imagePaths.length > 1 ? imagePaths.length - 1 : 0;
 
-            // Debugging: Periksa nilai imagePaths, firstImage, additionalImagesCount
-            console.log(`Certificate ID: ${cert.ID}`);
-            console.log(`Images: ${cert.Images}`);
-            console.log(`First Image: ${firstImage}`);
-            console.log(`Additional Images Count: ${additionalImagesCount}`);
-
-            // Buat card
+            // Buat elemen kartu sertifikat
             const card = document.createElement('div');
             card.classList.add('certification__card', 'swiper-slide');
             card.setAttribute('data-id', cert.ID);
+            card.setAttribute('data-index', index);
 
-            // Periksa apakah firstImage kosong
-            const imageSrc = firstImage ? `/uploads/certificate/${encodeURIComponent(firstImage)}` : '/uploads/certificate/default.jpg';
+            // Tentukan sumber gambar
+            const imageSrc = firstImage
+                ? `/uploads/certificate/${encodeURIComponent(firstImage)}`
+                : '/uploads/certificate/default.jpg';
 
             card.innerHTML = `
-                        <div class="certification__img-wrapper">
-                            <img src="${imageSrc}" alt="${cert.Publisher}" class="certification__img">
-                            ${additionalImagesCount > 0 ? `<span class="image-count">+${additionalImagesCount}</span>` : ''}
-                        </div>
-                        <div class="certification__content">
-                            <h1 class="certification__title">${cert.Title}</h1>
-                            <h3 class="certification__publisher">${cert.Publisher}</h3>
-                            <!-- Tambahkan info Issue & End -->
-                            <p class="certification__dates">
-                                <strong>Issue:</strong> ${issueString}<br>
-                                <strong>End:</strong> ${endString}
-                            </p>
-                        </div>
-                    `;
+            <div class="certification__img-wrapper">
+              <img src="${imageSrc}" alt="${cert.Publisher}" class="certification__img">
+              ${additionalImagesCount > 0 ? `<span class="image-count">+${additionalImagesCount}</span>` : ''}
+            </div>
+            <div class="certification__content">
+              <h1 class="certification__title">${cert.Title}</h1>
+              <h3 class="certification__publisher">${cert.Publisher}</h3>
+              <p class="certification__dates">
+                <strong>Issue:</strong> ${issueString}<br>
+                <strong>End:</strong> ${endString}
+              </p>
+            </div>
+          `;
 
-            // Card onClick => fetch detail, buka modal
+            // Saat kartu diklik, simpan index saat ini dan muat detail sertifikat ke modal
             card.addEventListener('click', () => {
               const certId = card.getAttribute('data-id');
-              if (!certId) return;
-
-              fetch(`/certificates/${certId}`)
-                  .then(response => {
-                    if (!response.ok) throw new Error('Failed to fetch certificate detail');
-                    return response.json();
-                  })
-                  .then(certDetail => {
-                    // Build detail Issue & End
-                    let detailIssue = '';
-                    if (certDetail.IssueMonth && certDetail.IssueYear) {
-                      const imStr = getMonthName(certDetail.IssueMonth);
-                      detailIssue = `${imStr} ${certDetail.IssueYear}`;
-                    }
-
-                    let detailEnd = '';
-                    if (certDetail.EndMonth && certDetail.EndYear) {
-                      const emStr = getMonthName(certDetail.EndMonth);
-                      detailEnd = `${emStr} ${certDetail.EndYear}`;
-                    } else {
-                      detailEnd = 'No Expiry';
-                    }
-
-                    // Tampilkan skill (jika misal `certDetail.skills` = "ML, CV, UL")
-                    let skillsStr = '';
-                    if (certDetail.Skills) {
-                      skillsStr = `<p><strong>Skills:</strong> ${certDetail.Skills}</p>`;
-                    }
-
-                    // Tampilkan verification link (jika ada)
-                    let verifyLink = '';
-                    if (certDetail.VerificationLink) {
-                      verifyLink = `
-                                        <p>
-                                            <strong>Verification Link:</strong> 
-                                            <a href="${certDetail.VerificationLink}" target="_blank">Open Link</a>
-                                        </p>
-                                    `;
-                    }
-
-                    // Tampilkan category (opsional)
-                    let categoryStr = '';
-                    if (certDetail.Category) {
-                      categoryStr = `<p><strong>Category:</strong> ${certDetail.Category}</p>`;
-                    }
-
-                    const dateCreated = certDetail.CreatedAt ? formatDate(certDetail.CreatedAt) : 'N/A';
-
-                    // Sanitasi deskripsi
-                    const sanitizedDescription = DOMPurify.sanitize(certDetail.Description);
-
-                    // Menangani multiple images di modal
-                    const modalImagePaths = certDetail.Images ? certDetail.Images.split(',') : [];
-                    let modalImagesHTML = '';
-                    modalImagePaths.forEach(img => {
-                      if (img.trim() !== '') {
-                        modalImagesHTML += `<div class="swiper-slide"><img src="/uploads/certificate/${encodeURIComponent(img.trim())}" alt="${certDetail.Publisher}" /></div>`;
-                      }
-                    });
-
-                    // Pastikan ada minimal satu slide
-                    if (modalImagesHTML === '') {
-                      modalImagesHTML = `<div class="swiper-slide"><img src="/uploads/certificate/default.jpg" alt="${certDetail.Publisher}" /></div>`;
-                    }
-
-                    modalContent.innerHTML = `
-                                    <button id="closeModal">Close</button>
-                                    <h1 style="text-align: center; font-size:45px;">${certDetail.Title}</h1>
-                                    <p style="text-align: center; font-size : 20px;"><strong>Issued By:</strong> ${certDetail.Publisher}</p>
-                                    
-                                    <!-- Swiper Container -->
-                                    <div class="swiper-container-modal">
-                                        <div class="swiper-wrapper">${modalImagesHTML}</div>
-                                        <!-- Add Navigation -->
-                                        <div class="swiper-button-next"></div>
-                                        <div class="swiper-button-prev"></div>
-                                    </div>
-                                    
-                                    <p style="font-size : 18px;"><strong>Description:</strong></p>
-                                    <div style="font-size: 16px;">${sanitizedDescription}</div>
-                                    
-                                    <p><strong>Issue:</strong> ${detailIssue}</p>
-                                    <p><strong>End:</strong> ${detailEnd}</p>
-                                    
-                                    ${categoryStr}
-                                    ${skillsStr}
-                                    ${verifyLink}
-                                    
-                                    <p><strong>Created At:</strong> ${dateCreated}</p>
-                                `;
-
-                    // Inisialisasi Swiper untuk modal
-                    // Pastikan hanya inisialisasi Swiper sekali
-                    if (!modal.querySelector('.swiper-container-modal').swiper) {
-                      new Swiper('.swiper-container-modal', {
-                        loop: true,
-                        navigation: {
-                          nextEl: '.swiper-button-next',
-                          prevEl: '.swiper-button-prev',
-                        },
-                      });
-                    }
-
-                    // Tambahkan event listener untuk tombol close di modal
-                    const closeModalBtn = modalContent.querySelector('#closeModal');
-                    if (closeModalBtn) {
-                      closeModalBtn.addEventListener('click', () => {
-                        modal.classList.remove('active');
-                      });
-                    }
-
-                    // Tampilkan modal
-                    modal.classList.add('active');
-                  })
-                  .catch(err => {
-                    console.error('Error fetching certificate details:', err);
-                  });
+              currentCertIndex = parseInt(card.getAttribute('data-index'));
+              loadCertificateDetail(certId);
             });
 
             wrapper.appendChild(card);
           });
 
-          // Inisialisasi Swiper untuk Landing Page
-          // Pastikan hanya inisialisasi sekali
+          // Inisialisasi Swiper untuk halaman utama (Landing Page)
           window.mySwiper = new Swiper('.swiper', {
             navigation: {
               nextEl: '.swiper__next',
@@ -384,20 +273,133 @@ document.addEventListener('DOMContentLoaded', () => {
         });
   }
 
-  // Helper function: month number -> month name
+  // Fungsi untuk mengonversi nomor bulan ke nama bulan
   function getMonthName(num) {
     const months = [
-      "January","February","March","April","May","June",
-      "July","August","September","October","November","December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
     return months[num - 1] || "";
   }
 
-  // Panggil fungsi untuk memuat sertifikat
-  loadCertificatesForHomepage();
+  // Fungsi untuk memformat tanggal (misalnya dari ISO string)
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  }
 
-  // Event listener untuk tombol Close pada modal (fallback)
-  closeModalButton.addEventListener('click', () => {
+  // Fungsi untuk memuat detail sertifikat ke dalam modal
+  function loadCertificateDetail(certId) {
+    fetch(`/certificates/${certId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to fetch certificate detail');
+          return response.json();
+        })
+        .then(certDetail => {
+          // Set judul dan subjudul modal
+          modalTitle.textContent = certDetail.Title;
+          modalSubtitle.textContent = `Issued by ${certDetail.Publisher}`;
+
+          // Format tanggal issue & end
+          let detailIssue = '';
+          if (certDetail.IssueMonth && certDetail.IssueYear) {
+            const imStr = getMonthName(certDetail.IssueMonth);
+            detailIssue = `${imStr} ${certDetail.IssueYear}`;
+          }
+          let detailEnd = '';
+          if (certDetail.EndMonth && certDetail.EndYear) {
+            const emStr = getMonthName(certDetail.EndMonth);
+            detailEnd = `${emStr} ${certDetail.EndYear}`;
+          } else {
+            detailEnd = 'No Expiry';
+          }
+
+          // Tampilkan skills, verification link, dan category jika ada
+          let extraInfo = '';
+          if (certDetail.Skills) {
+            extraInfo += `<p><strong>Skills:</strong> ${certDetail.Skills}</p>`;
+          }
+          if (certDetail.VerificationLink) {
+            extraInfo += `<p><strong>Verification Link:</strong> <a href="${certDetail.VerificationLink}" target="_blank">Open Link</a></p>`;
+          }
+          if (certDetail.Category) {
+            extraInfo += `<p><strong>Category:</strong> ${certDetail.Category}</p>`;
+          }
+          const dateCreated = certDetail.CreatedAt ? formatDate(certDetail.CreatedAt) : 'N/A';
+
+          // Gabungkan deskripsi lengkap
+          const sanitizedDescription = DOMPurify.sanitize(certDetail.Description);
+          modalDescription.innerHTML = `
+          <p style="font-size: 18px;"><strong>Description:</strong></p>
+          <div style="font-size: 16px;">${sanitizedDescription}</div>
+          <p><strong>Issue:</strong> ${detailIssue}</p>
+          <p><strong>End:</strong> ${detailEnd}</p>
+          ${extraInfo}
+          <p><strong>Created At:</strong> ${dateCreated}</p>
+        `;
+
+          // Tangani multiple images untuk modal (gunakan default jika tidak ada gambar)
+          const modalImagePaths = certDetail.Images ? certDetail.Images.split(',') : [];
+          let modalImagesHTML = '';
+          modalImagePaths.forEach(img => {
+            if (img.trim() !== '') {
+              modalImagesHTML += `<div class="swiper-slide">
+              <img src="/uploads/certificate/${encodeURIComponent(img.trim())}" alt="${certDetail.Publisher}" />
+            </div>`;
+            }
+          });
+          if (modalImagesHTML === '') {
+            modalImagesHTML = `<div class="swiper-slide">
+            <img src="/uploads/certificate/default.jpg" alt="${certDetail.Publisher}" />
+          </div>`;
+          }
+          // Muat ulang konten slider
+          swiperWrapper.innerHTML = modalImagesHTML;
+
+          // Jika modalSwiper sudah diinisialisasi sebelumnya, hancurkan dulu agar tidak terjadi duplikasi
+          if (modalSwiper) {
+            modalSwiper.destroy(true, true);
+          }
+          // Inisialisasi Swiper untuk modal
+          modalSwiper = new Swiper('.modal-swiper', {
+            loop: true,
+            navigation: {
+              nextEl: '.modal-swiper-next',
+              prevEl: '.modal-swiper-prev',
+            },
+          });
+
+          // Tampilkan modal
+          modal.classList.add('active');
+        })
+        .catch(err => {
+          console.error('Error fetching certificate details:', err);
+        });
+  }
+
+  // Event listener untuk tombol close modal
+  modalClose.addEventListener('click', () => {
     modal.classList.remove('active');
   });
+
+  // Event listener untuk tombol navigasi antar sertifikat (Sertifikat Sebelumnya)
+  btnPrevCert.addEventListener('click', () => {
+    if (certificatesList.length === 0 || currentCertIndex === null) return;
+    // Mengurangi index, jika sudah di awal maka kembali ke akhir list (loop)
+    currentCertIndex = (currentCertIndex - 1 + certificatesList.length) % certificatesList.length;
+    const prevCertId = certificatesList[currentCertIndex].ID;
+    loadCertificateDetail(prevCertId);
+  });
+
+  // Event listener untuk tombol navigasi antar sertifikat (Sertifikat Selanjutnya)
+  btnNextCert.addEventListener('click', () => {
+    if (certificatesList.length === 0 || currentCertIndex === null) return;
+    // Menambah index, jika sudah di akhir maka kembali ke awal list
+    currentCertIndex = (currentCertIndex + 1) % certificatesList.length;
+    const nextCertId = certificatesList[currentCertIndex].ID;
+    loadCertificateDetail(nextCertId);
+  });
+
+  // Panggil fungsi untuk memuat sertifikat pada halaman utama
+  loadCertificatesForHomepage();
 });
