@@ -8,10 +8,19 @@
     <link rel="icon" href="/assets/img/Designer.ico" type="image/png">
     <title>Yeremia Yosefan Pane</title>
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link
+            href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+            rel="stylesheet"
+    />
     <link rel="stylesheet" href="assets/lib/swiper/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.10/purify.min.js" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
 
 </head>
 
@@ -39,6 +48,9 @@
                     </li>
                     <li class="nav__item">
                         <a href="#portfolio" class="nav__link">Portfolio</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#certificates" class="nav__link">Certificates</a>
                     </li>
                     <li class="nav__item">
                         <a href="#blog" class="nav__link">Blog</a>
@@ -76,13 +88,13 @@
                                 </a>
                             </li>
                             <li class="social__item">
-                                <a href="#" class="social__link">
-                                    <i class="ri-dribbble-line"></i>
+                                <a href="https://www.instagram.com/yeremiapane/" class="social__link">
+                                    <i class="ri-instagram-line"></i>
                                 </a>
                             </li>
                             <li class="social__item">
-                                <a href="#" class="social__link">
-                                    <i class="ri-youtube-line"></i>
+                                <a href="https://x.com/PaneYeremia" class="social__link">
+                                    <i class="ri-twitter-x-line"></i>
                                 </a>
                             </li>
                         </ul>
@@ -409,8 +421,8 @@
                     <img src="assets/img/portfolio3.jpg" alt="" class="portfolio__img">
                     <div class="portfolio__content">
                         <div class="portfolio__info">
-                            <h3 class="portfolio__name">UI/UX Design</h3>
-                            <span class="portfolio__category">UI/UX Design</span>
+                            <h3 class="portfolio__name">Data Engineer</h3>
+                            <span class="portfolio__category">Data Engineer</span>
                         </div>
                         <a href="#" class="portfolio__link">
                             <i class="ri-external-link-line"></i>
@@ -421,31 +433,36 @@
         </section>
 
         <!--==================== Certifications ========================-->
-        <section class="section certificates">
+        <section class="section certificates" id="certificates">
             <div class="container">
-              <div class="section__header">
-                <h2 class="section__title">My Certifications</h2>
-                <p class="section__description">These are the certificates I earned from some of the activities I participated in.
-                    If you want to see the certificate details, Please click the certificate you want to see.
-                </p>
-              </div>
+                <div class="section__header">
+                    <h2 class="section__title">My Certifications</h2>
+                    <p class="section__description">
+                        These are the certificates I earned from some of the activities I participated in.
+                        If you want to see the certificate details, please click the certificate you want to see.
+                    </p>
+                </div>
             </div>
+
+            <!-- Swiper Container untuk Landing Page Sertifikat -->
             <div class="certificates__wrapper container swiper">
-              <div class="section-bg"></div>
-              <!-- Kontainer untuk sertifikat dinamis -->
-              <div class="swiper-wrapper">
-                <!-- Sertifikat akan ditambahkan di sini -->
-              </div>
+                <div class="section-bg"></div>
+                <!-- Kontainer untuk sertifikat dinamis -->
+                <div class="swiper-wrapper certification__cards">
+                    <!-- Sertifikat akan ditambahkan di sini -->
+                </div>
+
+                <div class="swiper__navigation">
+                    <div class="swiper__button swiper__prev">
+                        <i class="ri-arrow-left-s-line"></i>
+                    </div>
+                    <div class="swiper__button swiper__next">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </div>
+                </div>
             </div>
-            <div class="swiper__navigation">
-              <div class="swiper__button swiper__prev">
-                <i class="ri-arrow-left-s-line"></i>
-              </div>
-              <div class="swiper__button swiper__next">
-                <i class="ri-arrow-right-s-line"></i>
-              </div>
-            </div>
-          </section>
+        </section>
+
         <!-- Modal untuk detail sertifikat -->
         <div id="certificateModal">
             <button id="closeModal">Close</button>
@@ -453,6 +470,8 @@
                 <!-- Detail sertifikat akan dimuat di sini secara dinamis -->
             </div>
         </div>
+
+
 
         <!--==================== Blog ========================-->
         <section id="blog" class="section blog">
@@ -497,13 +516,13 @@
                             </a>
                         </li>
                         <li class="social__item">
-                            <a href="#" class="social__link">
-                                <i class="ri-dribbble-line"></i>
+                            <a href="https://www.instagram.com/yeremiapane/" class="social__link">
+                                <i class="ri-instagram-line"></i>
                             </a>
                         </li>
                         <li class="social__item">
-                            <a href="#" class="social__link">
-                                <i class="ri-youtube-line"></i>
+                            <a href="https://x.com/PaneYeremia" class="social__link">
+                                <i class="ri-twitter-x-line"></i>
                             </a>
                         </li>
                     </ul>

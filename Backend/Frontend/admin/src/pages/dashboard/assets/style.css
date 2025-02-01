@@ -424,6 +424,23 @@ button:hover {
     border-radius: 3px;
 }
 
+/*========= Preview Img Certificates ==========*/
+#Certificate_image_preview {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+#Certificate_image_preview img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
 /* Gunakan font Roboto dan Lora yang sudah di-include untuk konsistensi gaya */
 
 /* Styling untuk modal preview */

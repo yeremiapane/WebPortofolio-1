@@ -650,8 +650,9 @@ body {
 
 /* Certificates
 -------------------------------------------------------------*/
+
 .certificates__wrapper {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   max-width: 700px;
@@ -700,6 +701,42 @@ body {
   transform: scale(1.05);
 }
 
+/* Gaya kartu sertifikat (misalnya) */
+.certification__card {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.certification__card:hover {
+  transform: scale(1.02);
+}
+
+
+.swiper__navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.swiper__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: var(--color-dark);
+  font-size: var(--fs-lg);
+  color: var(--color-white);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.swiper__button:hover {
+  background-color: var(--color-primary);
+}
+
 /* Konten dalam kartu sertifikat */
 .certification__content {
   padding: 1rem;
@@ -723,6 +760,17 @@ body {
   font-size: 1rem;
   color: #2A3663;
   font-weight: bold;
+}
+
+.image-count {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
 }
 
 /* Modal styling */
@@ -760,40 +808,26 @@ body {
   border-radius: 4px;
 }
 
-/* Gaya kartu sertifikat (misalnya) */
-.certification__card {
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-.certification__card:hover {
-  transform: scale(1.02);
+/* Gaya untuk Swiper di Modal */
+.swiper-container-modal {
+  width: 100%;
+  height: 400px; /* Sesuaikan tinggi sesuai kebutuhan */
+  margin: 20px 0;
 }
 
-
-.swiper__navigation {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 3rem;
+.swiper-container-modal .swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.swiper__button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  background-color: var(--color-dark);
-  font-size: var(--fs-lg);
-  color: var(--color-white);
-  cursor: pointer;
-  transition: var(--transition);
+.swiper-button-next,
+.swiper-button-prev {
+  color: #000; /* Sesuaikan warna navigasi */
 }
 
-.swiper__button:hover {
-  background-color: var(--color-primary);
+.swiper-pagination-bullet {
+  background: #000; /* Sesuaikan warna pagination */
 }
 
 /* Blog

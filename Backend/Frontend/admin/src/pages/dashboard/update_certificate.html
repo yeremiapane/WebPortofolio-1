@@ -81,10 +81,14 @@
 
         <!-- Description -->
         <label for="Certificate_description">Description:</label>
+        <!-- Quill Editor Container -->
+        <div id="quillDescription"></div>
+        <!-- Hidden textarea to store Quill content -->
         <textarea
                 id="Certificate_description"
                 name="description"
                 placeholder="Short description"
+                style="display: none;"
                 required
         ></textarea>
 
@@ -104,8 +108,11 @@
                 id="Certificate_image"
                 name="images"
                 accept="image/*"
+                multiple
         />
 
+        <!-- Certification Image Preview -->
+        <div id="Certificate_image_preview" style="display: flex; flex-wrap: wrap; margin-top: 10px;"></div>
         <button type="submit">Update Certificate</button>
     </form>
 </div>

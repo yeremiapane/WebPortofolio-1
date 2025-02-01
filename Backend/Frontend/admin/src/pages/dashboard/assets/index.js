@@ -90,6 +90,8 @@ function loadContent(page, title) {
                 initializeUpdateArticle();
             } else if (page === '/admin_dashboard_pages/write_certificates.html') {
                 initializeWriteCertificates();
+                initializeQuillDescription();
+                initializeCertificateImagePreview();
                 const form = document.getElementById('writeCertificateForm');
                 if (form) {
                     form.addEventListener('submit', e => {
@@ -100,6 +102,8 @@ function loadContent(page, title) {
             } else if (page === '/admin_dashboard_pages/update_certificate.html') {
                 initializeWriteCertificates();
                 initializeUpdateCertificate();
+                initializeQuillDescription();
+                initializeCertificateImagePreview();
             } else if (page === '/admin_dashboard_pages/comments.html') {
                 initializeComments();
             }
@@ -782,6 +786,46 @@ function initializeWriteArticles() {
 }
 
 /** CERTIFICATES **/
+
+/** Fungsi untuk Menginisialisasi Quill Editor **/
+function initializeQuillDescription() {
+    const quill = new Quill('#quillDescription', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Sinkronkan konten Quill ke textarea tersembunyi sebelum form dikirim
+    const form = document.getElementById('writeCertificateForm');
+    const hiddenTextarea = document.getElementById('Certificate_description');
+
+    if (form && hiddenTextarea) {
+        form.addEventListener('submit', function(event) {
+            // Ambil konten HTML dari Quill dan simpan ke textarea
+            hiddenTextarea.value = quill.root.innerHTML;
+
+            // Optionally, you can sanitize the HTML here
+            // hiddenTextarea.value = DOMPurify.sanitize(quill.root.innerHTML);
+
+            // Jika Anda ingin menambahkan validasi minimal konten
+            if (!quill.getText().trim()) {
+                event.preventDefault();
+                showToast('Description cannot be empty.', 'warning');
+                return;
+            }
+        });
+    }
+
+    return quill;
+}
+
 function loadCertificates(page = 1) {
     currentPageCertificates = page;
     fetch(`/certificates?page=${page}&limit=10`, {
@@ -890,6 +934,8 @@ function initializeWriteCertificates() {
 }
 
 /** Submit Certificate (Write) **/
+/** Submit Certificate (Write) **/
+/** Submit Certificate (Write) **/
 function submitCertificateForm() {
     // Ambil nilai input
     const title     = document.getElementById('Certificate_title').value.trim();
@@ -902,13 +948,13 @@ function submitCertificateForm() {
     const endMonth   = document.getElementById('Certificate_end_month').value.trim();
     const endYear    = document.getElementById('Certificate_end_year').value.trim();
 
-    const description = document.getElementById('Certificate_description').value.trim();
+    const description = document.getElementById('Certificate_description').value.trim(); // Ambil dari textarea
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
 
-    const imageFile = document.getElementById('Certificate_image').files[0];
+    const imageFiles = document.getElementById('Certificate_image').files; // Mengambil semua file
 
     // Validasi minimal
-    if (!title || !publisher || !category || !skills || !description || !imageFile) {
+    if (!title || !publisher || !category || !skills || !description) { // Tidak lagi memerlukan imageFile
         showToast('Please fill all required fields.', 'warning');
         return;
     }
@@ -919,7 +965,7 @@ function submitCertificateForm() {
     formData.append('publisher', publisher);
     formData.append('category', category);
     formData.append('skills', skills);
-    formData.append('description', description);
+    formData.append('description', description); // Deskripsi berformat HTML
 
     // Jika user mengisi issueMonth / issueYear
     if (issueMonth)  formData.append('issue_month', issueMonth);
@@ -931,22 +977,25 @@ function submitCertificateForm() {
         formData.append('verification_link', verificationLink);
     }
 
-    // Jika user upload file
-    if (imageFile) {
-        // images = single path
-        formData.append('images', imageFile);
+    // Jika user mengupload file
+    if (imageFiles.length > 0) {
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append('images', imageFiles[i]); // Tambahkan setiap file dengan nama 'images'
+        }
     }
 
     // Kirim ke endpoint backend (contoh: /admin/certificates)
     fetch('/admin/certificates', {
         method: 'POST',
-        headers: window.authHeader,
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Pastikan header auth ditambahkan dengan benar
+            // Hapus 'Content-Type' karena FormData akan mengaturnya secara otomatis
+        },
         body: formData
     })
         .then(res => {
             if (!res.ok) {
-                showToast('Failed to create certificate', 'error');
-                throw new Error('Failed to create certificate');
+                return res.json().then(err => { throw new Error(err.error || 'Failed to create certificate'); });
             }
             return res.json();
         })
@@ -957,9 +1006,11 @@ function submitCertificateForm() {
         })
         .catch(err => {
             console.error('Error create certificate:', err);
-            showToast(`Error: ${err}`, 'error');
+            showToast(`Error: ${err.message}`, 'error');
         });
 }
+
+
 
 /** Update Certificate **/
 function initializeUpdateCertificate() {
@@ -1037,10 +1088,10 @@ function updateCertificateSubmit(certId) {
 
     const description = document.getElementById('Certificate_description').value.trim();
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
-    const imageFile = document.getElementById('Certificate_image').files[0];
+    const imageFiles = document.getElementById('Certificate_image').files; // Mengambil semua file
 
     // Validasi minimal
-    if (!title || !publisher || !category || !skills || !description) {
+    if (!title || !publisher || !category || !skills || !description) { // Menghapus imageFile dari validasi
         showToast('Please fill all required fields.', 'warning');
         return;
     }
@@ -1057,19 +1108,22 @@ function updateCertificateSubmit(certId) {
     if (endYear)     formData.append('end_year', endYear);
     if (verificationLink) formData.append('verification_link', verificationLink);
 
-    if (imageFile) {
-        formData.append('images', imageFile);
+    if (imageFiles.length > 0) {
+        for (let i = 0; i < imageFiles.length; i++) {
+            formData.append('images', imageFiles[i]);
+        }
     }
 
     fetch(`/admin/certificates/${certId}`, {
         method: 'PUT',
-        headers: window.authHeader,
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
         body: formData
     })
         .then(res => {
             if(!res.ok) {
-                showToast('Failed to update certificate', 'error');
-                throw new Error('Failed to update certificate');
+                return res.json().then(err => { throw new Error(err.error || 'Failed to update certificate'); });
             }
             return res.json();
         })
@@ -1079,7 +1133,60 @@ function updateCertificateSubmit(certId) {
         })
         .catch(err => {
             console.error(err);
-            showToast(`Error updating certificate: ${err}`, 'error');
+            showToast(`Error updating certificate: ${err.message}`, 'error');
         });
+}
+
+/** Preview Gambar untuk Certificate **/
+function initializeCertificateImagePreview() {
+    const imageInput = document.getElementById('Certificate_image');
+    const previewContainer = document.getElementById('Certificate_image_preview');
+
+    if (!imageInput || !previewContainer) {
+        console.error('Element input gambar atau container preview tidak ditemukan.');
+        return;
+    }
+
+    imageInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        previewContainer.innerHTML = ''; // Reset preview
+
+        if (files.length === 0) {
+            previewContainer.style.display = 'none';
+            return;
+        } else {
+            previewContainer.style.display = 'flex';
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Validasi tipe file (opsional)
+            if (!file.type.startsWith('image/')) {
+                showToast(`File ${file.name} bukan gambar.`, 'warning');
+                continue;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+                img.style.objectFit = 'cover';
+                img.style.margin = '5px';
+                img.style.border = '1px solid #ccc';
+                img.style.borderRadius = '4px';
+                previewContainer.appendChild(img);
+            }
+
+            reader.onerror = function() {
+                showToast(`Gagal membaca file ${file.name}.`, 'error');
+            }
+
+            reader.readAsDataURL(file);
+        }
+    });
 }
 

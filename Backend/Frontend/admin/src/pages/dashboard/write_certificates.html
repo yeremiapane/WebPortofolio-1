@@ -82,11 +82,15 @@
 
     <!-- Description -->
     <label for="Certificate_description">Description:</label>
+    <!-- Quill Editor Container -->
+    <div id="quillDescription"></div>
+    <!-- Hidden textarea to store Quill content -->
     <textarea
             id="Certificate_description"
             name="description"
             placeholder="Short description"
-            required
+            style="display: none;" <!-- Sembunyikan textarea asli -->
+    required
     ></textarea>
 
     <!-- Verification Link -->
@@ -105,7 +109,11 @@
             id="Certificate_image"
             name="images"
             accept="image/*"
+            multiple
     />
+    <!-- Certification Image Preview -->
+    <div id="Certificate_image_preview" style="display: flex; flex-wrap: wrap; margin-top: 10px;"></div>
+
 
     <button type="submit" id="submitCertificateBtn">Submit</button>
   </form>
