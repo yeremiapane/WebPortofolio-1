@@ -1051,7 +1051,7 @@ function initializeUpdateCertificate() {
                 document.getElementById('Certificate_end_year').value = cert.EndYear;
             }
 
-            document.getElementById('Certificate_description').value = cert.Description || '';
+            document.getElementById('Certificate_description').value = cert.Description;
 
             if (cert.VerificationLink) {
                 document.getElementById('Certificate_verification_link').value = cert.VerificationLink;
