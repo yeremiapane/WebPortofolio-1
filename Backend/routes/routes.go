@@ -13,7 +13,7 @@ import (
 
 func SetupRoutes() *gin.Engine {
 	r := gin.Default()
-
+	r.MaxMultipartMemory = 50 << 20
 	// Middleware CORS
 	r.Use(middleware.CORSMiddleware())
 
