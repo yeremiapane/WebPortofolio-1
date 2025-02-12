@@ -116,6 +116,17 @@ function truncateText(text, maxLength) {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 }
 
+function slugify(text) {
+  return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')      // Ganti spasi dengan tanda -
+      .replace(/[^\w\-]+/g, '')  // Hapus karakter khusus
+      .replace(/\-\-+/g, '-');   // Ganti tanda - berulang menjadi satu
+}
+
+
 function loadArticlesForHomepage() {
   fetch('/articles?page=1&limit=3')  // sesuaikan URL dan parameter
       .then(response => {
@@ -143,11 +154,11 @@ function loadArticlesForHomepage() {
           </div>
           <div class="blog__content">
             <h3 class="blog__title">
-              <a href="article/${article.ID}" style="text-decoration: none; color: inherit;">
+              <a href="article/${article.ID}/${slugify(article.Title)}" style="text-decoration: none; color: inherit;">
                 ${article.Title}
               </a>
             </h3>
-            <p class="blog__description">${truncateText(article.Description, 35)}</p>
+            <p class="blog__description">${truncateText(article.Description, 45)}</p>
           </div>
           <div class="blog__footer">
             <span class="blog__category">${article.Category}</span>

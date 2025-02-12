@@ -90,7 +90,7 @@ function loadContent(page, title) {
                 initializeUpdateArticle();
             } else if (page === '/admin_dashboard_pages/write_certificates.html') {
                 initializeWriteCertificates();
-                initializeQuillDescription();
+                initializeUpdateQuillDescription();
                 initializeCertificateImagePreview();
                 const form = document.getElementById('writeCertificateForm');
                 if (form) {
@@ -102,7 +102,7 @@ function loadContent(page, title) {
             } else if (page === '/admin_dashboard_pages/update_certificate.html') {
                 initializeWriteCertificates();
                 initializeUpdateCertificate();
-                initializeQuillDescription();
+                initializeUpdateQuillDescription();
                 initializeCertificateImagePreview();
             } else if (page === '/admin_dashboard_pages/comments.html') {
                 initializeComments();
@@ -787,15 +787,16 @@ function initializeWriteArticles() {
 
 /** CERTIFICATES **/
 
+
 /** Fungsi untuk Menginisialisasi Quill Editor **/
-function initializeQuillDescription() {
+function initializeUpdateQuillDescription() {
     const quill = new Quill('#quillDescription', {
         theme: 'snow',
         modules: {
             toolbar: [
                 [{ header: [1, 2, 3, false] }],
                 ['bold', 'italic', 'underline', 'strike'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                 ['link', 'image'],
                 ['clean']
             ]
@@ -803,18 +804,12 @@ function initializeQuillDescription() {
     });
 
     // Sinkronkan konten Quill ke textarea tersembunyi sebelum form dikirim
-    const form = document.getElementById('writeCertificateForm');
+    const form = document.getElementById('updateCertificateForm');
     const hiddenTextarea = document.getElementById('Certificate_description');
 
     if (form && hiddenTextarea) {
         form.addEventListener('submit', function(event) {
-            // Ambil konten HTML dari Quill dan simpan ke textarea
             hiddenTextarea.value = quill.root.innerHTML;
-
-            // Optionally, you can sanitize the HTML here
-            // hiddenTextarea.value = DOMPurify.sanitize(quill.root.innerHTML);
-
-            // Jika Anda ingin menambahkan validasi minimal konten
             if (!quill.getText().trim()) {
                 event.preventDefault();
                 showToast('Description cannot be empty.', 'warning');
@@ -825,6 +820,7 @@ function initializeQuillDescription() {
 
     return quill;
 }
+
 
 function loadCertificates(page = 1) {
     currentPageCertificates = page;
@@ -1014,15 +1010,17 @@ function submitCertificateForm() {
 
 /** Update Certificate **/
 function initializeUpdateCertificate() {
-    // 1) Ambil ID certificate yang mau di-update
-    //    Biasanya disimpan di global variable "window.currentCertificateId"
+    // Pastikan certificate ID tersedia
     const certId = window.currentCertificateId;
-    if(!certId) {
+    if (!certId) {
         showToast('Missing certificate ID.', 'error');
         return;
     }
 
-    // 2) Ambil data certificate dari backend (GET /certificates/:id)
+    // Inisialisasi Quill untuk update certificate
+    const quill = initializeUpdateQuillDescription();
+
+    // Fetch data certificate dari backend
     fetch(`/certificates/${certId}`, { headers: window.authHeader })
         .then(res => {
             if (!res.ok) {
@@ -1032,7 +1030,7 @@ function initializeUpdateCertificate() {
             return res.json();
         })
         .then(cert => {
-            // 3) Isi form fields sesuai data
+            // Isi field form dengan data certificate
             document.getElementById('Certificate_title').value = cert.Title || '';
             document.getElementById('Certificate_publisher').value = cert.Publisher || '';
             document.getElementById('Certificate_category').value = cert.Category || '';
@@ -1051,7 +1049,10 @@ function initializeUpdateCertificate() {
                 document.getElementById('Certificate_end_year').value = cert.EndYear;
             }
 
-            document.getElementById('Certificate_description').value = cert.Description;
+            // Isi textarea tersembunyi (jika diperlukan)
+            document.getElementById('Certificate_description').value = cert.Description || '';
+            // Set konten ke Quill Editor
+            quill.root.innerHTML = cert.Description || '';
 
             if (cert.VerificationLink) {
                 document.getElementById('Certificate_verification_link').value = cert.VerificationLink;
@@ -1064,7 +1065,7 @@ function initializeUpdateCertificate() {
             showToast('Error loading certificate detail', 'error');
         });
 
-    // 4) Tangani event submit form
+    // Tangani submit form update certificate
     const form = document.getElementById('updateCertificateForm');
     if (form) {
         form.addEventListener('submit', e => {
@@ -1073,6 +1074,7 @@ function initializeUpdateCertificate() {
         });
     }
 }
+
 
 
 function updateCertificateSubmit(certId) {

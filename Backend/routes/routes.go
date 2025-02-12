@@ -1,11 +1,16 @@
 package routes
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	slug2 "github.com/gosimple/slug"
 	"github.com/ulule/limiter"
 	gincache "github.com/ulule/limiter/drivers/middleware/gin"
 	"github.com/ulule/limiter/drivers/store/memory"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
+	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
 	"log"
+	"net/http"
 
 	"github.com/yeremiapane/WebPortofolio-1/Backend/controllers"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/middleware"
@@ -98,8 +103,29 @@ func SetupRoutes() *gin.Engine {
 		c.File("Frontend/user/article_pages.html")
 	})
 
-	r.GET("/article/:id", func(c *gin.Context) {
+	r.GET("/article/:id/:slug", func(c *gin.Context) {
 		c.File("Frontend/user/read_article.html")
+	})
+
+	// Route lama: Redirect ke URL baru yang menyertakan slug
+	r.GET("/article/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		// Ambil artikel dari database menggunakan ID
+		var article models.Article
+		if err := config.DB.First(&article, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
+			return
+		}
+
+		// Misalnya, implementasikan fungsi Slugify untuk mengubah judul menjadi slug URL-friendly
+		slug := slug2.Make(article.Title)
+
+		// Buat URL baru dengan format /article/:id/:slug
+		newURL := fmt.Sprintf("/article/%s/%s", id, slug)
+
+		// Redirect ke URL baru
+		c.Redirect(http.StatusMovedPermanently, newURL)
 	})
 
 	r.GET("/admin/", func(c *gin.Context) {

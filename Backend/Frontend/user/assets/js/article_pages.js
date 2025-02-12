@@ -1,3 +1,13 @@
+function slugify(text) {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')      // Ganti spasi dengan tanda -
+        .replace(/[^\w\-]+/g, '')  // Hapus karakter khusus
+        .replace(/\-\-+/g, '-');   // Ganti tanda - berulang menjadi satu
+}
+
 // NAVBAR TOGGLE (Responsive)
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const navbarLinks = document.getElementById('navbarLinks');
@@ -98,7 +108,7 @@ function displayArticles() {
         <div class="blog-card-content">
           <span class="blog-category">${category}</span>
           <h3 class="blog-title">${title}</h3>
-          <p class="blog-desc">${desc.substring(0, 100)}...</p>
+          <p class="blog-desc">${desc.substring(0, 200)}...</p>
           <div class="blog-meta">
             <span>
               <ion-icon name="time-outline"></ion-icon> ${readingTime} min
@@ -109,7 +119,7 @@ function displayArticles() {
           </div>
           <div class="blog-footer">
             <span>By ${publisher}</span>
-            <a href="/article/${id}" class="blog-readmore">Read More</a>
+            <a href="/article/${id}/${slugify(title)}" class="blog-readmore">Read More</a>
           </div>
         </div>
       `;

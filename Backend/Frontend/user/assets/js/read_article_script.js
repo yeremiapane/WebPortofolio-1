@@ -3,8 +3,10 @@
 // =====================================================
 const articleId = (() => {
   const pathParts = window.location.pathname.split("/");
-  return pathParts[pathParts.length - 1];
+  // Asumsi URL: /article/{id}/{slug}
+  return pathParts[2];
 })();
+
 
 // Quill toolbar dengan Font.whitelist yang sudah diperbaiki
 const Font = Quill.import('formats/font');
@@ -38,6 +40,7 @@ const commentEditor = new Quill('#comment-editor', {
   },
   theme: 'snow'
 });
+
 
 // =====================================================
 // 3) Fetch Detail Artikel
