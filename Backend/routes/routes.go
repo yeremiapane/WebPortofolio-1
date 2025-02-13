@@ -59,7 +59,7 @@ func SetupRoutes() *gin.Engine {
 	r.GET("/articles/filter", controllers.GetArticlesWithFilter)       // Disarankan: pisahkan query filter sebagai endpoint tersendiri
 	r.POST("/articles/:id/comments", controllers.CreateOrReplyComment) // Komentar publik
 	r.GET("/articles/:id/comments", controllers.GetCommentsByArticle)
-
+	r.GET("/categories", controllers.GetAllCategories)
 	r.GET("/stats", controllers.GetDashboardStats)
 
 	// Tambahkan di bagian public routes

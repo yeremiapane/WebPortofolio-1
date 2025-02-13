@@ -44,6 +44,7 @@ body {
   height: 100%; padding: 30px 0 150px;
   overflow: auto;
 }
+
 .sidebar.close .nav-links { overflow: visible; }
 .sidebar .nav-links::-webkit-scrollbar { display: none; }
 .sidebar .nav-links li {
@@ -174,6 +175,7 @@ button:hover {
 .resize-handles div {
   width: 10px; height: 10px; background: red; position: absolute; pointer-events: all;
 }
+
 .resize-handles .top-left { top: -5px; left: -5px; cursor: nwse-resize; }
 .resize-handles .top-right { top: -5px; right: -5px; cursor: nesw-resize; }
 .resize-handles .bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
@@ -449,6 +451,7 @@ button:hover {
   background: rgba(0,0,0,0.8); overflow-y: auto; z-index: 9999;
   padding: 20px; box-sizing: border-box;
 }
+
 #previewContent {
   background-color: #fff;
   margin: 0 auto; padding: 20px; max-width: 800px;
@@ -457,6 +460,7 @@ button:hover {
   /* read_article-ish styling */
   font-family: 'Poppins', sans-serif;
 }
+
 #closePreview {
   position: absolute; top: 20px; right: 20px;
   background: #567b95; color: #fff; border: none;
@@ -485,6 +489,7 @@ button:hover {
   border-left: 4px solid #ddd; margin: 1.5em 10px; padding: 0.5em 10px;
   background-color: #f4f4f4; border-radius: 4px;
 }
+
 #previewContent pre.ql-syntax,
 #previewContent pre code {
   background-color: #2d2d2d;
@@ -504,6 +509,7 @@ button:hover {
   animation: slideIn 0.4s ease, fadeOut 0.5s ease 3s forwards;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
+
 @keyframes slideIn {
   0%   { opacity: 0; transform: translateX(100%); }
   100% { opacity: 1; transform: translateX(0); }

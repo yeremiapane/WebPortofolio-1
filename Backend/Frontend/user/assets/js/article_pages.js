@@ -1,94 +1,146 @@
+// ==========================
+// Fungsi slugify (opsional)
+// ==========================
 function slugify(text) {
     return text
         .toString()
         .toLowerCase()
         .trim()
         .replace(/\s+/g, '-')      // Ganti spasi dengan tanda -
-        .replace(/[^\w\-]+/g, '')  // Hapus karakter khusus
+        .replace(/[^\w\-]+/g, '')  // Hapus karakter selain huruf, angka, underscore, atau tanda -
         .replace(/\-\-+/g, '-');   // Ganti tanda - berulang menjadi satu
 }
 
+// ==========================
 // NAVBAR TOGGLE (Responsive)
+// ==========================
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const navbarLinks = document.getElementById('navbarLinks');
 
 hamburgerBtn.addEventListener('click', () => {
     navbarLinks.classList.toggle('active');
+    // contoh ganti style display
+    if (navbarLinks.style.display === 'none') {
+        navbarLinks.style.display = 'block';
+    } else {
+        navbarLinks.style.display = 'none';
+    }
 });
 
 // ==========================
 // Konfigurasi Endpoint
 // ==========================
-const ARTICLES_ENDPOINT = `/articles`;
-const CATEGORIES_ENDPOINT = `/categories`;
-// Jika Anda punya endpoint lain (mis. /articles/filter?category=xxx), sesuaikan.
+const ARTICLES_FILTER_ENDPOINT = '/articles/filter'; // endpoint filter
+const CATEGORIES_ENDPOINT = '/categories';            // endpoint kategori
 
 // ==========================
 // Variabel Global
 // ==========================
-let allArticles = [];
-let currentIndex = 0;
-const articlesPerPage = 10; // Tampilkan 10 artikel per load
-const blogGrid = document.getElementById('blogGrid');
-const loadMoreBtn = document.getElementById('loadMoreBtn');
+let currentPage = 1;            // Halaman saat ini
+const limit = 10;               // Jumlah artikel per halaman
+let totalPages = 1;             // Akan diupdate dari server
+let currentCategory = '';       // Kategori terpilih
+let currentSearch = '';         // Keyword pencarian
+
+// DOM Elements
 const categorySelect = document.getElementById('categorySelect');
 const searchInput = document.getElementById('searchInput');
-
-// Data yang sedang kita tampilkan = allArticles (di-filter search => displayedArticles)
-// Agar realtime search mudah, kita simpan "latest filtered data" di displayedArticles.
-let displayedArticles = [];
+const blogGrid = document.getElementById('blogGrid');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
 
 // ==========================
-// Ambil Daftar Kategori
+// Fetch Daftar Kategori
 // ==========================
-fetch(CATEGORIES_ENDPOINT)
-    .then(resp => {
-        if (!resp.ok) throw new Error('Failed to fetch categories');
-        return resp.json();
-    })
-    .then(categories => {
-        categorySelect.innerHTML = '<option value="">All Categories</option>';
-        categories.forEach(cat => {
-            const opt = document.createElement('option');
-            opt.value = cat;
-            opt.textContent = cat;
-            categorySelect.appendChild(opt);
-        });
-    })
-    .catch(err => console.error('Error fetching categories:', err));
-
-// ==========================
-// Fungsi Fetch Articles
-// ==========================
-function fetchArticles(category = '') {
-    let url = ARTICLES_ENDPOINT;
-    if (category) {
-        url += `?category=${encodeURIComponent(category)}`;
-    }
-    fetch(url)
+function fetchCategories() {
+    fetch(CATEGORIES_ENDPOINT)
         .then(resp => {
-            if (!resp.ok) throw new Error('Failed to fetch articles');
+            if (!resp.ok) {
+                throw new Error('Failed to fetch categories');
+            }
             return resp.json();
         })
-        .then(articles => {
-            allArticles = articles;
-            applySearchFilter(); // Akan set displayedArticles sesuai input
+        .then(categories => {
+            // Bersihkan lalu tambahkan "All Categories"
+            categorySelect.innerHTML = '<option value="">All Categories</option>';
+
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;  // value = nama kategori
+                opt.textContent = cat; // teks yang ditampilkan
+                categorySelect.appendChild(opt);
+            });
         })
-        .catch(err => console.error('Error fetching articles:', err));
+        .catch(err => {
+            console.error('Error fetching categories:', err);
+            // fallback jika error
+            categorySelect.innerHTML = '<option value="">All Categories</option>';
+        });
 }
 
 // ==========================
-// Tampilkan Subset Artikel
+// Fetch Articles (Server-Side Filter & Pagination)
 // ==========================
-function displayArticles() {
-    // Hapus terlebih dahulu isi blogGrid
-    blogGrid.innerHTML = '';
+function fetchArticles(isLoadMore = false) {
+    // Siapkan query parameter
+    // Contoh: /articles/filter?category=xxx&search=xxx&page=1&limit=10
+    let url = `${ARTICLES_FILTER_ENDPOINT}?page=${currentPage}&limit=${limit}`;
 
-    // Subset berdasarkan currentIndex
-    const subset = displayedArticles.slice(0, currentIndex);
+    if (currentCategory) {
+        url += `&category=${encodeURIComponent(currentCategory)}`;
+    }
+    if (currentSearch) {
+        url += `&search=${encodeURIComponent(currentSearch)}`;
+    }
 
-    subset.forEach(article => {
-        // Asumsi property: {ID,Title,MainImage,Category,Description,Publisher,ReadingTime,Likes}
+    fetch(url)
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error('Failed to fetch articles');
+            }
+            return resp.json();
+        })
+        .then(data => {
+            // data seharusnya memiliki format:
+            // {
+            //   data: [...array of articles...],
+            //   total_data: 20,
+            //   page: 1,
+            //   limit: 10,
+            //   total_page: 2
+            // }
+
+            const articles = data.data || [];
+            totalPages = data.total_page || 1;
+
+            // Render / tampilan
+            // Jika isLoadMore = false, clear grid terlebih dahulu
+            renderArticles(articles, isLoadMore);
+
+            // Tampilkan/tidak tombol loadMore
+            if (currentPage >= totalPages) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'inline-block';
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching articles:', err);
+        });
+}
+
+// ==========================
+// Render Artikel ke Halaman
+// ==========================
+function renderArticles(articles, append = false) {
+    // Jika bukan append (bukan "Load More"), bersihkan grid
+    if (!append) {
+        blogGrid.innerHTML = '';
+    }
+
+    // Looping setiap artikel
+    articles.forEach(article => {
+        // Asumsi properti object: 
+        // { ID, Title, MainImage, Category, Description, Publisher, ReadingTime, Likes, ... }
         const id = article.ID || 0;
         const title = article.Title || 'Untitled';
         const category = article.Category || 'Uncategorized';
@@ -99,85 +151,80 @@ function displayArticles() {
         const publisher = article.Publisher || 'Anonymous';
         const readingTime = article.ReadingTime || 0;
         const likes = article.Likes || 0;
+        const comment = article.Comments || 0;
 
+        // Buat elemen card
         const card = document.createElement('div');
         card.classList.add('blog-card');
-
         card.innerHTML = `
-        <img src="${image}" alt="${title}">
-        <div class="blog-card-content">
-          <span class="blog-category">${category}</span>
-          <h3 class="blog-title">${title}</h3>
-          <p class="blog-desc">${desc.substring(0, 200)}...</p>
-          <div class="blog-meta">
-            <span>
-              <ion-icon name="time-outline"></ion-icon> ${readingTime} min
-            </span>
-            <span>
-              <ion-icon name="heart-outline"></ion-icon> ${likes}
-            </span>
+          <img src="${image}" alt="${title}">
+          <div class="blog-card-content">
+            <span class="blog-category">${category}</span>
+            <h3 class="blog-title">${title}</h3>
+            <p class="blog-desc">${desc.substring(0, 250)}...</p>
+            <div class="blog-meta">
+              <span>
+                <ion-icon name="time-outline"></ion-icon> ${readingTime} min
+              </span>
+              <span>
+                <ion-icon name="heart-outline"></ion-icon> ${likes}
+              </span>
+              <span>
+                <ion-icon name="chatbubble-outline"></ion-icon> ${comment}
+              </span>
+            </div>
+            <div class="blog-footer">
+              <span>By ${publisher}</span>
+              <a href="/article/${id}/${slugify(title)}" class="blog-readmore">Read More</a>
+            </div>
           </div>
-          <div class="blog-footer">
-            <span>By ${publisher}</span>
-            <a href="/article/${id}/${slugify(title)}" class="blog-readmore">Read More</a>
-          </div>
-        </div>
-      `;
+        `;
         blogGrid.appendChild(card);
     });
-
-    // Cek load more
-    if (currentIndex >= displayedArticles.length) {
-        loadMoreBtn.style.display = 'none';
-    } else {
-        loadMoreBtn.style.display = 'block';
-    }
 }
 
 // ==========================
-// LOAD MORE
+// Event: LOAD MORE
 // ==========================
 loadMoreBtn.addEventListener('click', () => {
-    // Tambah 10 lagi
-    currentIndex += articlesPerPage;
-    displayArticles();
+    currentPage++;
+    // isLoadMore = true => kita append artikel baru
+    fetchArticles(true);
 });
 
 // ==========================
-// Filter by search (Local)
-// ==========================
-// Re-run filter setiap kali mengetik
-searchInput.addEventListener('input', () => {
-    applySearchFilter();
-});
-
-function applySearchFilter() {
-    const searchVal = searchInput.value.toLowerCase();
-    // Filter dari allArticles berdasarkan Title / Description dsb.
-    displayedArticles = allArticles.filter(a => {
-        const title = (a.Title || '').toLowerCase();
-        const desc = (a.Description || '').toLowerCase();
-        return title.includes(searchVal) || desc.includes(searchVal);
-    });
-
-    // Reset index
-    currentIndex = articlesPerPage;
-    displayArticles();
-}
-
-// ==========================
-// Category Change
+// Event: Perubahan Kategori
 // ==========================
 categorySelect.addEventListener('change', (e) => {
-    const selectedCat = e.target.value;
-    searchInput.value = '';
-    fetchArticles(selectedCat);
+    currentCategory = e.target.value;
+    // Reset pencarian
+    // (Terserah mau di-reset atau tidak, disesuaikan)
+    // currentSearch = '';
+    // searchInput.value = '';
+
+    // Reset page ke 1
+    currentPage = 1;
+    fetchArticles(false);
 });
 
 // ==========================
-// On DOM Loaded
+// Event: Search
+// ==========================
+searchInput.addEventListener('input', () => {
+    currentSearch = searchInput.value;
+    // Reset page
+    currentPage = 1;
+    fetchArticles(false);
+});
+
+// ==========================
+// DOM Loaded
 // ==========================
 document.addEventListener('DOMContentLoaded', () => {
-    // Pertama load all categories = '' (semua)
-    fetchArticles('');
+    // Pertama, ambil daftar kategori
+    fetchCategories();
+
+    // Mulai ambil artikel pertama kali
+    currentPage = 1;
+    fetchArticles(false);
 });

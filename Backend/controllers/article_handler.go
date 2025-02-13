@@ -366,19 +366,20 @@ func GetArticlesWithFilter(c *gin.Context) {
 
 	db := config.DB.Model(&models.Article{})
 
-	// Filter search (cari di title atau content)
+	// Filter search (title or content)
 	if search != "" {
 		db = db.Where("title LIKE ? OR content LIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	// Filter category
+	// Filter category (case-insensitive misal)
 	if category != "" {
+		// db = db.Where("LOWER(category) = ?", strings.ToLower(category))
 		db = db.Where("category = ?", category)
 	}
-	// Filter tags -> misal user masukkan "golang,react"
+
+	// Filter tags
 	if tags != "" {
 		tagList := strings.Split(tags, ",")
-		// Contoh: filter yang mengandung semua tag tersebut:
 		for _, t := range tagList {
 			t = strings.TrimSpace(t)
 			db = db.Where("FIND_IN_SET(?, tags)", t)
