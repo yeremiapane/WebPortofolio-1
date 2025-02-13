@@ -299,7 +299,6 @@ function loadComments(page = 1) {
                         <td>${cmt.Status}</td>
                         <td>
                             <button onclick="detailComment(${cmt.ID})">Detail</button>
-                            <button onclick="deleteComment(${cmt.ID})" class="btn-delete">Delete</button>
                         </td>
                     </tr>
                 `;

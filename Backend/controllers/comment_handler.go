@@ -107,7 +107,7 @@ func CreateOrReplyComment(c *gin.Context) {
 		Name:        name,
 		Email:       email,
 		Content:     content,
-		Status:      "pending", // butuh approval
+		Status:      "approved", // butuh approval
 		IsAnonymous: isAnon,
 	}
 
