@@ -750,7 +750,7 @@ function initializeWriteArticles() {
     console.log("initializeWriteArticles: setting up Quill");
     Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
     const Font = Quill.import('formats/font');
-    Font.whitelist = ['Roboto', 'Montserrat', 'Nunito Sans', 'Mulish']
+    Font.whitelist = ['Roboto', 'Montserrat', 'Nunito-Sans', 'Mulish', 'Poppins'];
     Quill.register(Font, true);
 
     const editorEl = document.getElementById('quillEditor');

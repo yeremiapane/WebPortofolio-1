@@ -10,7 +10,7 @@ const articleId = (() => {
 
 // Quill toolbar dengan Font.whitelist yang sudah diperbaiki
 const Font = Quill.import('formats/font');
-Font.whitelist = ['roboto', 'montserrat', 'nunito-sans', 'mulish', 'poppins'];
+Font.whitelist = ['Roboto', 'Montserrat', 'Nunito-Sans', 'Mulish', 'Poppins'];
 Quill.register(Font, true);
 
 const toolbarOptions = [
