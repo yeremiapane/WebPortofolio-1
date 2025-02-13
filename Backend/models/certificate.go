@@ -15,6 +15,7 @@ type Certificate struct {
 	EndYear          *int   `gorm:"null"`
 	Description      string `gorm:"type:text"`
 	VerificationLink string `gorm:"type:varchar(255)"`
+	VerificationCode string `gorm:"type:varchar(255)"`
 	Category         string `gorm:"type:varchar(100)"`
 	Skills           string `gorm:"type:text"` // "golang,react,html"
 	CreatedAt        time.Time

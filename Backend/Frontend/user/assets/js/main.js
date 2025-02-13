@@ -346,6 +346,13 @@ document.addEventListener('DOMContentLoaded', () => {
        </div>`
               : '';
 
+          const verificationCodeHTML = certDetail.VerificationCode
+              ? `<div class="detail-item verification">
+         <i class="fa-solid fa-user-check"></i>
+         <span><strong>Code Certificate: </strong>${certDetail.VerificationCode}</span>
+       </div>`
+              : '';
+
           // Sanitize description content
           const sanitizedDescription = DOMPurify.sanitize(certDetail.Description);
 
@@ -375,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <span><strong>Category:</strong> ${categoryHTML}</span>
     </div>` : '' }
     ${verificationLinkHTML}
+    ${verificationCodeHTML}
     <div class="detail-item created">
       <i class="fas fa-clock"></i>
       <span><strong>Created At:</strong> ${dateCreated}</span>

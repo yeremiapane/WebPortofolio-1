@@ -23,6 +23,7 @@ type CertificateInput struct {
 	EndYear          int      `json:"endYear"`
 	Description      string   `json:"description"`
 	VerificationLink string   `json:"verificationLink"`
+	VerificationCode string   `json:"verificationCode"`
 	Category         string   `json:"category"`
 	Skills           string   `json:"skills"` // "Go, Docker, Kubernetes"
 }
@@ -35,6 +36,7 @@ func CreateCertificate(c *gin.Context) {
 	skills := c.PostForm("skills")
 	description := c.PostForm("description")
 	verificationLink := c.PostForm("verification_link")
+	verificationCode := c.PostForm("verification_code")
 
 	// Contoh parsing issue month/year
 	issueMonth, _ := strconv.Atoi(c.PostForm("issue_month"))
@@ -87,6 +89,7 @@ func CreateCertificate(c *gin.Context) {
 		Skills:           skills,
 		Description:      description,
 		VerificationLink: verificationLink,
+		VerificationCode: verificationCode,
 		IssueMonth:       issueMonth,
 		IssueYear:        issueYear,
 		EndMonth:         endMonth,
@@ -141,6 +144,7 @@ func UpdateCertificate(c *gin.Context) {
 	skills := c.PostForm("skills")
 	description := c.PostForm("description")
 	verificationLink := c.PostForm("verification_link")
+	verificationCode := c.PostForm("verification_code")
 
 	issueMonth, _ := strconv.Atoi(c.PostForm("issue_month"))
 	issueYear, _ := strconv.Atoi(c.PostForm("issue_year"))
@@ -195,6 +199,7 @@ func UpdateCertificate(c *gin.Context) {
 	cert.Skills = skills
 	cert.Description = description
 	cert.VerificationLink = verificationLink
+	cert.VerificationCode = verificationCode
 	cert.IssueMonth = issueMonth
 	cert.IssueYear = issueYear
 	cert.EndMonth = endMonth

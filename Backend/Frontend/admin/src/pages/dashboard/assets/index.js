@@ -102,7 +102,6 @@ function loadContent(page, title) {
             } else if (page === '/admin_dashboard_pages/update_certificate.html') {
                 initializeWriteCertificates();
                 initializeUpdateCertificate();
-                initializeUpdateQuillDescription();
                 initializeCertificateImagePreview();
             } else if (page === '/admin_dashboard_pages/comments.html') {
                 initializeComments();
@@ -946,6 +945,7 @@ function submitCertificateForm() {
 
     const description = document.getElementById('Certificate_description').value.trim(); // Ambil dari textarea
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
+    const verificationCode = document.getElementById('Certificate_verification_code').value.trim();
 
     const imageFiles = document.getElementById('Certificate_image').files; // Mengambil semua file
 
@@ -971,6 +971,10 @@ function submitCertificateForm() {
 
     if (verificationLink) {
         formData.append('verification_link', verificationLink);
+    }
+
+    if (verificationCode){
+        formData.append('verification_code', verificationCode)
     }
 
     // Jika user mengupload file
@@ -1058,6 +1062,10 @@ function initializeUpdateCertificate() {
                 document.getElementById('Certificate_verification_link').value = cert.VerificationLink;
             }
 
+            if (cert.VerificationCode) {
+                document.getElementById('Certificate_verification_code').value = cert.VerificationCode;
+            }
+
             showToast('Certificate detail loaded', 'success');
         })
         .catch(err => {
@@ -1090,6 +1098,7 @@ function updateCertificateSubmit(certId) {
 
     const description = document.getElementById('Certificate_description').value.trim();
     const verificationLink = document.getElementById('Certificate_verification_link').value.trim();
+    const verificationCode = document.getElementById('Certificate_verification_code').value.trim();
     const imageFiles = document.getElementById('Certificate_image').files; // Mengambil semua file
 
     // Validasi minimal
@@ -1109,6 +1118,7 @@ function updateCertificateSubmit(certId) {
     if (endMonth)    formData.append('end_month', endMonth);
     if (endYear)     formData.append('end_year', endYear);
     if (verificationLink) formData.append('verification_link', verificationLink);
+    if (verificationCode) formData.append('verification_code', verificationCode);
 
     if (imageFiles.length > 0) {
         for (let i = 0; i < imageFiles.length; i++) {
