@@ -9,6 +9,11 @@ WORKDIR /app
 # Copy semua file proyek ke dalam container
 COPY Backend .
 
+RUN go clean -cache -modcache && \
+    go mod download && \
+    go build -o web_portofolio main.go
+
+
 # Download dependencies
 RUN go mod tidy
 
