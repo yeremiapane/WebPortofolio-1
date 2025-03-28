@@ -12,6 +12,54 @@ function slugify(text) {
 }
 
 // ==========================
+// Loading Screen Management
+// ==========================
+const loadingScreen = document.getElementById('loadingScreen');
+const loadingBar = document.getElementById('loadingBar');
+const loadingText = document.getElementById('loadingText');
+const sectionCategories = document.getElementById('sectionCategories');
+const sectionArticles = document.getElementById('sectionArticles');
+
+// Total loading progress counts to 100
+let loadingProgress = 0;
+const PROGRESS_CATEGORIES = 30; // Categories data is 30% of loading
+const PROGRESS_ARTICLES = 70;   // Articles data is 70% of loading
+
+// Update loading progress
+function updateLoadingProgress(section, increment) {
+  loadingProgress += increment;
+  loadingBar.style.width = `${loadingProgress}%`;
+  
+  // Mark section as loaded
+  if (section) {
+    const sectionElement = document.getElementById(`section${section}`);
+    if (sectionElement) {
+      sectionElement.classList.add('loaded');
+    }
+  }
+  
+  // Update loading text based on progress
+  if (loadingProgress < 40) {
+    loadingText.textContent = 'Memuat kategori...';
+  } else if (loadingProgress < 80) {
+    loadingText.textContent = 'Memuat artikel...';
+  } else {
+    loadingText.textContent = 'Hampir selesai...';
+  }
+  
+  // Hide loading screen when complete
+  if (loadingProgress >= 100) {
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 500);
+    }, 300);
+  }
+}
+
+// ==========================
 // NAVBAR TOGGLE (Responsive)
 // ==========================
 const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -52,6 +100,8 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 // Fetch Daftar Kategori
 // ==========================
 function fetchCategories() {
+    loadingText.textContent = 'Memuat daftar kategori...';
+    
     fetch(CATEGORIES_ENDPOINT)
         .then(resp => {
             if (!resp.ok) {
@@ -69,11 +119,16 @@ function fetchCategories() {
                 opt.textContent = cat; // teks yang ditampilkan
                 categorySelect.appendChild(opt);
             });
+            
+            // Update loading progress
+            updateLoadingProgress('Categories', PROGRESS_CATEGORIES);
         })
         .catch(err => {
             console.error('Error fetching categories:', err);
             // fallback jika error
             categorySelect.innerHTML = '<option value="">All Categories</option>';
+            // Still update progress on error
+            updateLoadingProgress('Categories', PROGRESS_CATEGORIES);
         });
 }
 
@@ -81,6 +136,11 @@ function fetchCategories() {
 // Fetch Articles (Server-Side Filter & Pagination)
 // ==========================
 function fetchArticles(isLoadMore = false) {
+    // If initial load (not load more), update loading message
+    if (!isLoadMore) {
+        loadingText.textContent = 'Memuat artikel...';
+    }
+    
     // Siapkan query parameter
     // Contoh: /articles/filter?category=xxx&search=xxx&page=1&limit=10
     let url = `${ARTICLES_FILTER_ENDPOINT}?page=${currentPage}&limit=${limit}`;
@@ -122,9 +182,19 @@ function fetchArticles(isLoadMore = false) {
             } else {
                 loadMoreBtn.style.display = 'inline-block';
             }
+            
+            // Only update loading progress if this is the initial load
+            if (!isLoadMore) {
+                updateLoadingProgress('Articles', PROGRESS_ARTICLES);
+            }
         })
         .catch(err => {
             console.error('Error fetching articles:', err);
+            // Still update progress on error if initial load
+            if (!isLoadMore) {
+                loadingText.textContent = 'Gagal memuat artikel. Silakan coba lagi...';
+                updateLoadingProgress('Articles', PROGRESS_ARTICLES);
+            }
         });
 }
 
@@ -221,6 +291,10 @@ searchInput.addEventListener('input', () => {
 // DOM Loaded
 // ==========================
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize loading screen
+    loadingProgress = 0;
+    loadingBar.style.width = '0%';
+    
     // Pertama, ambil daftar kategori
     fetchCategories();
 

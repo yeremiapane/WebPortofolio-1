@@ -31,6 +31,60 @@ const toolbarOptions = [
 ];
 
 // =====================================================
+// Loading Screen Management
+// =====================================================
+const loadingScreen = document.getElementById('loadingScreen');
+const loadingBar = document.getElementById('loadingBar');
+const loadingText = document.getElementById('loadingText');
+const sectionArticle = document.getElementById('sectionArticle');
+const sectionLikes = document.getElementById('sectionLikes');
+const sectionComments = document.getElementById('sectionComments');
+const sectionRelated = document.getElementById('sectionRelated');
+
+// Total loading progress counts to 100
+let loadingProgress = 0;
+const PROGRESS_ARTICLE = 40;  // Article data is 40% of loading
+const PROGRESS_LIKES = 15;    // Likes data is 15% of loading
+const PROGRESS_COMMENTS = 25; // Comments data is 25% of loading
+const PROGRESS_RELATED = 20;  // Related articles is 20% of loading
+
+// Update loading progress
+function updateLoadingProgress(section, increment) {
+  loadingProgress += increment;
+  loadingBar.style.width = `${loadingProgress}%`;
+  
+  // Mark section as loaded
+  if (section) {
+    const sectionElement = document.getElementById(`section${section}`);
+    if (sectionElement) {
+      sectionElement.classList.add('loaded');
+    }
+  }
+  
+  // Update loading text based on progress
+  if (loadingProgress < 30) {
+    loadingText.textContent = 'Memuat informasi artikel...';
+  } else if (loadingProgress < 60) {
+    loadingText.textContent = 'Mengambil data interaksi...';
+  } else if (loadingProgress < 90) {
+    loadingText.textContent = 'Menyiapkan konten terkait...';
+  } else {
+    loadingText.textContent = 'Hampir selesai...';
+  }
+  
+  // Hide loading screen when complete
+  if (loadingProgress >= 100) {
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 500);
+    }, 300);
+  }
+}
+
+// =====================================================
 // 2) Inisialisasi Quill Editor
 // =====================================================
 const commentEditor = new Quill('#comment-editor', {
@@ -47,6 +101,8 @@ const commentEditor = new Quill('#comment-editor', {
 // =====================================================
 async function fetchArticleDetail() {
   try {
+    loadingText.textContent = "Memuat artikel...";
+    
     const response = await fetch(`/articles/${articleId}`, {
       method: 'GET',
       credentials: 'include'
@@ -95,9 +151,15 @@ async function fetchArticleDetail() {
     articleContent.innerHTML = article.Content || '';
 
     document.getElementById('likeCount').textContent = article.Likes || 0;
+    
+    // Update loading progress after article data is loaded
+    updateLoadingProgress('Article', PROGRESS_ARTICLE);
 
   } catch (error) {
     console.error('Error fetching article detail:', error);
+    // Even on error, update progress but show error in loading text
+    loadingText.textContent = "Gagal memuat artikel. Silakan coba lagi...";
+    updateLoadingProgress('Article', PROGRESS_ARTICLE);
   }
 }
 
@@ -127,8 +189,13 @@ async function fetchLikeStatus() {
     } else {
       icon.setAttribute('name','heart-outline');
     }
+    
+    // Update loading progress after likes data is loaded
+    updateLoadingProgress('Likes', PROGRESS_LIKES);
+    
   } catch (error) {
     console.error('Error fetching like status:', error);
+    updateLoadingProgress('Likes', PROGRESS_LIKES);
   }
 }
 
@@ -178,8 +245,13 @@ async function fetchComments() {
     const data = await resp.json();
     const comments = data.comments || [];
     renderComments(comments);
+    
+    // Update loading progress after comments are loaded
+    updateLoadingProgress('Comments', PROGRESS_COMMENTS);
+    
   } catch (error) {
     console.error('Error fetching comments:', error);
+    updateLoadingProgress('Comments', PROGRESS_COMMENTS);
   }
 }
 
@@ -441,8 +513,13 @@ async function fetchAnotherPosts() {
       card.appendChild(content);
       relatedContainer.appendChild(card);
     });
+    
+    // Update loading progress after related articles are loaded
+    updateLoadingProgress('Related', PROGRESS_RELATED);
+    
   } catch (error) {
     console.error('Error fetching related articles:', error);
+    updateLoadingProgress('Related', PROGRESS_RELATED);
   }
 }
 
@@ -498,8 +575,16 @@ function showAlert(message, type='success') {
 // 10) Inisialisasi Setelah DOM Loaded
 // =====================================================
 document.addEventListener('DOMContentLoaded', async () => {
-  await fetchArticleDetail();
-  await fetchLikeStatus();
-  await fetchComments();
-  await fetchAnotherPosts();
+  // Initialize loading screen
+  loadingProgress = 0;
+  loadingBar.style.width = '0%';
+  
+  // Use Promise.all to load everything in parallel
+  // but still update the UI sequentially
+  await Promise.all([
+    fetchArticleDetail(),
+    fetchLikeStatus(),
+    fetchComments(),
+    fetchAnotherPosts()
+  ]);
 });
