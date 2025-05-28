@@ -104,6 +104,10 @@ func SetupRoutes() *gin.Engine {
 		c.File("Frontend/user/index.html")
 	})
 
+	r.GET("/contact-form", func(c *gin.Context) {
+		c.File("Frontend/user/contact-form.html")
+	})
+
 	r.GET("/portfolio", func(c *gin.Context) {
 		c.File("Frontend/user/portofolio_dev.html")
 	})
