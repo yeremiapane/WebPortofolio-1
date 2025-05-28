@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Screen Test</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .test-button {
+            background: #4F46E5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #3730A3;
+        }
+        
+        .demo-info {
+            background: #f0f9ff;
+            border: 1px solid #0891b2;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-info h3 {
+            color: #0891b2;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 Loading Screen Demo</h1>
+        
+        <div class="demo-info">
+            <h3>✨ Fitur Loading Screen yang Telah Ditambahkan:</h3>
+            <ul>
+                <li><strong>Animated Logo</strong> - Logo YR. Portfolio dengan animasi</li>
+                <li><strong>Multi-Ring Spinner</strong> - 3 ring berputar dengan warna berbeda</li>
+                <li><strong>Progress Bar</strong> - Progress bar dengan efek glow</li>
+                <li><strong>Dynamic Messages</strong> - Pesan yang berubah sesuai progress</li>
+                <li><strong>Smooth Transitions</strong> - Transisi halus saat loading selesai</li>
+                <li><strong>Responsive Design</strong> - Menyesuaikan dengan ukuran layar</li>
+                <li><strong>Entrance Animations</strong> - Animasi masuk untuk konten utama</li>
+            </ul>
+        </div>
+        
+        <h2>🎯 Test Loading Screen</h2>
+        <p>Klik tombol di bawah untuk membuka halaman dengan loading screen:</p>
+        
+        <button class="test-button" onclick="window.open('portofolio_dev.html', '_blank')">
+            📱 Test Portfolio Loading
+        </button>
+        
+        <button class="test-button" onclick="window.open('project-detail.html', '_blank')">
+            🔍 Test Project Detail Loading
+        </button>
+        
+        <button class="test-button" onclick="window.open('project-detail-data-analyst.html', '_blank')">
+            📊 Test Data Analyst Project Loading
+        </button>
+        
+        <h2>🔧 Cara Kerja Loading Screen</h2>
+        <div class="demo-info">
+            <h3>📋 Proses Loading:</h3>
+            <ol>
+                <li><strong>Initialization</strong> - Loading screen muncul saat halaman dimuat</li>
+                <li><strong>Progress Simulation</strong> - Progress bar bergerak dengan increment random</li>
+                <li><strong>Message Updates</strong> - Pesan berubah berdasarkan progress:
+                    <ul>
+                        <li>Loading Portfolio/Project Details...</li>
+                        <li>Preparing Content...</li>
+                        <li>Loading Images...</li>
+                        <li>Initializing Components...</li>
+                        <li>Almost Ready...</li>
+                        <li>Ready!</li>
+                    </ul>
+                </li>
+                <li><strong>Resource Loading</strong> - Menunggu semua resource (gambar, CSS, JS) selesai dimuat</li>
+                <li><strong>Minimum Time</strong> - Loading minimal 1 detik untuk UX yang baik</li>
+                <li><strong>Smooth Exit</strong> - Fade out dengan animasi dan trigger entrance animations</li>
+            </ol>
+        </div>
+        
+        <h2>🎨 Desain Features</h2>
+        <div class="demo-info">
+            <h3>🌟 Visual Elements:</h3>
+            <ul>
+                <li><strong>Gradient Background</strong> - Background gradient yang elegan</li>
+                <li><strong>Brand Consistency</strong> - Menggunakan logo dan warna brand</li>
+                <li><strong>Multi-Layer Spinner</strong> - 3 ring dengan delay dan warna berbeda</li>
+                <li><strong>Glowing Progress Bar</strong> - Progress bar dengan efek cahaya</li>
+                <li><strong>Pulsing Text</strong> - Teks loading dengan animasi pulse</li>
+                <li><strong>Mobile Optimized</strong> - Ukuran yang disesuaikan untuk mobile</li>
+            </ul>
+        </div>
+        
+        <h2>⚡ Performance Features</h2>
+        <div class="demo-info">
+            <h3>🚀 Optimizations:</h3>
+            <ul>
+                <li><strong>Prevent Scrolling</strong> - Mencegah scroll saat loading</li>
+                <li><strong>DOM Cleanup</strong> - Menghapus loading screen dari DOM setelah selesai</li>
+                <li><strong>Event Listeners</strong> - Proper cleanup untuk mencegah memory leaks</li>
+                <li><strong>Smooth Animations</strong> - Hardware-accelerated CSS animations</li>
+                <li><strong>Progressive Enhancement</strong> - Fallback jika JavaScript disabled</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <h3>🎉 Loading Screen Successfully Implemented!</h3>
+            <p>Semua halaman portfolio sekarang memiliki loading screen yang menarik dan profesional.</p>
+        </div>
+    </div>
+</body>
+</html> 

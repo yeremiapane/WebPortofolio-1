@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Portfolio</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/upload-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="write-portfolio-container">
+        <div class="header-section">
+            <h2><i class="fas fa-edit"></i> Update Portfolio</h2>
+            <p>Edit your portfolio project information</p>
+        </div>
+
+        <form id="updatePortfolioForm" class="portfolio-form">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="portfolio_title">Project Title *</label>
+                        <input type="text" id="portfolio_title" name="title" required placeholder="Enter project title">
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio_category">Category *</label>
+                        <select id="portfolio_category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Development">Development</option>
+                            <option value="Data Analytics">Data Analytics</option>
+                            <option value="Data Engineer">Data Engineer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="portfolio_description">Description *</label>
+                        <textarea id="portfolio_description" name="description" required rows="3" placeholder="Brief description of the project"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="portfolio_overview">Overview *</label>
+                        <textarea id="portfolio_overview" name="overview" required rows="4" placeholder="Detailed overview of the project"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="portfolio_project_time">Project Duration *</label>
+                        <input type="text" id="portfolio_project_time" name="project_time" required placeholder="e.g., 3 months, 6 weeks">
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio_hero_image">Hero Image *</label>
+                        <div class="image-upload-container">
+                            <div class="upload-area" id="heroUploadArea">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Click to upload or drag and drop</p>
+                                    <p class="upload-hint">PNG, JPG, WebP up to 5MB</p>
+                                </div>
+                                <input type="file" id="portfolio_hero_image" name="hero_image" accept="image/*">
+                            </div>
+                            <div id="heroImagePreview" class="image-preview" style="display: none;"></div>
+                            <div id="currentHeroImage" class="current-image" style="display: none;">
+                                <p>Current Image:</p>
+                                <img id="currentHeroImg" src="" alt="Current Hero Image">
+                                <p id="currentHeroName"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="portfolio_live_demo_url">Live Demo URL</label>
+                        <input type="url" id="portfolio_live_demo_url" name="live_demo_url" placeholder="https://demo.example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio_github_url">GitHub URL</label>
+                        <input type="url" id="portfolio_github_url" name="github_url" placeholder="https://github.com/username/repo">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="form-section">
+                <h3><i class="fas fa-code"></i> Technology Stack</h3>
+                
+                <!-- Frontend Technologies -->
+                <div class="tech-stack-item">
+                    <h4><i class="fas fa-desktop"></i> Frontend</h4>
+                    <div id="frontendTech" class="tech-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button type="button" class="btn-add-small" data-container="frontendTech" data-category="Frontend">
+                        <i class="fas fa-plus"></i> Add Frontend Technology
+                    </button>
+                </div>
+
+                <!-- Backend Technologies -->
+                <div class="tech-stack-item">
+                    <h4><i class="fas fa-server"></i> Backend</h4>
+                    <div id="backendTech" class="tech-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button type="button" class="btn-add-small" data-container="backendTech" data-category="Backend">
+                        <i class="fas fa-plus"></i> Add Backend Technology
+                    </button>
+                </div>
+
+                <!-- Database Technologies -->
+                <div class="tech-stack-item">
+                    <h4><i class="fas fa-database"></i> Database</h4>
+                    <div id="databaseTech" class="tech-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button type="button" class="btn-add-small" data-container="databaseTech" data-category="Database">
+                        <i class="fas fa-plus"></i> Add Database Technology
+                    </button>
+                </div>
+
+                <!-- Tools & Platforms -->
+                <div class="tech-stack-item">
+                    <h4><i class="fas fa-tools"></i> Tools & Platforms</h4>
+                    <div id="toolsTech" class="tech-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button type="button" class="btn-add-small" data-container="toolsTech" data-category="Tools">
+                        <i class="fas fa-plus"></i> Add Tool/Platform
+                    </button>
+                </div>
+            </div>
+
+            <!-- Project Gallery -->
+            <div class="form-section">
+                <h3><i class="fas fa-images"></i> Project Gallery</h3>
+                <p class="section-description">Add images to showcase your project</p>
+                
+                <div id="projectGallery" class="gallery-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                <button type="button" class="btn-add-small" data-container="projectGallery" data-category="Gallery">
+                    <i class="fas fa-plus"></i> Add Gallery Image
+                    </button>
+                </div>
+
+            <!-- Custom Sections -->
+            <div class="form-section">
+                <h3><i class="fas fa-list-alt"></i> Custom Sections</h3>
+                <p class="section-description">Add custom sections like Features, Challenges, Solutions, etc.</p>
+                
+                <div id="customSections" class="custom-sections-container">
+                    <!-- Custom sections will be populated by JavaScript -->
+                    </div>
+                
+                <button type="button" id="addCustomSectionBtn" class="btn-add-small">
+                    <i class="fas fa-plus"></i> Add Custom Section
+                    </button>
+                </div>
+
+            <!-- Project Stats -->
+            <div class="form-section">
+                <h3><i class="fas fa-chart-bar"></i> Project Statistics</h3>
+                <p class="section-description">Add key project statistics (Duration, Team Size, etc.)</p>
+                
+                <div id="projectStats" class="stats-inputs-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                <button type="button" class="btn-add-small" data-container="projectStats" data-category="Stats">
+                    <i class="fas fa-plus"></i> Add Project Stat
+                    </button>
+            </div>
+
+            <!-- Project Info -->
+            <div class="form-section">
+                <h3><i class="fas fa-info"></i> Project Information</h3>
+                <p class="section-description">Add additional project information (Client, Role, etc.)</p>
+                
+                <div id="projectInfo" class="info-inputs-container">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <button type="button" class="btn-add-small" data-container="projectInfo" data-category="Info">
+                    <i class="fas fa-plus"></i> Add Project Info
+                    </button>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" id="cancelBtn" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Update Portfolio
+                </button>
+            </div>
+        </form>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>Updating portfolio...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Section Modal -->
+    <div id="customSectionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Custom Section</h3>
+                <span class="close" id="closeCustomSectionModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="customSectionForm">
+                    <div class="form-group">
+                        <label for="sectionTitle">Section Title *</label>
+                        <input type="text" id="sectionTitle" required placeholder="e.g., Features, Challenges, Solutions">
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionType">Section Type *</label>
+                        <select id="sectionType" required>
+                            <option value="">Select Type</option>
+                            <option value="list">List</option>
+                            <option value="gallery">Gallery</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionOrder">Order</label>
+                        <input type="number" id="sectionOrder" min="1" value="1">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelCustomSection" class="btn-cancel">Cancel</button>
+                        <button type="submit" class="btn-submit">Add Section</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let portfolioData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing update portfolio form...');
+            
+            // Initialize form submission
+            const form = document.getElementById('updatePortfolioForm');
+            if (form) {
+                form.addEventListener('submit', handleFormSubmit);
+            }
+
+            // Initialize image upload functionality
+            initializeImageUpload();
+            
+            // Use the centralized initialization from index.js
+            if (typeof initializeUpdatePortfolio === 'function') {
+                initializeUpdatePortfolio();
+            } else {
+                console.error('initializeUpdatePortfolio function not found in index.js');
+                // Fallback to local function
+                loadPortfolioData();
+            }
+            
+            console.log('Update portfolio form initialized');
+        });
+
+        function loadPortfolioData() {
+            // Use the function from index.js instead of duplicating
+            if (typeof initializeUpdatePortfolioData === 'function') {
+                initializeUpdatePortfolioData();
+            } else {
+                console.error('initializeUpdatePortfolioData function not found in index.js');
+            }
+        }
+
+        // All populate functions are now handled by index.js:
+        // - populatePortfolioForm (main function)
+        // - populateTechnologyStacks
+        // - populateProjectGallery  
+        // - populateCustomSections
+        // - populateProjectStats
+        // - populateProjectInfo
+
+        // All create item functions are now handled by add functions in index.js:
+        // - addPortfolioTechItem
+        // - addPortfolioGalleryItem
+        // - addPortfolioStatItem
+        // - addPortfolioInfoItem
+
+        function createCustomSectionElement(section) {
+            const sectionId = 'section_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const div = document.createElement('div');
+            div.className = 'custom-section-item';
+            div.dataset.sectionId = sectionId;
+
+            let itemsHtml = '';
+            if (section.items && Array.isArray(section.items) && section.items.length > 0) {
+                section.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="section-item">
+                            <input type="text" name="section_${sectionId}_item_title[]" placeholder="Item title" value="${item.title || ''}" required>
+                            <textarea name="section_${sectionId}_item_description[]" rows="2" placeholder="Item description" required>${item.description || ''}</textarea>
+                            ${section.section_type !== 'list' ? `<input type="url" name="section_${sectionId}_item_image_url[]" placeholder="Image URL" value="${item.image_url || ''}">` : ''}
+                            <input type="text" name="section_${sectionId}_item_tag[]" placeholder="Tag (optional)" value="${item.tag || ''}">
+                            <input type="number" name="section_${sectionId}_item_order[]" placeholder="Order" min="1" value="${item.order || 1}">
+                            <button type="button" class="btn-remove-small">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            } else {
+                // Add one empty item
+                itemsHtml = `
+                    <div class="section-item">
+                        <input type="text" name="section_${sectionId}_item_title[]" placeholder="Item title" required>
+                        <textarea name="section_${sectionId}_item_description[]" rows="2" placeholder="Item description" required></textarea>
+                        ${section.section_type !== 'list' ? `<input type="url" name="section_${sectionId}_item_image_url[]" placeholder="Image URL">` : ''}
+                        <input type="text" name="section_${sectionId}_item_tag[]" placeholder="Tag (optional)">
+                        <input type="number" name="section_${sectionId}_item_order[]" placeholder="Order" min="1" value="1">
+                        <button type="button" class="btn-remove-small">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            div.innerHTML = `
+                <h4><i class="fas fa-cog"></i> ${section.title} (${section.section_type})</h4>
+                <input type="hidden" name="section_${sectionId}_title" value="${section.title}">
+                <input type="hidden" name="section_${sectionId}_type" value="${section.section_type}">
+                <input type="hidden" name="section_${sectionId}_order" value="${section.order || 1}">
+                
+                <div class="section-items-container">
+                    ${itemsHtml}
+                </div>
+                
+                <button type="button" class="btn-add-small" data-container="section_${sectionId}" data-section-type="${section.section_type}">
+                    <i class="fas fa-plus"></i> Add Item
+                </button>
+                            <button type="button" class="btn-remove-section" onclick="removeCustomSectionFromIndex('${sectionId}')">
+                <i class="fas fa-trash"></i> Remove Section
+            </button>
+            `;
+
+            return div;
+        }
+
+        // Custom section modal is now handled by index.js
+
+        // Custom section functions are now handled by index.js
+
+        // removeCustomSection function is now handled by index.js as removeCustomSectionFromIndex
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Use the updatePortfolioSubmit function from index.js
+            const portfolioId = window.currentPortfolioId;
+            if (!portfolioId) {
+                alert('Portfolio ID not found');
+                return;
+            }
+            
+            if (typeof updatePortfolioSubmit === 'function') {
+                updatePortfolioSubmit(portfolioId);
+            } else {
+                console.error('updatePortfolioSubmit function not found in index.js');
+                alert('Update function not available');
+            }
+        }
+
+        function collectPortfolioFormData() {
+            // Basic validation
+            const title = document.getElementById('portfolio_title').value.trim();
+            const category = document.getElementById('portfolio_category').value;
+            const description = document.getElementById('portfolio_description').value.trim();
+            const overview = document.getElementById('portfolio_overview').value.trim();
+            const projectTime = document.getElementById('portfolio_project_time').value.trim();
+
+            if (!title || !category || !description || !overview || !projectTime) {
+                alert('Please fill all required fields');
+                return null;
+            }
+
+            // Use existing image URL from portfolioData if no new image uploaded
+            let imageUrl = null;
+            if (portfolioData && portfolioData.image_url) {
+                imageUrl = portfolioData.image_url;
+            } else {
+                alert('Image URL is required');
+                return null;
+            }
+
+            const formData = {
+                title: title,
+                category: category,
+                description: description,
+                overview: overview,
+                project_time: projectTime,
+                image_url: imageUrl,
+                live_demo_url: document.getElementById('portfolio_live_demo_url').value.trim() || null,
+                github_url: document.getElementById('portfolio_github_url').value.trim() || null,
+                technology_stacks: collectTechnologyStacks(),
+                project_gallery: collectProjectGallery(),
+                custom_sections: collectCustomSections(),
+                project_stats: collectProjectStats(),
+                project_info: collectProjectInfo()
+            };
+
+            return formData;
+        }
+
+        function collectTechnologyStacks() {
+            const stacks = [];
+            const categories = ['Frontend', 'Backend', 'Database', 'Tools'];
+            
+            categories.forEach(category => {
+                const containerMap = {
+                    'Frontend': 'frontendTech',
+                    'Backend': 'backendTech',
+                    'Database': 'databaseTech',
+                    'Tools': 'toolsTech'
+                };
+                
+                const container = document.getElementById(containerMap[category]);
+                const items = [];
+                
+                const techItems = container.querySelectorAll('.tech-item');
+                techItems.forEach(item => {
+                    const name = item.querySelector(`input[name="${category.toLowerCase()}_name[]"]`)?.value.trim();
+                    const version = item.querySelector(`input[name="${category.toLowerCase()}_version[]"]`)?.value.trim();
+                    const description = item.querySelector(`input[name="${category.toLowerCase()}_description[]"]`)?.value.trim();
+                    
+                    if (name) {
+                        items.push({
+                            name: name,
+                            version: version || null,
+                            description: description || null
+                        });
+                    }
+                });
+                
+                if (items.length > 0) {
+                    stacks.push({
+                        category: category,
+                        items: items
+                    });
+                }
+            });
+            
+            return stacks;
+        }
+
+        function collectProjectGallery() {
+            const gallery = [];
+            const galleryItems = document.querySelectorAll('#projectGallery .gallery-item');
+            
+            galleryItems.forEach(item => {
+                const title = item.querySelector('input[name="gallery_title[]"]')?.value.trim();
+                const description = item.querySelector('textarea[name="gallery_description[]"]')?.value.trim();
+                const order = parseInt(item.querySelector('input[name="gallery_order[]"]')?.value) || 1;
+                
+                // Check for existing image in current-gallery-image div
+                let imageUrl = null;
+                const currentImage = item.querySelector('.current-gallery-image img');
+                if (currentImage) {
+                    imageUrl = currentImage.src;
+                }
+                
+                if (imageUrl && (title || description)) {
+                    gallery.push({
+                        image_url: imageUrl,
+                        title: title || null,
+                        description: description || null,
+                        order: order
+                    });
+                }
+            });
+            
+            return gallery;
+        }
+
+        function collectCustomSections() {
+            const sections = [];
+            const sectionContainers = document.querySelectorAll('.custom-section-item');
+            
+            sectionContainers.forEach(container => {
+                const sectionId = container.dataset.sectionId;
+                const title = container.querySelector(`input[name="section_${sectionId}_title"]`)?.value;
+                const sectionType = container.querySelector(`input[name="section_${sectionId}_type"]`)?.value;
+                const order = parseInt(container.querySelector(`input[name="section_${sectionId}_order"]`)?.value) || 1;
+                
+                const items = [];
+                const itemElements = container.querySelectorAll('.section-item');
+                
+                itemElements.forEach((item, index) => {
+                    const itemTitle = item.querySelector(`input[name="section_${sectionId}_item_title[]"]`)?.value.trim();
+                    const itemDescription = item.querySelector(`textarea[name="section_${sectionId}_item_description[]"]`)?.value.trim();
+                    const itemImageUrl = item.querySelector(`input[name="section_${sectionId}_item_image_url[]"]`)?.value.trim();
+                    const itemTag = item.querySelector(`input[name="section_${sectionId}_item_tag[]"]`)?.value.trim();
+                    const itemOrder = parseInt(item.querySelector(`input[name="section_${sectionId}_item_order[]"]`)?.value) || index + 1;
+                    
+                    if (itemTitle && itemDescription) {
+                        items.push({
+                            title: itemTitle,
+                            description: itemDescription,
+                            image_url: itemImageUrl || null,
+                            tag: itemTag || null,
+                            order: itemOrder
+                        });
+                    }
+                });
+                
+                if (title && items.length > 0) {
+                    sections.push({
+                        title: title,
+                        section_type: sectionType,
+                        order: order,
+                        items: items
+                    });
+                }
+            });
+            
+            return sections;
+        }
+
+        function collectProjectStats() {
+            const stats = [];
+            const statItems = document.querySelectorAll('#projectStats .stat-item');
+            
+            statItems.forEach(item => {
+                const label = item.querySelector('input[name="stat_label[]"]')?.value.trim();
+                const value = item.querySelector('input[name="stat_value[]"]')?.value.trim();
+                const icon = item.querySelector('input[name="stat_icon[]"]')?.value.trim();
+                const order = parseInt(item.querySelector('input[name="stat_order[]"]')?.value) || 1;
+                
+                if (label && value) {
+                    stats.push({
+                        label: label,
+                            value: value,
+                        icon: icon || null,
+                        order: order
+                        });
+                    }
+                });
+                
+            return stats;
+        }
+
+        function collectProjectInfo() {
+            const info = [];
+            const infoItems = document.querySelectorAll('#projectInfo .info-item');
+            
+            infoItems.forEach(item => {
+                const label = item.querySelector('input[name="info_label[]"]')?.value.trim();
+                const value = item.querySelector('input[name="info_value[]"]')?.value.trim();
+                const order = parseInt(item.querySelector('input[name="info_order[]"]')?.value) || 1;
+                
+                if (label && value) {
+                    info.push({
+                        label: label,
+                        value: value,
+                        order: order
+                    });
+                }
+            });
+            
+            return info;
+        }
+
+        function submitPortfolioForm(formData) {
+            const portfolioId = window.currentPortfolioId;
+            
+            fetch(`/api/admin/portfolios/${portfolioId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update portfolio');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                alert('Portfolio updated successfully!');
+                // Redirect to dashboard
+                if (typeof loadContent === 'function') {
+                    loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard');
+                } else {
+                    window.location.href = '/admin/dashboard';
+                }
+            })
+            .catch(error => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                console.error('Error:', error);
+                alert('Error updating portfolio: ' + error.message);
+            });
+        }
+
+                // Dynamic buttons are now handled by index.js
+        // All button functionality moved to centralized event handling
+
+        // Image upload functions for update form
+        function initializeImageUpload() {
+            // Hero image upload
+            const heroUploadArea = document.getElementById('heroUploadArea');
+            const heroImageInput = document.getElementById('portfolio_hero_image');
+            const heroPreview = document.getElementById('heroImagePreview');
+
+            if (heroUploadArea && heroImageInput) {
+                // Hero upload area click
+                heroUploadArea.addEventListener('click', function() {
+                    heroImageInput.click();
+                });
+
+                // Hero drag and drop
+                heroUploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+
+                heroUploadArea.addEventListener('dragleave', function() {
+                    this.classList.remove('dragover');
+                });
+
+                heroUploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        heroImageInput.files = files;
+                        handleHeroImagePreview(files[0]);
+                    }
+                });
+
+                // Hero file input change
+                heroImageInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        handleHeroImagePreview(this.files[0]);
+                    }
+                });
+            }
+
+            // Gallery image upload handling
+            initializeGalleryImageUpload();
+        }
+
+        function handleHeroImagePreview(file) {
+            const heroPreview = document.getElementById('heroImagePreview');
+            const heroUploadArea = document.getElementById('heroUploadArea');
+            const currentHeroImage = document.getElementById('currentHeroImage');
+            
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    heroPreview.innerHTML = `
+                        <img src="${e.target.result}" alt="New Hero Image Preview">
+                        <p><i class="fas fa-check-circle" style="color: #10b981;"></i> ${file.name} (New)</p>
+                        <button type="button" onclick="clearHeroImage()" class="btn-remove-small" style="margin-top: 10px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    heroPreview.style.display = 'block';
+                    heroUploadArea.classList.add('upload-success');
+                    if (currentHeroImage) {
+                        currentHeroImage.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearHeroImage() {
+            const heroImageInput = document.getElementById('portfolio_hero_image');
+            const heroPreview = document.getElementById('heroImagePreview');
+            const heroUploadArea = document.getElementById('heroUploadArea');
+            const currentHeroImage = document.getElementById('currentHeroImage');
+            
+            heroImageInput.value = '';
+            heroPreview.style.display = 'none';
+            heroUploadArea.classList.remove('upload-success');
+            if (currentHeroImage) {
+                currentHeroImage.style.display = 'block';
+            }
+        }
+
+        function initializeGalleryImageUpload() {
+            // Event delegation for gallery upload areas
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.gallery-upload-area')) {
+                    const uploadArea = e.target.closest('.gallery-upload-area');
+                    const fileInput = uploadArea.querySelector('input[type="file"]');
+                    fileInput.click();
+                }
+            });
+
+            // Event delegation for gallery file input change
+            document.addEventListener('change', function(e) {
+                if (e.target.type === 'file' && e.target.name === 'gallery_image_file[]') {
+                    const galleryItem = e.target.closest('.gallery-item');
+                    const uploadArea = galleryItem.querySelector('.gallery-upload-area');
+                    const preview = galleryItem.querySelector('.gallery-image-preview');
+                    const currentImage = galleryItem.querySelector('.current-gallery-image');
+                    
+                    if (e.target.files && e.target.files[0]) {
+                        const file = e.target.files[0];
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                preview.innerHTML = `
+                                    <img src="${event.target.result}" alt="New Gallery Preview">
+                                    <p><i class="fas fa-check-circle" style="color: #10b981;"></i> ${file.name} (New)</p>
+                                `;
+                                preview.style.display = 'block';
+                                uploadArea.classList.add('upload-success');
+                                if (currentImage) {
+                                    currentImage.style.display = 'none';
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                }
+            });
+
+            // Gallery drag and drop
+            document.addEventListener('dragover', function(e) {
+                if (e.target.closest('.gallery-upload-area')) {
+                    e.preventDefault();
+                    e.target.closest('.gallery-upload-area').classList.add('dragover');
+                }
+            });
+
+            document.addEventListener('dragleave', function(e) {
+                if (e.target.closest('.gallery-upload-area')) {
+                    e.target.closest('.gallery-upload-area').classList.remove('dragover');
+                }
+            });
+
+            document.addEventListener('drop', function(e) {
+                if (e.target.closest('.gallery-upload-area')) {
+                    e.preventDefault();
+                    const uploadArea = e.target.closest('.gallery-upload-area');
+                    const fileInput = uploadArea.querySelector('input[type="file"]');
+                    const files = e.dataTransfer.files;
+                    
+                    uploadArea.classList.remove('dragover');
+                    
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        // Trigger change event
+                        const event = new Event('change', { bubbles: true });
+                        fileInput.dispatchEvent(event);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

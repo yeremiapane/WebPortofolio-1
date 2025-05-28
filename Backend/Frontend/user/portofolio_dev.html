@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeremia Yosefan Pane - Portfolio</title>
+    
+    <!-- Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/assets/css/portfolio.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-logo">
+                <span class="brand-text">YR.</span>
+                <span class="brand-subtitle">Portfolio</span>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text">
+                <span class="loading-message">Loading Portfolio...</span>
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text">YR.</span>
+                <span class="brand-subtitle">Portfolio</span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#portfolio" class="nav-link active" data-filter="all">
+                        <i class="fas fa-th-large"></i>
+                        <span>All Projects</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#portfolio" class="nav-link" data-filter="Development">
+                        <i class="fas fa-code"></i>
+                        <span>Developer</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#portfolio" class="nav-link" data-filter="Data Analytics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Data Analyst</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#portfolio" class="nav-link" data-filter="Data Engineer">
+                        <i class="fas fa-database"></i>
+                        <span>Data Engineer</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="http://localhost:8080" class="nav-link" data-filter="about">
+                        <i class="fas fa-user"></i>
+                        <span>About Me</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/contact-form.html" class="nav-link" data-filter="contact">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-rocket"></i>
+                    <span>Welcome to My Portfolio</span>
+                </div>
+                <h1 class="hero-title">
+                    Crafting Digital
+                    <span class="gradient-text">Experiences</span>
+                    & Data Solutions
+                </h1>
+                <p class="hero-description">
+                    Explore my journey through web development, data analysis, and engineering. 
+                    Each project represents a unique challenge solved with creativity and precision.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="0" id="projects-count">0</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="0" id="categories-count">0</div>
+                        <div class="stat-label">Specializations</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="0">0</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-elements">
+                    <div class="floating-icon" style="--delay: 0s">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 1s">
+                        <i class="fab fa-js-square"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 2s">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 3s">
+                        <i class="fab fa-react"></i>
+                    </div>
+                    <div class="floating-icon" style="--delay: 4s">
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid -->
+    <section id="portfolio" class="portfolio-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">A collection of my best work across different domains</p>
+            </div>
+            
+            <!-- Filter Status -->
+            <div class="filter-status" id="filter-status">
+                <div class="filter-info">
+                    <span class="filter-icon">
+                        <i class="fas fa-th-large"></i>
+                    </span>
+                    <span class="filter-text">Showing All Projects</span>
+                    <span class="filter-count" id="filter-count">(0)</span>
+                </div>
+            </div>
+            
+            <!-- Loading Animation -->
+            <div class="loading-container" id="loading-container" style="display: none;">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Loading Portfolio...</p>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-container" id="error-container" style="display: none;">
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Failed to Load Portfolio</h3>
+                    <p>Unable to fetch portfolio data. Please check your connection and try again.</p>
+                    <button class="retry-btn" onclick="loadPortfolioData()">
+                        <i class="fas fa-redo"></i>
+                        Retry
+                    </button>
+                </div>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolio-grid">
+                <!-- Portfolio cards will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <p class="section-subtitle">Get to know more about my background and expertise</p>
+            </div>
+            <!-- About content will be added here -->
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Let's discuss your next project</p>
+            </div>
+            <!-- Contact content will be added here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YR.</h3>
+                    <p>Crafting digital experiences with passion and precision.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#portfolio" data-filter="all">All Projects</a></li>
+                            <li><a href="#portfolio" data-filter="Development">Developer</a></li>
+                            <li><a href="#portfolio" data-filter="Data Analytics">Data Analyst</a></li>
+                            <li><a href="#portfolio" data-filter="Data Engineer">Data Engineer</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="http://localhost:8080">Home</a></li>
+                            <li><a href="http://localhost:8080#about">About</a></li>
+                            <li><a href="http://localhost:8080#service">Services</a></li>
+                            <li><a href="/contact-form.html">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Connect</h4>
+                        <div class="social-links">
+                            <a href="https://www.linkedin.com/in/yeremia-yosefan-pane-74041921a/" class="social-link" target="_blank">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="https://github.com/yeremiapane" class="social-link" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://x.com/PaneYeremia" class="social-link" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="/contact-form.html" class="social-link">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Yeremia Yosefan Pane. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/assets/js/portfolio-dynamic.js"></script>
+</body>
+</html>

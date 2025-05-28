@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Portfolio Buttons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .alert-error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .code-block {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .step {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .step h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Solusi Masalah Tombol Portfolio</h1>
+        
+        <div class="alert alert-error">
+            <strong>Masalah:</strong> Tombol "Add Gallery Image", "Add Project Stat", dll. tidak berfungsi ketika diakses melalui localhost:8080/admin/dashboard, tetapi berfungsi ketika file HTML dibuka langsung.
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>Penyebab:</strong> Konflik antara event listener di index.js dan event listener di file HTML individual. Ketika halaman dimuat melalui dashboard, kedua sistem event handling aktif bersamaan dan saling mengganggu.
+        </div>
+
+        <div class="step">
+            <h3>🎯 Solusi 1: Hapus Event Listener Duplikat</h3>
+            <p>Hapus fungsi <code>initializeDynamicButtons()</code> dari file HTML dan hanya gunakan yang di index.js:</p>
+            
+            <div class="code-block">
+// Di write_portfolio.html, HAPUS bagian ini:
+document.addEventListener('DOMContentLoaded', function() {
+    // ... kode lain ...
+    
+    // HAPUS BARIS INI:
+    // initializeDynamicButtons();
+});
+
+// HAPUS JUGA seluruh fungsi initializeDynamicButtons() di file HTML
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🎯 Solusi 2: Perbaiki Event Delegation di index.js</h3>
+            <p>Pastikan event delegation di index.js menangani semua tombol dengan benar:</p>
+            
+            <div class="code-block">
+// Di index.js, perbaiki fungsi initializePortfolioButtonEvents():
+function initializePortfolioButtonEvents() {
+    console.log('Initializing portfolio button events...');
+    
+    // Hapus event listener lama jika ada
+    document.removeEventListener('click', handlePortfolioButtonClick);
+    
+    // Tambah event listener baru
+    document.addEventListener('click', handlePortfolioButtonClick);
+}
+
+function handlePortfolioButtonClick(e) {
+    if (e.target.closest('.btn-add-small')) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const button = e.target.closest('.btn-add-small');
+        const container = button.getAttribute('data-container');
+        const category = button.getAttribute('data-category');
+        
+        console.log('Add button clicked:', category, container);
+        
+        if (category === 'Gallery') {
+            addPortfolioGalleryItem(container);
+        } else if (category === 'Stats') {
+            addPortfolioStatItem(container);
+        } else if (category === 'Info') {
+            addPortfolioInfoItem(container);
+        } else if (['Frontend', 'Backend', 'Database', 'Tools'].includes(category)) {
+            addPortfolioTechItem(container, category);
+        }
+    }
+    
+    if (e.target.closest('.btn-remove-small')) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const button = e.target.closest('.btn-remove-small');
+        const item = button.closest('.tech-item, .gallery-item, .stat-item, .info-item');
+        const container = item.closest('.tech-inputs-container, .gallery-inputs-container, .stats-inputs-container, .info-inputs-container');
+        
+        if (container && container.children.length > 1) {
+            item.remove();
+            console.log('Item removed');
+        } else {
+            alert('At least one item is required');
+        }
+    }
+}
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🎯 Solusi 3: Tambah Fungsi Helper yang Hilang</h3>
+            <p>Tambahkan fungsi-fungsi helper di index.js:</p>
+            
+            <div class="code-block">
+function addPortfolioGalleryItem(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'gallery-item';
+    newItem.innerHTML = `
+        &lt;div class="gallery-upload-area"&gt;
+            &lt;div class="upload-content"&gt;
+                &lt;i class="fas fa-image"&gt;&lt;/i&gt;
+                &lt;p&gt;Upload Gallery Image&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;input type="file" name="gallery_image_file[]" accept="image/*" required&gt;
+        &lt;/div&gt;
+        &lt;div class="gallery-image-preview"&gt;&lt;/div&gt;
+        &lt;div class="gallery-inputs"&gt;
+            &lt;input type="text" name="gallery_title[]" placeholder="Image title"&gt;
+            &lt;textarea name="gallery_description[]" rows="2" placeholder="Image description"&gt;&lt;/textarea&gt;
+            &lt;input type="number" name="gallery_order[]" placeholder="Order" min="1" value="1"&gt;
+        &lt;/div&gt;
+        &lt;button type="button" class="btn-remove-small"&gt;
+            &lt;i class="fas fa-times"&gt;&lt;/i&gt;
+        &lt;/button&gt;
+    `;
+    container.appendChild(newItem);
+}
+
+function addPortfolioStatItem(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'stat-item';
+    newItem.innerHTML = `
+        &lt;input type="text" name="stat_label[]" placeholder="Label (e.g., Duration)" required&gt;
+        &lt;input type="text" name="stat_value[]" placeholder="Value (e.g., 4 Months)" required&gt;
+        &lt;input type="text" name="stat_icon[]" placeholder="Icon class (e.g., fas fa-calendar)"&gt;
+        &lt;input type="number" name="stat_order[]" placeholder="Order" min="1" value="1"&gt;
+        &lt;button type="button" class="btn-remove-small"&gt;
+            &lt;i class="fas fa-times"&gt;&lt;/i&gt;
+        &lt;/button&gt;
+    `;
+    container.appendChild(newItem);
+}
+
+function addPortfolioInfoItem(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'info-item';
+    newItem.innerHTML = `
+        &lt;input type="text" name="info_label[]" placeholder="Label (e.g., Client)" required&gt;
+        &lt;input type="text" name="info_value[]" placeholder="Value (e.g., Company Name)" required&gt;
+        &lt;input type="number" name="info_order[]" placeholder="Order" min="1" value="1"&gt;
+        &lt;button type="button" class="btn-remove-small"&gt;
+            &lt;i class="fas fa-times"&gt;&lt;/i&gt;
+        &lt;/button&gt;
+    `;
+    container.appendChild(newItem);
+}
+            </div>
+        </div>
+
+        <div class="alert alert-success">
+            <strong>Hasil:</strong> Setelah menerapkan solusi ini, tombol-tombol portfolio akan berfungsi dengan baik baik ketika diakses melalui dashboard maupun dibuka langsung.
+        </div>
+
+        <div class="step">
+            <h3>🧪 Cara Test</h3>
+            <ol>
+                <li>Terapkan solusi di atas</li>
+                <li>Restart server Go</li>
+                <li>Buka <code>localhost:8080/admin/dashboard</code></li>
+                <li>Masuk ke menu "Write Portfolio"</li>
+                <li>Coba klik tombol "Add Gallery Image", "Add Project Stat", dll.</li>
+                <li>Tombol harus berfungsi dan menambah form field baru</li>
+            </ol>
+        </div>
+
+        <button class="btn" onclick="window.close()">Tutup</button>
+    </div>
+</body>
+</html> 

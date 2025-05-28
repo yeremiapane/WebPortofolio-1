@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Platform - Project Detail | Yeremia Yosefan Pane</title>
+    
+    <!-- Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/project-detail.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-logo">
+                <span class="brand-text">YR.</span>
+                <span class="brand-subtitle">Portfolio</span>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text">
+                <span class="loading-message">Loading Project Details...</span>
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="portofolio_dev.html" class="brand-link">
+                    <span class="brand-text">YR.</span>
+                    <span class="brand-subtitle">Portfolio</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="portofolio_dev.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Portfolio</span>
+                </a>
+                <button class="btn-share" id="share-btn">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="project-meta">
+                    <div class="project-category">
+                        <i class="fas fa-code"></i>
+                        <span>Web Development</span>
+                    </div>
+                    <div class="project-date">
+                        <i class="fas fa-calendar"></i>
+                        <span>December 2023</span>
+                    </div>
+                </div>
+                
+                <h1 class="project-title">E-Commerce Platform</h1>
+                <p class="project-subtitle">
+                    A comprehensive full-stack e-commerce solution featuring modern UI/UX design, 
+                    secure payment integration, and powerful admin dashboard for seamless online business management.
+                </p>
+                
+                <div class="project-links">
+                    <a href="#" class="btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Live Demo
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        <i class="fab fa-github"></i>
+                        Source Code
+                    </a>
+                </div>
+                
+                <div class="project-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Months</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Team Members</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Features</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="image-container">
+                    <img src="https://via.placeholder.com/800x500/4F46E5/ffffff?text=E-Commerce+Platform" alt="E-Commerce Platform">
+                    <div class="image-overlay">
+                        <button class="btn-play" id="play-demo">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Details -->
+    <section class="project-details">
+        <div class="container">
+            <div class="details-grid">
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Overview -->
+                    <div class="content-section">
+                        <h2 class="section-title">Project Overview</h2>
+                        <div class="overview-content">
+                            <p>
+                                This e-commerce platform was designed to provide a seamless shopping experience 
+                                for both customers and administrators. Built with modern web technologies, 
+                                it features a responsive design, secure payment processing, and comprehensive 
+                                inventory management.
+                            </p>
+                            <p>
+                                The platform includes advanced features such as real-time inventory tracking, 
+                                automated email notifications, analytics dashboard, and multi-language support. 
+                                The admin panel provides powerful tools for managing products, orders, customers, 
+                                and generating detailed reports.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="content-section">
+                        <h2 class="section-title">Key Features</h2>
+                        <div class="features-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Shopping Cart</h3>
+                                    <p>Advanced cart functionality with save for later and wishlist features</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Payment Integration</h3>
+                                    <p>Secure payment processing with multiple payment gateway support</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Analytics Dashboard</h3>
+                                    <p>Comprehensive analytics and reporting for business insights</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Responsive Design</h3>
+                                    <p>Optimized for all devices with mobile-first approach</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery -->
+                    <div class="content-section">
+                        <h2 class="section-title">Project Gallery</h2>
+                        <div class="gallery-grid">
+                            <div class="gallery-item" data-image="1">
+                                <img src="https://via.placeholder.com/400x300/4F46E5/ffffff?text=Homepage" alt="Homepage">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-expand"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-item" data-image="2">
+                                <img src="https://via.placeholder.com/400x300/059669/ffffff?text=Product+Page" alt="Product Page">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-expand"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-item" data-image="3">
+                                <img src="https://via.placeholder.com/400x300/DC2626/ffffff?text=Admin+Dashboard" alt="Admin Dashboard">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-expand"></i>
+                                </div>
+                            </div>
+                            <div class="gallery-item" data-image="4">
+                                <img src="https://via.placeholder.com/400x300/7C3AED/ffffff?text=Checkout+Process" alt="Checkout Process">
+                                <div class="gallery-overlay">
+                                    <i class="fas fa-expand"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Challenges & Solutions -->
+                    <div class="content-section">
+                        <h2 class="section-title">Challenges & Solutions</h2>
+                        <div class="challenges-list">
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <h3>Performance Optimization</h3>
+                                    <span class="challenge-tag">Technical</span>
+                                </div>
+                                <p>
+                                    Implemented lazy loading, image optimization, and caching strategies 
+                                    to ensure fast loading times even with large product catalogs.
+                                </p>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <h3>Security Implementation</h3>
+                                    <span class="challenge-tag">Security</span>
+                                </div>
+                                <p>
+                                    Integrated comprehensive security measures including JWT authentication, 
+                                    input validation, and secure payment processing protocols.
+                                </p>
+                            </div>
+                            <div class="challenge-item">
+                                <div class="challenge-header">
+                                    <h3>Scalability Design</h3>
+                                    <span class="challenge-tag">Architecture</span>
+                                </div>
+                                <p>
+                                    Designed modular architecture with microservices approach to handle 
+                                    growing user base and expanding feature requirements.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Tech Stack -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Technology Stack</h3>
+                        <div class="tech-stack">
+                            <div class="tech-category">
+                                <h4>Frontend</h4>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">React</span>
+                                    <span class="tech-tag">TypeScript</span>
+                                    <span class="tech-tag">Tailwind CSS</span>
+                                    <span class="tech-tag">Redux</span>
+                                </div>
+                            </div>
+                            <div class="tech-category">
+                                <h4>Backend</h4>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Node.js</span>
+                                    <span class="tech-tag">Express</span>
+                                    <span class="tech-tag">MongoDB</span>
+                                    <span class="tech-tag">JWT</span>
+                                </div>
+                            </div>
+                            <div class="tech-category">
+                                <h4>Tools & Services</h4>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Docker</span>
+                                    <span class="tech-tag">AWS</span>
+                                    <span class="tech-tag">Stripe</span>
+                                    <span class="tech-tag">Cloudinary</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Info -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Project Information</h3>
+                        <div class="project-info">
+                            <div class="info-item">
+                                <span class="info-label">Client</span>
+                                <span class="info-value">TechStart Inc.</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Duration</span>
+                                <span class="info-value">6 Months</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Team Size</span>
+                                <span class="info-value">3 Developers</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">My Role</span>
+                                <span class="info-value">Full-Stack Developer</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status</span>
+                                <span class="info-value status-completed">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact CTA -->
+                    <div class="sidebar-section">
+                        <div class="contact-cta">
+                            <h3>Interested in Similar Project?</h3>
+                            <p>Let's discuss how I can help bring your ideas to life.</p>
+                            <a href="#contact" class="btn-contact">
+                                <i class="fas fa-envelope"></i>
+                                Get In Touch
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Projects -->
+    <section class="related-projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Other Projects</h2>
+                <p class="section-subtitle">Explore more of my work across different domains</p>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-card" data-category="developer">
+                    <div class="card-image">
+                        <img src="https://via.placeholder.com/400x250/059669/ffffff?text=Mobile+App" alt="Task Management App">
+                        <div class="card-overlay">
+                            <div class="overlay-content">
+                                <a href="#" class="btn-view">
+                                    <i class="fas fa-eye"></i>
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">
+                            <i class="fas fa-mobile-alt"></i>
+                            Mobile Development
+                        </div>
+                        <h3 class="card-title">Task Management App</h3>
+                        <p class="card-description">
+                            Cross-platform mobile app for team collaboration and project management.
+                        </p>
+                        <div class="card-tech">
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">Firebase</span>
+                            <span class="tech-tag">Dart</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="data-analyst">
+                    <div class="card-image">
+                        <img src="https://via.placeholder.com/400x250/DC2626/ffffff?text=Sales+Dashboard" alt="Sales Dashboard">
+                        <div class="card-overlay">
+                            <div class="overlay-content">
+                                <a href="#" class="btn-view">
+                                    <i class="fas fa-eye"></i>
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">
+                            <i class="fas fa-chart-line"></i>
+                            Data Analysis
+                        </div>
+                        <h3 class="card-title">Sales Performance Dashboard</h3>
+                        <p class="card-description">
+                            Interactive dashboard analyzing sales trends and customer behavior.
+                        </p>
+                        <div class="card-tech">
+                            <span class="tech-tag">Tableau</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">SQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card" data-category="data-engineer">
+                    <div class="card-image">
+                        <img src="https://via.placeholder.com/400x250/EA580C/ffffff?text=Data+Pipeline" alt="Data Pipeline">
+                        <div class="card-overlay">
+                            <div class="overlay-content">
+                                <a href="#" class="btn-view">
+                                    <i class="fas fa-eye"></i>
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">
+                            <i class="fas fa-database"></i>
+                            Data Engineering
+                        </div>
+                        <h3 class="card-title">Real-time Data Pipeline</h3>
+                        <p class="card-description">
+                            Scalable data pipeline processing millions of records in real-time.
+                        </p>
+                        <div class="card-tech">
+                            <span class="tech-tag">Apache Spark</span>
+                            <span class="tech-tag">Kafka</span>
+                            <span class="tech-tag">Docker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="view-all-projects">
+                <a href="portofolio_dev.html" class="btn-view-all">
+                    <span>View All Projects</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="image-modal">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <img src="" alt="" id="modal-image">
+            <div class="modal-nav">
+                <button class="modal-prev" id="modal-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="modal-next" id="modal-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YR.</h3>
+                    <p>Crafting digital experiences with passion and precision.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="portofolio_dev.html">Portfolio</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Connect</h4>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Yeremia Yosefan Pane. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="assets/js/project-detail.js"></script>
+</body>
+</html> 

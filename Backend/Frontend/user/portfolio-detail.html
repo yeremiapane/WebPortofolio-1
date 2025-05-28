@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <title>Portfolio Detail - Yeremia Yosefan Pane</title>
+    
+    <!-- Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/assets/css/portfolio.css">
+    <link rel="stylesheet" href="/assets/css/portfolio-detail.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-logo">
+                <span class="brand-text">YR.</span>
+                <span class="brand-subtitle">Portfolio Detail</span>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text">
+                <span class="loading-message">Loading Project Details...</span>
+                <div class="loading-progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-text">YR.</span>
+                <span class="brand-subtitle">Portfolio</span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="/portfolio" class="nav-link">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to Portfolio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/blog" class="nav-link">
+                        <i class="fas fa-blog"></i>
+                        <span>Blog</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Portfolio Detail Content -->
+    <main class="portfolio-detail" id="portfolio-detail">
+        <!-- Error Container -->
+        <div class="error-container" id="error-container" style="display: none;">
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Portfolio Not Found</h3>
+                <p>The requested portfolio could not be found or failed to load.</p>
+                <a href="/portfolio" class="retry-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Portfolio
+                </a>
+            </div>
+        </div>
+
+        <!-- Portfolio Content (will be populated dynamically) -->
+        <div class="portfolio-content" id="portfolio-content" style="display: none;">
+            <!-- Hero Section -->
+            <section class="detail-hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <div class="breadcrumb">
+                            <a href="/portfolio">Portfolio</a>
+                            <span class="separator">/</span>
+                            <span class="current" id="breadcrumb-title">Project Detail</span>
+                        </div>
+                        
+                        <div class="hero-badge" id="hero-category">
+                            <i class="fas fa-code"></i>
+                            <span>Development</span>
+                        </div>
+                        
+                        <h1 class="hero-title" id="hero-title">Project Title</h1>
+                        <p class="hero-description" id="hero-description">Project description will be loaded here...</p>
+                        
+                        <div class="hero-actions">
+                            <div class="action-buttons" id="action-buttons">
+                                <!-- Buttons will be populated dynamically -->
+                            </div>
+                            <div class="project-meta" id="project-meta">
+                                <!-- Meta info will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-image">
+                        <img id="hero-image" src="" alt="Project Hero Image" loading="lazy">
+                        <div class="image-overlay"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Overview -->
+            <section class="project-overview">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Project Overview</h2>
+                    </div>
+                    <div class="overview-content" id="overview-content">
+                        <!-- Overview content will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technology Stack -->
+            <section class="technology-stack" id="technology-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Technology Stack</h2>
+                        <p>Technologies and tools used in this project</p>
+                    </div>
+                    <div class="tech-grid" id="tech-grid">
+                        <!-- Technology stacks will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Gallery -->
+            <section class="project-gallery" id="gallery-section" style="display: none;">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Project Gallery</h2>
+                        <p>Screenshots and images from the project</p>
+                    </div>
+                    <div class="gallery-grid" id="gallery-grid">
+                        <!-- Gallery images will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Stats -->
+            <section class="project-stats" id="stats-section" style="display: none;">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Project Statistics</h2>
+                    </div>
+                    <div class="stats-grid" id="stats-grid">
+                        <!-- Project stats will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Custom Sections -->
+            <div id="custom-sections">
+                <!-- Custom sections will be populated dynamically -->
+            </div>
+
+            <!-- Project Information -->
+            <section class="project-info" id="info-section" style="display: none;">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Project Information</h2>
+                    </div>
+                    <div class="info-grid" id="info-grid">
+                        <!-- Project info will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Related Projects -->
+            <section class="related-projects">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Related Projects</h2>
+                        <p>Other projects you might be interested in</p>
+                    </div>
+                    <div class="related-grid" id="related-grid">
+                        <!-- Related projects will be populated dynamically -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>YR.</h3>
+                    <p>Crafting digital experiences with passion and precision.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="/portfolio">Portfolio</a></li>
+                            <li><a href="/#about">About</a></li>
+                            <li><a href="/#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Connect</h4>
+                        <div class="social-links">
+                            <a href="https://linkedin.com/in/yeremia-yosefan" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="https://github.com/yeremia-yosefan" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://twitter.com/yeremia_yosefan" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="mailto:yeremia.yosefan@example.com" class="social-link">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Yeremia Yosefan Pane. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="image-modal">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-image-container" id="modal-image-container">
+                <img src="" alt="" id="modal-image">
+                
+                <!-- Zoom Controls -->
+                <div class="modal-zoom-controls">
+                    <button class="zoom-btn" id="zoom-in" title="Zoom In">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="zoom-btn" id="zoom-out" title="Zoom Out">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="zoom-btn" id="zoom-reset" title="Reset Zoom">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </button>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="modal-nav">
+                    <button class="modal-prev" id="modal-prev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="modal-next" id="modal-next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Info Toggle Button -->
+                <button class="modal-info-toggle" id="modal-info-toggle" title="Toggle Info">
+                    <i class="fas fa-info"></i>
+                </button>
+                
+                <!-- Info Hint Tooltip -->
+                <div class="modal-info-hint" id="modal-info-hint">
+                    Click to view image details
+                </div>
+                
+                <!-- Image Info Overlay -->
+                <div class="modal-image-info-overlay" id="modal-image-info-overlay">
+                    <h3 id="overlay-image-title">Image Title</h3>
+                    <p id="overlay-image-description">Image description will appear here</p>
+                    <div class="modal-image-meta">
+                        <span class="modal-image-order" id="overlay-image-order">1 of 5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/assets/js/portfolio-detail.js"></script>
+    <script>
+        // Global function for related project navigation
+        function viewRelatedProject(projectId) {
+            console.log('Navigating to project:', projectId);
+            const slug = 'project-detail'; // Generic slug since we don't have the title yet
+            window.location.href = `/portfolio/${projectId}/${slug}`;
+        }
+        
+        // Make function globally available
+        window.viewRelatedProject = viewRelatedProject;
+        
+        // Initialize navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Back button functionality
+            const backBtns = document.querySelectorAll('.nav-link[href="/portfolio"], .nav-link[href*="portfolio"]');
+            backBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Check if user came from portfolio page
+                    const referrer = document.referrer;
+                    const isFromPortfolio = referrer.includes('/portfolio') || referrer.includes('/portofolio');
+                    
+                    if (isFromPortfolio && window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/portfolio';
+                    }
+                });
+            });
+            
+            // Contact links functionality
+            const contactLinks = document.querySelectorAll('a[href="#contact"], a[href="/#contact"]');
+            contactLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = '/#contact';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

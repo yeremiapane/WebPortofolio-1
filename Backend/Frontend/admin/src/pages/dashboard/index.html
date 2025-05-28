@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Admin</title>
+  <title>Modern Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Styles -->
-  <!-- style.css: memuat styling sidebar, dashboard, stat-card, dsb. -->
   <link rel="stylesheet" href="/admin_dashboard_pages/style.css">
-  <!-- Additional style for article writing (opsional) -->
-  <link rel="stylesheet" href="/admin_dashboard_assets/write_articles.css">
+  <link rel="stylesheet" href="/admin_dashboard_pages/assets/write_articles.css">
 
+  <!-- Modern Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <!-- Boxicons -->
-  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Highlight.js Theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
@@ -35,85 +36,194 @@
 <!-- Toast Container (untuk notifikasi popup) -->
 <div id="toastContainer" class="toast-container"></div>
 
-<!-- SIDEBAR -->
-<div class="sidebar close">
-  <div class="logo-details">
-    <i class='bx bxl-c-plus-plus'></i>
-    <span class="logo_name">Menu</span>
+<!-- MODERN SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <!-- Logo Section -->
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <div class="logo-text">
+        <h3>YeremiaAdmin</h3>
+        <span>Content Management</span>
+      </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
-  <ul class="nav-links">
-    <li>
-      <div class="iocn-link">
-        <a href="#" onclick="loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard')">
-          <i class='bx bx-grid-alt'></i>
-          <span class="link_name">Dashboard</span>
-        </a>
-      </div>
-      <ul class="sub-menu">
-        <li><a href="#" onclick="loadContent('/admin_dashboard_pages/dashboard.html', 'Dashboard')">Dashboard</a></li>
-      </ul>
-    </li>
 
-    <!-- Articles -->
-    <li>
-      <div class="iocn-link">
-        <a href="#" onclick="loadContent('/admin_dashboard_pages/write_articles.html', 'Articles')">
-          <i class='bx bxs-news'></i>
-          <span class="link_name">Articles</span>
+  <!-- Navigation Menu -->
+  <div class="sidebar-menu">
+    <ul class="menu-list">
+      <!-- Dashboard -->
+      <li class="menu-item active">
+        <a href="#" class="menu-link" data-page="/admin_dashboard_pages/dashboard.html" data-title="Dashboard">
+          <div class="menu-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <span class="menu-text">Dashboard</span>
+          <div class="menu-indicator"></div>
         </a>
-      </div>
-      <ul class="sub-menu">
-        <li><a href="#" onclick="loadContent('/admin_dashboard_pages/write_articles.html', 'Write Articles')">Write Articles</a></li>
-        <li><a href="#" onclick="loadContent('/admin_dashboard_pages/update_articles.html', 'Update Articles')">Update Articles</a></li>
-      </ul>
-    </li>
+      </li>
 
-    <!-- Certificates -->
-    <li>
-      <div class="iocn-link">
-        <a href="#" onclick="loadContent('/admin_dashboard_pages/write_certificates.html', 'Certificates')">
-          <i class='bx bxs-medal'></i>
-          <span class="link_name">Certificates</span>
+      <!-- Articles Section -->
+      <li class="menu-item has-submenu">
+        <a href="#" class="menu-link">
+          <div class="menu-icon">
+            <i class="fas fa-newspaper"></i>
+          </div>
+          <span class="menu-text">Articles</span>
+          <div class="menu-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
         </a>
-      </div>
-      <ul class="sub-menu">
-        <li><a href="#" onclick="loadContent('/admin_dashboard_pages/write_certificates.html', 'Write Certificates')">Write Certificates</a></li>
-        <li><a href="#" onclick="loadContent('/admin_dashboard_pages/update_certificate.html', 'Update Certificates')">Update Certificates</a></li>
-      </ul>
-    </li>
+        <ul class="submenu">
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/write_articles.html" data-title="Write Articles">
+              <i class="fas fa-pen"></i>
+              <span>Write Article</span>
+            </a>
+          </li>
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/update_articles.html" data-title="Manage Articles">
+              <i class="fas fa-edit"></i>
+              <span>Manage Articles</span>
+            </a>
+          </li>
+        </ul>
+      </li>
 
-    <!-- Comments -->
-    <li>
-      <div class="iocn-link">
-        <a href="#" onclick="loadContent('/admin_dashboard_pages/comments.html', 'Comments')">
-          <i class='bx bx-comment'></i>
-          <span class="link_name">Comments</span>
+      <!-- Certificates Section -->
+      <li class="menu-item has-submenu">
+        <a href="#" class="menu-link">
+          <div class="menu-icon">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <span class="menu-text">Certificates</span>
+          <div class="menu-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
         </a>
-      </div>
-    </li>
+        <ul class="submenu">
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/write_certificates.html" data-title="Add Certificate">
+              <i class="fas fa-plus"></i>
+              <span>Add Certificate</span>
+            </a>
+          </li>
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/update_certificate.html" data-title="Manage Certificates">
+              <i class="fas fa-cog"></i>
+              <span>Manage Certificates</span>
+            </a>
+          </li>
+        </ul>
+      </li>
 
-    <!-- LOGOUT -->
-    <li>
-      <div class="profile-details">
-        <div class="name-job">
-          <div class="profile_name">LOGOUT</div>
+      <!-- Portfolio Section -->
+      <li class="menu-item has-submenu">
+        <a href="#" class="menu-link">
+          <div class="menu-icon">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <span class="menu-text">Portfolio</span>
+          <div class="menu-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </a>
+        <ul class="submenu">
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/write_portfolio.html" data-title="Create Portfolio">
+              <i class="fas fa-plus-circle"></i>
+              <span>Create Portfolio</span>
+            </a>
+          </li>
+          <li class="submenu-item">
+            <a href="#" class="submenu-link" data-page="/admin_dashboard_pages/update_portfolio.html" data-title="Manage Portfolio">
+              <i class="fas fa-tasks"></i>
+              <span>Manage Portfolio</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Comments -->
+      <li class="menu-item">
+        <a href="#" class="menu-link" data-page="/admin_dashboard_pages/comments.html" data-title="Comments">
+          <div class="menu-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <span class="menu-text">Comments</span>
+          <div class="menu-indicator"></div>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- User Profile & Logout -->
+  <div class="sidebar-footer">
+          <div class="user-profile">
+        <div class="user-avatar">
+          <img src="/admin_dashboard_pages/assets/Imagem/logo.jpg" alt="Profile" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #6366f1, #06b6d4)'; this.parentElement.innerHTML='<span style=\'color:white;font-weight:600;display:flex;align-items:center;justify-content:center;width:100%;height:100%;\'>Y</span>';">
         </div>
-        <i class='bx bx-log-out-circle' onclick="logoutUser()"></i>
+        <div class="user-info">
+          <h4>Yeremia</h4>
+          <span>Administrator</span>
+        </div>
       </div>
-    </li>
-  </ul>
-</div>
-
-<!-- HOME SECTION -->
-<section class="home-section">
-  <div class="home-content">
-    <i class='bx bx-menu'></i>
-    <span class="text">Dashboard Yeremia</span>
+    <button class="logout-btn" onclick="logoutUser()" title="Logout">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </button>
   </div>
-  <div id="dynamic-content"></div>
-</section>
+</nav>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- MAIN CONTENT AREA -->
+<main class="main-content" id="mainContent">
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-left">
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 class="page-title">Modern Dashboard</h1>
+    </div>
+    
+    <div class="header-right">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." class="global-search">
+      </div>
+      
+      <div class="header-actions">
+        <button class="action-btn notification-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        
+        <div class="user-menu">
+          <div class="user-avatar">
+            <img src="/admin_dashboard_pages/assets/Imagem/logo.jpg" alt="Profile" onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #6366f1, #06b6d4)'; this.parentElement.innerHTML='<span style=\'color:white;font-weight:600;display:flex;align-items:center;justify-content:center;width:100%;height:100%;\'>Y</span>';">
+          </div>
+          <span class="user-name">Yeremia</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dynamic Content -->
+  <div class="content-wrapper">
+    <div id="dynamic-content"></div>
+  </div>
+</main>
 
 <!-- Main JS -->
-<script src="/admin_dashboard_assets/index.js"></script>
+<script src="/admin_dashboard_pages/assets/index.js"></script>
 </body>
 </html>
