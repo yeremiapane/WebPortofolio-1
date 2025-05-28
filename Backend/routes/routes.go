@@ -2,6 +2,10 @@ package routes
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	slug2 "github.com/gosimple/slug"
 	"github.com/ulule/limiter"
@@ -9,8 +13,6 @@ import (
 	"github.com/ulule/limiter/drivers/store/memory"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
-	"log"
-	"net/http"
 
 	"github.com/yeremiapane/WebPortofolio-1/Backend/controllers"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/middleware"
@@ -66,6 +68,9 @@ func SetupRoutes() *gin.Engine {
 	r.POST("/articles/:id/toggle_like", controllers.ToggleLikeArticle)
 	r.GET("/articles/:id/like_status", controllers.GetLikeStatus)
 
+	// Setup portfolio routes
+	SetupPortfolioRoutes(r)
+
 	// Admin group routes
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthMiddleware())
@@ -97,6 +102,48 @@ func SetupRoutes() *gin.Engine {
 	// Serve file HTML untuk rute tertentu
 	r.GET("/", func(c *gin.Context) {
 		c.File("Frontend/user/index.html")
+	})
+
+	r.GET("/portfolio", func(c *gin.Context) {
+		c.File("Frontend/user/portofolio_dev.html")
+	})
+
+	r.GET("/portfolios", func(c *gin.Context) {
+		c.File("Frontend/user/portofolio_dev.html")
+	})
+
+	r.GET("/portfolio/detail", func(c *gin.Context) {
+		c.File("Frontend/user/project-detail-data-analyst.html")
+	})
+
+	// New route for SEO-friendly portfolio URLs: /portfolio/id/slug
+	r.GET("/portfolio/:id/:slug", func(c *gin.Context) {
+		c.File("Frontend/user/project-detail-data-analyst.html")
+	})
+
+	// Fallback route for portfolio with just ID (redirect to slug version)
+	r.GET("/portfolio/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		// Validate that ID is a number
+		if _, err := strconv.Atoi(id); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid portfolio ID"})
+			return
+		}
+
+		// Get portfolio from database to create slug
+		var portfolio models.Portfolio
+		if err := config.DB.First(&portfolio, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Portfolio not found"})
+			return
+		}
+
+		// Create slug from title
+		slug := slug2.Make(portfolio.Title)
+
+		// Redirect to SEO-friendly URL
+		newURL := fmt.Sprintf("/portfolio/%s/%s", id, slug)
+		c.Redirect(http.StatusMovedPermanently, newURL)
 	})
 
 	r.GET("/blog", func(c *gin.Context) {

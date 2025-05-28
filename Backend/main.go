@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/yeremiapane/WebPortofolio-1/Backend/config"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/models"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/routes"
 	"github.com/yeremiapane/WebPortofolio-1/Backend/utils"
-	"log"
 )
 
 func main() {
@@ -18,6 +19,14 @@ func main() {
 		&models.Comments{},
 		&models.Visitor{},
 		&models.ArticleLike{},
+		&models.Portfolio{},
+		&models.TechnologyStack{},
+		&models.TechItem{},
+		&models.ProjectImage{},
+		&models.CustomSection{},
+		&models.CustomSectionItem{},
+		&models.ProjectStat{},
+		&models.ProjectInfo{},
 	)
 
 	if err != nil {

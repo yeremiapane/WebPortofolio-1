@@ -38,7 +38,11 @@ func GetDashboardStats(c *gin.Context) {
 	var totalViews int64
 	db.Model(&models.Article{}).Select("SUM(view_count)").Scan(&totalViews)
 
-	// 7) Kembalikan respons JSON
+	// 7) Hitung total portfolio
+	var totalPortfolios int64
+	db.Model(&models.Portfolio{}).Count(&totalPortfolios)
+
+	// 8) Kembalikan respons JSON
 	c.JSON(http.StatusOK, gin.H{
 		"total_articles":     totalArticles,
 		"total_certificates": totalCertificates,
@@ -48,5 +52,6 @@ func GetDashboardStats(c *gin.Context) {
 		"rejected_comments":  rejectedComments,
 		"total_likes":        totalLikes,
 		"total_views":        totalViews,
+		"total_portfolios":   totalPortfolios,
 	})
 }

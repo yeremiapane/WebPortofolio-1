@@ -1,0 +1,334 @@
+{
+  "info": {
+    "name": "Portfolio API Tests",
+    "description": "Collection untuk testing Portfolio API endpoints",
+    "version": "1.0.0"
+  },
+  "requests": [
+    {
+      "name": "Get All Portfolios",
+      "method": "GET",
+      "url": "http://localhost:8080/api/portfolios",
+      "description": "Mengambil semua portfolio dengan pagination"
+    },
+    {
+      "name": "Get All Portfolios with Filters",
+      "method": "GET",
+      "url": "http://localhost:8080/api/portfolios?page=1&limit=5&category=Development&search=web",
+      "description": "Mengambil portfolio dengan filter dan pencarian"
+    },
+    {
+      "name": "Get Portfolio by ID",
+      "method": "GET",
+      "url": "http://localhost:8080/api/portfolios/1",
+      "description": "Mengambil portfolio berdasarkan ID"
+    },
+    {
+      "name": "Get Portfolio Categories",
+      "method": "GET",
+      "url": "http://localhost:8080/api/portfolios/categories",
+      "description": "Mengambil daftar kategori portfolio"
+    },
+    {
+      "name": "Create Portfolio (Admin)",
+      "method": "POST",
+      "url": "http://localhost:8080/api/admin/portfolios",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE"
+      },
+      "body": {
+        "title": "E-Commerce Website",
+        "image_url": "https://example.com/ecommerce-preview.jpg",
+        "description": "Full-stack e-commerce website dengan fitur modern dan user-friendly interface",
+        "live_demo_url": "https://demo-ecommerce.example.com",
+        "github_url": "https://github.com/username/ecommerce-project",
+        "overview": "Proyek ini adalah solusi e-commerce komprehensif yang dibangun dengan teknologi modern. Mencakup autentikasi pengguna, manajemen produk, keranjang belanja, integrasi pembayaran, dan dashboard admin yang lengkap.",
+        "category": "Development",
+        "project_time": "3 bulan",
+        "technology_stacks": [
+          {
+            "category": "Frontend",
+            "items": [
+              {
+                "name": "HTML",
+                "version": "5",
+                "description": "Bahasa markup untuk struktur web"
+              },
+              {
+                "name": "CSS",
+                "version": "3",
+                "description": "Bahasa styling untuk desain web"
+              },
+              {
+                "name": "JavaScript",
+                "version": "ES6+",
+                "description": "Bahasa pemrograman untuk interaktivitas web"
+              },
+              {
+                "name": "React",
+                "version": "18.2",
+                "description": "Library JavaScript untuk membangun UI"
+              }
+            ]
+          },
+          {
+            "category": "Backend",
+            "items": [
+              {
+                "name": "Golang",
+                "version": "1.21",
+                "description": "Bahasa pemrograman backend"
+              },
+              {
+                "name": "GIN",
+                "version": "1.9",
+                "description": "Web framework untuk Golang"
+              },
+              {
+                "name": "JWT",
+                "version": "4.5",
+                "description": "JSON Web Token untuk autentikasi"
+              }
+            ]
+          },
+          {
+            "category": "Database",
+            "items": [
+              {
+                "name": "MySQL",
+                "version": "8.0",
+                "description": "Sistem manajemen database relasional"
+              },
+              {
+                "name": "Redis",
+                "version": "7.0",
+                "description": "In-memory database untuk caching"
+              }
+            ]
+          }
+        ],
+        "project_information": [
+          {
+            "category": "Features",
+            "items": [
+              {
+                "title": "User Authentication",
+                "description": "Sistem login dan registrasi yang aman dengan JWT tokens",
+                "order": 1
+              },
+              {
+                "title": "Product Management",
+                "description": "Operasi CRUD untuk produk dengan upload gambar",
+                "order": 2
+              },
+              {
+                "title": "Shopping Cart",
+                "description": "Tambah, hapus, dan modifikasi item dalam keranjang belanja",
+                "order": 3
+              },
+              {
+                "title": "Payment Integration",
+                "description": "Integrasi dengan multiple payment gateway",
+                "order": 4
+              },
+              {
+                "title": "Admin Dashboard",
+                "description": "Dashboard lengkap untuk mengelola toko online",
+                "order": 5
+              }
+            ]
+          },
+          {
+            "category": "Challenges",
+            "items": [
+              {
+                "title": "Payment Security",
+                "description": "Mengintegrasikan multiple payment gateway dengan aman",
+                "order": 1
+              },
+              {
+                "title": "Performance Optimization",
+                "description": "Optimasi query database dan response API",
+                "order": 2
+              },
+              {
+                "title": "Scalability",
+                "description": "Membangun arsitektur yang dapat menangani traffic tinggi",
+                "order": 3
+              }
+            ]
+          },
+          {
+            "category": "Solutions",
+            "items": [
+              {
+                "title": "Microservices Architecture",
+                "description": "Memisahkan layanan menjadi microservices untuk skalabilitas",
+                "order": 1
+              },
+              {
+                "title": "Caching Strategy",
+                "description": "Implementasi Redis untuk caching data yang sering diakses",
+                "order": 2
+              },
+              {
+                "title": "API Rate Limiting",
+                "description": "Implementasi rate limiting untuk mencegah abuse",
+                "order": 3
+              }
+            ]
+          }
+        ],
+        "dynamic_fields": [
+          {
+            "field_name": "Team Size",
+            "field_type": "text",
+            "is_required": false,
+            "items": [
+              {
+                "value": "5 developers (2 Frontend, 2 Backend, 1 DevOps)",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "field_name": "Project Status",
+            "field_type": "select",
+            "is_required": true,
+            "options": "[\"Completed\", \"In Progress\", \"On Hold\", \"Cancelled\"]",
+            "items": [
+              {
+                "value": "Completed",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "field_name": "Client Feedback",
+            "field_type": "textarea",
+            "is_required": false,
+            "items": [
+              {
+                "value": "Excellent work! The website exceeded our expectations. The team delivered a high-quality product on time and within budget. The user interface is intuitive and the performance is outstanding.",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "field_name": "Budget Range",
+            "field_type": "select",
+            "is_required": false,
+            "options": "[\"< $10k\", \"$10k - $50k\", \"$50k - $100k\", \"> $100k\"]",
+            "items": [
+              {
+                "value": "$50k - $100k",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "field_name": "Project URL",
+            "field_type": "url",
+            "is_required": false,
+            "items": [
+              {
+                "value": "https://portfolio.example.com/ecommerce-project",
+                "order": 1
+              }
+            ]
+          },
+          {
+            "field_name": "Completion Date",
+            "field_type": "date",
+            "is_required": false,
+            "items": [
+              {
+                "value": "2024-01-15",
+                "order": 1
+              }
+            ]
+          }
+        ]
+      },
+      "description": "Membuat portfolio baru (memerlukan autentikasi admin)"
+    },
+    {
+      "name": "Update Portfolio (Admin)",
+      "method": "PUT",
+      "url": "http://localhost:8080/api/admin/portfolios/1",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE"
+      },
+      "body": {
+        "title": "E-Commerce Website (Updated)",
+        "image_url": "https://example.com/ecommerce-preview-updated.jpg",
+        "description": "Full-stack e-commerce website dengan fitur modern dan user-friendly interface (Updated Version)",
+        "live_demo_url": "https://demo-ecommerce-v2.example.com",
+        "github_url": "https://github.com/username/ecommerce-project-v2",
+        "overview": "Proyek ini adalah solusi e-commerce komprehensif yang telah diupdate dengan fitur-fitur terbaru dan peningkatan performa.",
+        "category": "Development",
+        "project_time": "4 bulan",
+        "technology_stacks": [
+          {
+            "category": "Frontend",
+            "items": [
+              {
+                "name": "React",
+                "version": "18.2",
+                "description": "Library JavaScript untuk membangun UI"
+              },
+              {
+                "name": "TypeScript",
+                "version": "5.0",
+                "description": "Superset JavaScript dengan type safety"
+              }
+            ]
+          }
+        ],
+        "project_information": [
+          {
+            "category": "New Features",
+            "items": [
+              {
+                "title": "Real-time Notifications",
+                "description": "Notifikasi real-time untuk order updates",
+                "order": 1
+              }
+            ]
+          }
+        ],
+        "dynamic_fields": [
+          {
+            "field_name": "Version",
+            "field_type": "text",
+            "is_required": false,
+            "items": [
+              {
+                "value": "2.0",
+                "order": 1
+              }
+            ]
+          }
+        ]
+      },
+      "description": "Mengupdate portfolio yang sudah ada (memerlukan autentikasi admin)"
+    },
+    {
+      "name": "Delete Portfolio (Admin)",
+      "method": "DELETE",
+      "url": "http://localhost:8080/api/admin/portfolios/1",
+      "headers": {
+        "Authorization": "Bearer YOUR_JWT_TOKEN_HERE"
+      },
+      "description": "Menghapus portfolio (memerlukan autentikasi admin)"
+    }
+  ],
+  "notes": [
+    "Ganti YOUR_JWT_TOKEN_HERE dengan token JWT yang valid",
+    "Pastikan server berjalan di http://localhost:8080",
+    "Untuk endpoint admin, login terlebih dahulu untuk mendapatkan JWT token",
+    "Sesuaikan ID portfolio dalam URL dengan ID yang ada di database"
+  ]
+} 
